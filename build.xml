@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="cocaine-framework-java" basedir="." default="jar">
+	<property name="ivy-ant.dir" value="${user.home}/yandex-build/ivy-ant"/>
+	<import file="${ivy-ant.dir}/ivy-targets.xml"/>
+	<taskdef resource="cpptasks.tasks"/>
+	
+	<target name="clean">
+		<delete dir="target"/>
+	</target>
+
+	<target name="compile" depends="ivy-retrieve">
+		<mkdir dir="target/classes"/>
+		<javac source="1.7" target="1.7" destdir="target/classes" debug="true" encoding="utf-8" includeantruntime="false">
+			<src path="src/main/java"/>
+			<src path="src/test/java"/>
+			<classpath>
+				<fileset dir="lib/jars" includes="*.jar"/>
+			</classpath>
+		</javac>
+	</target>
+
+	<target name="generate-jni-interfaces" depends="compile">
+		<mkdir dir="target/generated"/>
+		<javah destdir="target/generated" force="yes">
+			<classpath>
+				<fileset dir="lib/jars" includes="*.jar" />
+				<pathelement location="target/classes" />
+			</classpath>
+			<class name="ru.yandex.cocaine.dealer.Client"/>
+		</javah>
+	</target>
+	
+	<target name="compile-native" depends="generate-jni-interfaces">
+		<mkdir dir="target/obj"/>
+		<exec executable="src/main/bin/build-native.sh"/>
+	</target>
+
+	<patternset id="runtime.resources">
+		<include name="**/*.css"/>
+		<include name="**/*.jpg"/>
+		<include name="**/*.js"/>
+		<include name="**/*.png"/>
+		<include name="**/*.gif"/>
+		<include name="**/*.properties"/>
+		<include name="**/*.groovy"/>
+		<include name="**/*.txt"/>
+		<include name="**/*.xml"/>
+		<include name="**/*.xsl"/>
+	</patternset>
+
+	<target name="jar" depends="compile, compile-native">
+		<mkdir dir="target/jars"/>
+		<jar destfile="target/jars/yandex-startrek.jar">
+			<fileset dir="target/classes"/>
+			<fileset dir="src/main/java">
+				<patternset refid="runtime.resources"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="rebuild" depends="clean, jar"/>
+
+	<target name="test" depends="compile">
+		<copy todir="target/classes/data">
+			<fileset dir="src/test/data"/>
+		</copy>
+		<junit printsummary="yes" fork="yes" forkMode="once" failureproperty="test.failure">
+			<sysproperty key="ant.junit.runner" value="true" />
+			<jvmarg value="-Dfile.encoding=UTF-8" />
+			<classpath>
+				<fileset dir="lib/jars" includes="*.jar" />
+				<fileset dir="lib/bundles" includes="*.jar"/>
+				<pathelement location="target/classes" />
+				<pathelement location="src/main/java" />
+				<pathelement location="src/test/java" />
+				<pathelement location="src/test/log4j" />
+			</classpath>
+
+			<batchtest todir="${basedir}">
+				<fileset dir="target/classes">
+					<include name="**/*Test.class" />
+					<exclude name="**/Abstract*.class" />
+				</fileset>
+				<formatter type="plain" usefile="no" />
+			</batchtest>
+		</junit>
+		<fail message="Tests failed" if="test.failure" />
+	</target>
+
+	<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml"/>
+
+	<property name="sonar.jdbc.url" value="jdbc:mysql://artemredkin.dev.tools.yandex.net:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
+	<property name="sonar.jdbc.driverClassName" value="com.mysql.jdbc.Driver" />
+	<property name="sonar.jdbc.username" value="sonar" />
+	<property name="sonar.jdbc.password" value="sonar" />
+
+	<property name="sonar.host.url" value="http://artemredkin.dev.tools.yandex.net:9000" />
+
+	<target name="sonar" depends="compile">
+		<property name="sonar.sources" value="src/main/java" />
+		<property name="sonar.projectName" value="startrek" />
+		<property name="sonar.binaries" value="target/classes" />
+		<property name="sonar.tests" value="src/test/java" />
+		<property name="sonar.libraries" value="lib/jars" />
+		<sonar:sonar key="ru.yandex:startrek" version="0.1" xmlns:sonar="antlib:org.sonar.ant"/>
+	</target>
+
+</project>
