@@ -1,0 +1,20 @@
+{
+	"version" : 1,
+	"logger" :
+	{
+		"type" : "FILE_LOGGER",
+		"flags" : "PLOG_ALL | PLOG_INTRO",
+		"file" : "./dealer.log"
+	},
+
+	"services" :
+	{
+    	"app1" : {
+			"app" : "perl_test1",
+			"autodiscovery" : {
+				"type" : "FILE",
+				"source" : "./src/test/resources/hosts"
+			}
+		}
+	}
+}
