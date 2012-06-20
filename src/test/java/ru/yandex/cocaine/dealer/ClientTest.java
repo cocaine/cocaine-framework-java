@@ -9,7 +9,9 @@ import ru.yandex.misc.test.Assert;
 
 public class ClientTest {
 	
-	
+	private static final long TIMEOUT = 1000;
+	private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
+	private static final MessagePolicy policy = MessagePolicy.builder().timeout(TIMEOUT/3, TIME_UNIT).build();
 	
 	@Test
 	public void testGood() throws TimeoutException{
@@ -19,8 +21,9 @@ public class ClientTest {
 			 client = new Client("./src/test/resources/config_example.json");
 			 Response response = null;
 			 try {
-				 response = client.sendMessage("app1/test_handle", new TextMessage(testString));
-				 String responseStr = response.get(1000, TimeUnit.MILLISECONDS);
+				 
+				 response = client.sendMessage("app1/test_handle", new TextMessage(testString), policy);
+				 String responseStr = response.get(TIMEOUT, TIME_UNIT);
 				 Assert.assertContains(responseStr, testString);
 				 response.close();
 			 } finally{
@@ -45,8 +48,8 @@ public class ClientTest {
 			 client = new Client("./src/test/resources/config_example.json");
 			 Response response = null;
 			 try {
-				 response = client.sendMessage("app1/test_handle_timeout", new TextMessage(testString));
-				 String responseStr = response.get(10000, TimeUnit.MILLISECONDS);
+				 response = client.sendMessage("app1/test_handle_timeout", new TextMessage(testString), policy);
+				 String responseStr = response.get(TIMEOUT, TIME_UNIT);
 			 } finally{
 				 if (response!=null) {
 					 response.close();

@@ -62,19 +62,14 @@
 	<target name="rebuild" depends="clean, jar"/>
 
 	<target name="test" depends="compile">
-		<copy todir="target/classes/data">
-			<fileset dir="src/test/data"/>
-		</copy>
 		<junit printsummary="yes" fork="yes" forkMode="once" failureproperty="test.failure">
 			<sysproperty key="ant.junit.runner" value="true" />
 			<jvmarg value="-Dfile.encoding=UTF-8" />
 			<classpath>
 				<fileset dir="lib/jars" includes="*.jar" />
-				<fileset dir="lib/bundles" includes="*.jar"/>
 				<pathelement location="target/classes" />
 				<pathelement location="src/main/java" />
 				<pathelement location="src/test/java" />
-				<pathelement location="src/test/log4j" />
 			</classpath>
 
 			<batchtest todir="${basedir}">

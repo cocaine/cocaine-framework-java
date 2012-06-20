@@ -8,8 +8,10 @@ import java.util.concurrent.TimeoutException;
  */
 public class Response {
 	private long cResponsePtr;
+	private long timeout;
+	private TimeUnit timeUnit;
 
-	public Response(long cResponsePtr){
+	Response(long cResponsePtr){
 		this.cResponsePtr = cResponsePtr;
 	}
 	
@@ -22,7 +24,7 @@ public class Response {
 		// see response_impl.cpp: response_impl_t::get for cocaineTimeout
 		// definition cocaineTimeout==1 is 1000 seconds
 		double cocaineTimeout = milliseconds / 1000000.0; 
-		return get(cResponsePtr, cocaineTimeout);
+		return get(cResponsePtr, cocaineTimeout*2);
 	}
 
 	public void close(){
