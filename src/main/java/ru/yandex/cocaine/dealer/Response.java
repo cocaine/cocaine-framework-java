@@ -1,27 +1,28 @@
 package ru.yandex.cocaine.dealer;
 
-import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
  */
-public class Response implements Callable<String>{
+public class Response {
 	private long cResponsePtr;
 
 	public Response(long cResponsePtr){
 		this.cResponsePtr = cResponsePtr;
 	}
 	
-	public String get(double timeout) {
+	public String get(long timeout, TimeUnit timeUnit) throws TimeoutException{
 		if (cResponsePtr==0) {
 			throw new IllegalStateException("Response is closed");
 		}
-		return get(cResponsePtr, timeout);
-	}
-
-	@Override
-	public String call() throws Exception {
-		return get(-1);
+		
+		long milliseconds = timeUnit.toMillis(timeout);
+		// see response_impl.cpp: response_impl_t::get for cocaineTimeout
+		// definition cocaineTimeout==1 is 1000 seconds
+		double cocaineTimeout = milliseconds / 1000000.0; 
+		return get(cResponsePtr, cocaineTimeout);
 	}
 
 	public void close(){
@@ -37,7 +38,7 @@ public class Response implements Callable<String>{
 		close(cResponsePtr);
 	}
 	
-	private native String get(long cResponsePtr, double timeout);
+	private native String get(long cResponsePtr, double timeout) throws TimeoutException;
 	private native void close(long cResponsePtr);
 
 	{

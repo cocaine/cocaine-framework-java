@@ -1,5 +1,6 @@
 #include <cocaine/dealer/utils/data_container.hpp>
 #include <cocaine/dealer/response.hpp>
+#include <cocaine/dealer/utils/error.hpp>
 
 #include "response_holder.hpp"
 #include "ru_yandex_cocaine_dealer_Response.h"
@@ -9,16 +10,27 @@ using namespace cocaine::dealer::java;
 using namespace cocaine::dealer;
 
 JNIEXPORT void JNICALL Java_ru_yandex_cocaine_dealer_Response_close
-  (JNIEnv *, jobject, jlong c_response_ptr){
+  (JNIEnv *, jobject, jlong c_response_ptr) {
 	response_holder_t * response_ptr = (response_holder_t *)c_response_ptr;
 	delete response_ptr;
 }
 
+jint deal_with_error(JNIEnv *env, dealer_error& error);
+
 JNIEXPORT jstring JNICALL Java_ru_yandex_cocaine_dealer_Response_get
-  (JNIEnv *env, jobject obj, jlong c_response_ptr, jdouble timeout){
+  (JNIEnv *env, jobject obj, jlong c_response_ptr, jdouble timeout) {
 	response_holder_t *response_holder = (response_holder_t *)c_response_ptr;
 	data_container * container = new data_container();
-	bool has_next = response_holder->get()->get(container, timeout);
+	bool has_next = false;
+	try{
+		 has_next = response_holder->get()->get(container, timeout);
+	} catch (dealer_error& error){
+		int throw_result = deal_with_error(env, error);
+		// just to remove warning
+		std::stringstream s;
+		s<<throw_result;
+		return from_string(env, s.str());
+	}
 	char buf[100] = {0};
 	jstring head = env->NewStringUTF((char*) container->data());
 	if (has_next){
@@ -28,4 +40,21 @@ JNIEXPORT jstring JNICALL Java_ru_yandex_cocaine_dealer_Response_get
 		return from_string(env, head_str + tail_str);
 	}
 	return head;
+}
+
+jint deal_with_error(JNIEnv *env, dealer_error& error) {
+	int res = 0;
+	printf("code %d ", error.code());
+	switch (error.code()){
+		case deadline_error:
+			res = throw_timeout_exception(env, "call timeouted");
+			break;
+		case timeout_error:
+			res = throw_timeout_exception(env, "call timeouted");
+			break;
+		default:
+			res = throw_runtime_exception(env, "generic_error");
+			break;
+	}
+	return res;
 }
