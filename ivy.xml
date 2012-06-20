@@ -18,6 +18,7 @@
     </configurations>
 
     <dependencies>
+	    <dependency org="ru.yandex" name="misc" rev="r20120517211327.528e462d0e83" conf="compile->runtime(*),master(*),spring(*);sources->sources(*)"/>
         <dependency org="junit" name="junit" rev="4.8.1" conf="test->runtime(*),master(*)"/>
         <dependency org="org.mockito" name="mockito-core" rev="1.8.5" conf="test->runtime(*),master(*)"/>
     </dependencies>

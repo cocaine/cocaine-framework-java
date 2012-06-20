@@ -2,7 +2,6 @@
 <project name="cocaine-framework-java" basedir="." default="jar">
 	<property name="ivy-ant.dir" value="${user.home}/yandex-build/ivy-ant"/>
 	<import file="${ivy-ant.dir}/ivy-targets.xml"/>
-	<taskdef resource="cpptasks.tasks"/>
 	
 	<target name="clean">
 		<delete dir="target"/>
@@ -27,11 +26,13 @@
 				<pathelement location="target/classes" />
 			</classpath>
 			<class name="ru.yandex.cocaine.dealer.Client"/>
+			<class name="ru.yandex.cocaine.dealer.Response"/>
 		</javah>
 	</target>
 	
 	<target name="compile-native" depends="generate-jni-interfaces">
 		<mkdir dir="target/obj"/>
+		<mkdir dir="target/lib"/>
 		<exec executable="src/main/bin/build-native.sh"/>
 	</target>
 
@@ -50,7 +51,7 @@
 
 	<target name="jar" depends="compile, compile-native">
 		<mkdir dir="target/jars"/>
-		<jar destfile="target/jars/yandex-startrek.jar">
+		<jar destfile="target/jars/yandex-cocaine-dealer.jar">
 			<fileset dir="target/classes"/>
 			<fileset dir="src/main/java">
 				<patternset refid="runtime.resources"/>
