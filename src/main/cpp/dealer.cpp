@@ -12,13 +12,13 @@
 using namespace cocaine::dealer;
 using namespace cocaine::dealer::java;
 
-JNIEXPORT void JNICALL Java_ru_yandex_cocaine_dealer_Client_delete
+JNIEXPORT void JNICALL Java_ru_yandex_cocaine_dealer_Dealer_delete
 (JNIEnv *, jobject, jlong dealer_ptr) {
     dealer_t * dealer = (dealer_t *) dealer_ptr;
     delete dealer;
 };
 
-JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Client_init(JNIEnv *env,
+JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_init(JNIEnv *env,
         jobject, jstring config_path) {
     std::string config_path_str = to_string(env, config_path);
     try{
@@ -33,7 +33,7 @@ JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Client_init(JNIEnv *env,
 }
 ;
 
-JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Client_sendMessage(
+JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_sendMessage(
         JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
         jstring handle, jstring text, jboolean send_to_all_hosts,
         jboolean urgent, jdouble timeout, jdouble deadline, jint max_retries)
