@@ -42,16 +42,17 @@ public class DealerTest {
             }
         }
     }
-    
-    @Test (expected = RuntimeException.class)
+
+    @Test(expected = RuntimeException.class)
     public void testBadConfig() {
-        Dealer c = new Dealer("aaa");
+        new Dealer("aaa");
     }
-    
-    @Test (expected = RuntimeException.class)
+
+    @Test(expected = RuntimeException.class)
     public void testBadSendMessage() {
         Dealer c = new Dealer("./src/test/resources/dealer_config.json");
-        c.sendMessage("a/b", new TextMessage("text"), MessagePolicy.builder().build());
+        c.sendMessage("a/b", new TextMessage("text"), MessagePolicy.builder()
+                .build());
     }
 
     @Test(expected = TimeoutException.class)

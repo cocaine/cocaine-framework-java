@@ -5,6 +5,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.junit.Test;
 
+/**
+ * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
+ */
 public class PerformanceTest {
 
     private final String CONFIG_PATH = "./src/test/resources/dealer_config.json";
