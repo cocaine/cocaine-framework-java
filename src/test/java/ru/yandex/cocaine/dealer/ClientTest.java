@@ -44,10 +44,14 @@ public class ClientTest {
     }
     
     @Test (expected = RuntimeException.class)
-    public void testBadPath(){
-        
+    public void testBadConfig() {
         Client c = new Client("aaa");
-        
+    }
+    
+    @Test (expected = RuntimeException.class)
+    public void testBadSendMessage() {
+        Client c = new Client("./src/test/resources/dealer_config.json");
+        c.sendMessage("a/b", new TextMessage("text"), MessagePolicy.builder().build());
     }
 
     @Test(expected = TimeoutException.class)
