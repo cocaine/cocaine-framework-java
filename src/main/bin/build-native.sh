@@ -13,10 +13,10 @@ fi
 
 g++ -$SHARED_FLAG -o target/lib/libcocaine-framework-java.so -Wl,-soname,libcocaine-framework-java\
 	-I/System/Library/Frameworks/JavaVM.framework/Versions/1.7/Headers \
-	-Isrc/main/cpp  \
-	-Itarget/generated 	\
-	-fpermissive -fPIC	 	\
-	-I${JAVA_HOME}/include \
+	-Isrc/main/cpp  			 \
+	-Itarget/generated 			 \
+	-fpermissive -fPIC	 	     \
+	-I${JAVA_HOME}/include       \
 	-I${JAVA_HOME}/include/linux \
 	 src/main/cpp/client.cpp  src/main/cpp/response.cpp src/main/cpp/util.cpp \
 	-lcocaine-dealer -lc 

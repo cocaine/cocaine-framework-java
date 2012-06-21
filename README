@@ -19,3 +19,16 @@ there are 2 functional and 1 performance test
 in src/test/java
 
 when running them make sure LD_LIBRARY_PATH contains target/lib
+
+Cocaine app
+====================
+
+there is a sample cocaine app bundled.
+To deploy and run it on a new cocaine instance run 
+src/test/resources/run.sh
+
+the app itself is a perl script : srt/test/resources/test.pl
+with the manifest srt/test/resources/perl_test1.app.manifers
+2 handles are defined:
+test_handle - echoes the request back
+test_handle_timeout - never returns - sleeps forever

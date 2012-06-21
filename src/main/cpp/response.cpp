@@ -26,7 +26,6 @@ JNIEXPORT jstring JNICALL Java_ru_yandex_cocaine_dealer_Response_get
 		 has_next = response_holder->get()->get(&container, timeout);
 	} catch (dealer_error& error){
 		int throw_result = deal_with_error(env, error);
-		// just to remove warning
 		std::stringstream s;
 		s<<throw_result;
 		return from_string(env, s.str());
@@ -49,10 +48,10 @@ jint deal_with_error(JNIEnv *env, dealer_error& error) {
 	int res = 0;
 	switch (error.code()){
 		case deadline_error:
-			res = throw_timeout_exception(env, "call timeouted");
+			res = throw_timeout_exception(env, "call timed out");
 			break;
 		case timeout_error:
-			res = throw_timeout_exception(env, "call timeouted");
+			res = throw_timeout_exception(env, "call timed out");
 			break;
 		default:
 			res = throw_runtime_exception(env, "generic_error");
