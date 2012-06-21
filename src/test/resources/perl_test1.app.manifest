@@ -1,0 +1,24 @@
+{
+   "args" : {
+        "source" : "./src/test/resources/test.pl"
+    },
+    "engine" : {
+        "heartbeat-timeout" : 60,
+        "pool-limit" : 100,
+        "queue-limit" : 250
+    },
+    "tasks" : {
+        "test_handle" : {
+            "endpoint" : "tcp://*:9400",
+            "type" : "server+lsd"
+        } 
+    },
+    "drivers" : 
+	{ "test_handle" : 
+		{"type":"native-server","endpoint" : "tcp://*:9400", "path":"./src/test/resources/test.pl", "emit":"test_handle"} ,
+  	  "test_handle_timeout" :
+		{"type":"native-server","endpoint" : "tcp://*:9401", "path":"./src/test/resources/test.pl", "emit":"test_handle_timeout"} 
+    	},
+    "type" : "perl"
+}
+
