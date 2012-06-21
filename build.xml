@@ -23,7 +23,7 @@
 				<fileset dir="lib/jars" includes="*.jar" />
 				<pathelement location="target/classes" />
 			</classpath>
-			<class name="ru.yandex.cocaine.dealer.Client"/>
+			<class name="ru.yandex.cocaine.dealer.Dealer"/>
 			<class name="ru.yandex.cocaine.dealer.Response"/>
 		</javah>
 	</target>
