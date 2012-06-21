@@ -9,3 +9,4 @@ LD_PRELOAD=/usr/lib/libperl.so:/usr/lib/libpython2.7.so cocaine-deploy \
 	-p $prevdir/src/test/resources/package.tar.gz perl_test1 \
 	-c $prevdir/src/test/resources/cocaine.conf 
 rm -rf ./target/data/cache/
+rm -rf src/test/resources/package.tar.gz

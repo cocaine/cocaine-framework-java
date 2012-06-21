@@ -7,5 +7,15 @@ http://wiki.yandex-team.ru/Cocaine/Deployment
 install yandex-build 
 http://wiki.yandex-team.ru/m/tech/trash/yandex-build
 
+make sure $JAVA_HOME points to jdk
+
 cd to cocaine-framework-java root dir
 $> ant
+
+Tests
+====================
+
+there are 2 functional and 1 performance test
+in src/test/java
+
+when running them make sure LD_LIBRARY_PATH contains target/lib
