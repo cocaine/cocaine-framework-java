@@ -2,6 +2,7 @@
 #include <cocaine/dealer/response.hpp>
 #include <cocaine/dealer/message_policy.hpp>
 #include <cocaine/dealer/message_path.hpp>
+#include <cocaine/dealer/utils/error.hpp>
 #include <locale>
 
 #include "ru_yandex_cocaine_dealer_Client.h"
@@ -20,8 +21,15 @@ JNIEXPORT void JNICALL Java_ru_yandex_cocaine_dealer_Client_delete
 JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Client_init(JNIEnv *env,
         jobject, jstring config_path) {
     std::string config_path_str = to_string(env, config_path);
-    dealer_t * dealer = new dealer_t(config_path_str);
-    return (jlong) dealer;
+    try{
+        dealer_t * dealer = new dealer_t(config_path_str);
+        return (jlong) dealer;
+    } catch( dealer_error& error){
+        throw_runtime_exception(env, error.what());
+    } catch (internal_error& error){
+        throw_runtime_exception(env, error.what());
+    }
+    return 0;
 }
 ;
 

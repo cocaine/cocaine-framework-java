@@ -42,6 +42,13 @@ public class ClientTest {
             }
         }
     }
+    
+    @Test (expected = RuntimeException.class)
+    public void testBadPath(){
+        
+        Client c = new Client("aaa");
+        
+    }
 
     @Test(expected = TimeoutException.class)
     public void testTimeout() throws TimeoutException {
