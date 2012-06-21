@@ -20,9 +20,9 @@ public class Dealer {
         String[] parts = path.split("/");
         String service = parts[0];
         String handle = parts[1];
-        double cocaineTimeout = toNanoSeconds(
+        double cocaineTimeout = toSeconds(
                 messagePolicy.timeoutDuration, messagePolicy.timeoutTimeUnit);
-        double cocaineDeadline = toNanoSeconds(
+        double cocaineDeadline = toSeconds(
                 messagePolicy.timeoutDuration, messagePolicy.timeoutTimeUnit);
         long responsePtr = sendMessage(cDealerPtr.get(), service, handle,
                 message.toString(), messagePolicy.sendToAllHosts,
@@ -45,7 +45,11 @@ public class Dealer {
     }
 
     public static double toNanoSeconds(long timeout, TimeUnit timeUnit) {
-        return timeUnit.toMillis(timeout) / 1000000.0;
+        return timeUnit.toNanos(timeout);
+    }
+
+    public static double toSeconds(long timeout, TimeUnit timeUnit) {
+        return timeUnit.toSeconds(timeout);
     }
 
     // returns pointer to a client

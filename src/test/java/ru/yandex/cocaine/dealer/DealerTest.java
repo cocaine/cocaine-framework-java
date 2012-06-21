@@ -11,7 +11,7 @@ import org.junit.Test;
  */
 public class DealerTest {
 
-    private static final long TIMEOUT = 1000;
+    private static final long TIMEOUT = 10000;
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
     private static final MessagePolicy policy = MessagePolicy.builder()
             .timeout(TIMEOUT / 3, TIME_UNIT).build();
