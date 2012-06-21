@@ -32,7 +32,7 @@ JNIEXPORT jstring JNICALL Java_ru_yandex_cocaine_dealer_Response_get
 		return from_string(env, s.str());
 	}
 	jstring head = from_string(env, "");
-	if (!container.empty()){
+	if (!container.empty()) {
 		std::string response_str((char*)container.data(), container.size());
 		head = env->NewStringUTF(response_str.c_str());
 	}

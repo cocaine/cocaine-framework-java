@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class PerformanceTest {
 
-	private final String CONFIG_PATH = "./src/test/resources/config_example.json";
+	private final String CONFIG_PATH = "./src/test/resources/dealer_config.json";
 	private final String PATH = "app1/test_handle";
 
 	@Test
@@ -33,7 +33,7 @@ public class PerformanceTest {
 					if (counter % 1000 == 0 ) {
 						System.out.println(response+" "+total_counter+" "+((cursum)/(counter*1000000.0)));
 					}
-					if (counter % 100000 == 0 ) {
+					if (counter % 10000 == 0 ) {
 						cursum = cursum/counter;
 						counter = 1;
 					}

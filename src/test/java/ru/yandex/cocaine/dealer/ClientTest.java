@@ -18,7 +18,7 @@ public class ClientTest {
 		Client client = null;
 		String testString = "hello_world";
 		try{
-			 client = new Client("./src/test/resources/config_example.json");
+			 client = new Client("./src/test/resources/dealer_config.json");
 			 Response response = null;
 			 try {
 				 
@@ -45,7 +45,7 @@ public class ClientTest {
 		Client client = null;
 		String testString = "hello_world";
 		try{
-			 client = new Client("./src/test/resources/config_example.json");
+			 client = new Client("./src/test/resources/dealer_config.json");
 			 Response response = null;
 			 try {
 				 response = client.sendMessage("app1/test_handle_timeout", new TextMessage(testString), policy);
