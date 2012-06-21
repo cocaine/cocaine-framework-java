@@ -6,15 +6,15 @@ import java.util.concurrent.TimeUnit;
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
  */
 public class Dealer {
-    private long cClientPtr = 0;
+    private long cDealerPtr = 0;
 
     public Dealer(String configPath) {
-        cClientPtr = init(configPath);
+        cDealerPtr = init(configPath);
     }
 
     public Response sendMessage(String path, Message message,
             MessagePolicy messagePolicy) {
-        if (cClientPtr == 0) {
+        if (cDealerPtr == 0) {
             throw new IllegalStateException("client is closed");
         }
         String[] parts = path.split("/");
@@ -24,7 +24,7 @@ public class Dealer {
                 messagePolicy.timeoutDuration, messagePolicy.timeoutTimeUnit);
         double cocaineDeadline = toCocainTimestamp(
                 messagePolicy.timeoutDuration, messagePolicy.timeoutTimeUnit);
-        long responsePtr = sendMessage(cClientPtr, service, handle,
+        long responsePtr = sendMessage(cDealerPtr, service, handle,
                 message.toString(), messagePolicy.sendToAllHosts,
                 messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
                 messagePolicy.maxRetries);
@@ -32,10 +32,10 @@ public class Dealer {
     }
 
     public void close() {
-        if (cClientPtr != 0) {
-            delete(cClientPtr);
+        if (cDealerPtr != 0) {
+            delete(cDealerPtr);
         }
-        cClientPtr = 0;
+        cDealerPtr = 0;
     }
 
     @Override
