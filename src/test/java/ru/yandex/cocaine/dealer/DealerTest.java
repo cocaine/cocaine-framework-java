@@ -3,9 +3,8 @@ package ru.yandex.cocaine.dealer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.junit.Assert;
 import org.junit.Test;
-
-import ru.yandex.misc.test.Assert;
 
 /**
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
@@ -29,7 +28,8 @@ public class DealerTest {
                 response = dealer.sendMessage("app1/test_handle",
                         new TextMessage(testString), policy);
                 String responseStr = response.get(TIMEOUT, TIME_UNIT);
-                Assert.assertContains(responseStr, testString);
+                Assert.assertNotNull(responseStr);
+                Assert.assertTrue(responseStr.contains(testString));
                 response.close();
             } finally {
                 if (response != null) {

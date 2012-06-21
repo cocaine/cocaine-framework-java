@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="cocaine-framework-java" basedir="." default="jar">
-	<property name="ivy-ant.dir" value="${user.home}/yandex-build/ivy-ant"/>
-	<import file="${ivy-ant.dir}/ivy-targets.xml"/>
 	
 	<target name="clean">
 		<delete dir="target"/>
 	</target>
 
-	<target name="compile" depends="ivy-retrieve">
+	<target name="compile">
 		<mkdir dir="target/classes"/>
 		<javac source="1.7" target="1.7" destdir="target/classes" debug="true" encoding="utf-8" includeantruntime="false">
 			<src path="src/main/java"/>
@@ -82,23 +80,4 @@
 		</junit>
 		<fail message="Tests failed" if="test.failure" />
 	</target>
-
-	<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml"/>
-
-	<property name="sonar.jdbc.url" value="jdbc:mysql://artemredkin.dev.tools.yandex.net:3306/sonar?useUnicode=true&amp;characterEncoding=utf8" />
-	<property name="sonar.jdbc.driverClassName" value="com.mysql.jdbc.Driver" />
-	<property name="sonar.jdbc.username" value="sonar" />
-	<property name="sonar.jdbc.password" value="sonar" />
-
-	<property name="sonar.host.url" value="http://artemredkin.dev.tools.yandex.net:9000" />
-
-	<target name="sonar" depends="compile">
-		<property name="sonar.sources" value="src/main/java" />
-		<property name="sonar.projectName" value="startrek" />
-		<property name="sonar.binaries" value="target/classes" />
-		<property name="sonar.tests" value="src/test/java" />
-		<property name="sonar.libraries" value="lib/jars" />
-		<sonar:sonar key="ru.yandex:startrek" version="0.1" xmlns:sonar="antlib:org.sonar.ant"/>
-	</target>
-
 </project>
