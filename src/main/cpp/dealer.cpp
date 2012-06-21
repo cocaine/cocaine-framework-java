@@ -16,7 +16,7 @@ JNIEXPORT void JNICALL Java_ru_yandex_cocaine_dealer_Dealer_delete
 (JNIEnv *, jobject, jlong dealer_ptr) {
     dealer_t * dealer = (dealer_t *) dealer_ptr;
     delete dealer;
-};
+}
 
 JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_init(JNIEnv *env,
         jobject, jstring config_path) {
@@ -31,7 +31,6 @@ JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_init(JNIEnv *env,
     }
     return 0;
 }
-;
 
 JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_sendMessage(
         JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
