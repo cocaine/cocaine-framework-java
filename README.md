@@ -4,9 +4,6 @@ Installation
 install cocaine-core (libcocaine-dealer is bundled into it)
 http://wiki.yandex-team.ru/Cocaine/Deployment
 
-install yandex-build 
-http://wiki.yandex-team.ru/m/tech/trash/yandex-build
-
 make sure $JAVA_HOME points to jdk
 
 cd to cocaine-framework-java root dir
