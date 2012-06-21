@@ -10,7 +10,7 @@ import ru.yandex.misc.test.Assert;
 /**
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
  */
-public class ClientTest {
+public class DealerTest {
 
     private static final long TIMEOUT = 1000;
     private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
@@ -19,14 +19,14 @@ public class ClientTest {
 
     @Test
     public void testGood() throws TimeoutException {
-        Client client = null;
+        Dealer dealer = null;
         String testString = "hello_world";
         try {
-            client = new Client("./src/test/resources/dealer_config.json");
+            dealer = new Dealer("./src/test/resources/dealer_config.json");
             Response response = null;
             try {
 
-                response = client.sendMessage("app1/test_handle",
+                response = dealer.sendMessage("app1/test_handle",
                         new TextMessage(testString), policy);
                 String responseStr = response.get(TIMEOUT, TIME_UNIT);
                 Assert.assertContains(responseStr, testString);
@@ -37,32 +37,32 @@ public class ClientTest {
                 }
             }
         } finally {
-            if (client != null) {
-                client.close();
+            if (dealer != null) {
+                dealer.close();
             }
         }
     }
     
     @Test (expected = RuntimeException.class)
     public void testBadConfig() {
-        Client c = new Client("aaa");
+        Dealer c = new Dealer("aaa");
     }
     
     @Test (expected = RuntimeException.class)
     public void testBadSendMessage() {
-        Client c = new Client("./src/test/resources/dealer_config.json");
+        Dealer c = new Dealer("./src/test/resources/dealer_config.json");
         c.sendMessage("a/b", new TextMessage("text"), MessagePolicy.builder().build());
     }
 
     @Test(expected = TimeoutException.class)
     public void testTimeout() throws TimeoutException {
-        Client client = null;
+        Dealer dealer = null;
         String testString = "hello_world";
         try {
-            client = new Client("./src/test/resources/dealer_config.json");
+            dealer = new Dealer("./src/test/resources/dealer_config.json");
             Response response = null;
             try {
-                response = client.sendMessage("app1/test_handle_timeout",
+                response = dealer.sendMessage("app1/test_handle_timeout",
                         new TextMessage(testString), policy);
                 response.get(TIMEOUT, TIME_UNIT);
             } finally {
@@ -72,8 +72,8 @@ public class ClientTest {
             }
 
         } finally {
-            if (client != null) {
-                client.close();
+            if (dealer != null) {
+                dealer.close();
             }
         }
     }

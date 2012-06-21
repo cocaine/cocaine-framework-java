@@ -5,10 +5,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
  */
-public class Client {
+public class Dealer {
     private long cClientPtr = 0;
 
-    public Client(String configPath) {
+    public Dealer(String configPath) {
         cClientPtr = init(configPath);
     }
 

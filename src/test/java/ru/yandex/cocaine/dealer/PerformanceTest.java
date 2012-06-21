@@ -15,18 +15,18 @@ public class PerformanceTest {
         TextMessage message = new TextMessage("hello world");
         MessagePolicy messagePolicy = MessagePolicy.builder()
                 .timeout(100000, TimeUnit.MILLISECONDS).build();
-        Client c = null;
+        Dealer dealer = null;
         long cursum = 0;
 
         try {
-            c = new Client(CONFIG_PATH);
+            dealer = new Dealer(CONFIG_PATH);
             int counter = 1;
             int total_counter = 1;
             for (;;) {
                 Response r = null;
                 try {
                     long begin = System.nanoTime();
-                    r = c.sendMessage(PATH, message, messagePolicy);
+                    r = dealer.sendMessage(PATH, message, messagePolicy);
                     String response = r.get(100000, TimeUnit.MILLISECONDS);
                     long end = System.nanoTime();
                     cursum += (end - begin);
@@ -47,8 +47,8 @@ public class PerformanceTest {
                 total_counter++;
             }
         } finally {
-            if (c != null) {
-                c.close();
+            if (dealer != null) {
+                dealer.close();
             }
         }
     }

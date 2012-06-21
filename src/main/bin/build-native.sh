@@ -18,6 +18,6 @@ g++ -$SHARED_FLAG -o target/lib/libcocaine-framework-java.so -Wl,-soname,libcoca
 	-fpermissive -fPIC	 	     \
 	-I${JAVA_HOME}/include       \
 	-I${JAVA_HOME}/include/linux \
-	 src/main/cpp/client.cpp  src/main/cpp/response.cpp src/main/cpp/util.cpp \
+	 src/main/cpp/dealer.cpp  src/main/cpp/response.cpp src/main/cpp/util.cpp \
 	-lcocaine-dealer -lc 
 	
