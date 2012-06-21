@@ -5,7 +5,7 @@
 #include <cocaine/dealer/utils/error.hpp>
 #include <locale>
 
-#include "ru_yandex_cocaine_dealer_Client.h"
+#include "ru_yandex_cocaine_dealer_Dealer.h"
 #include "response_holder.hpp"
 #include "util.hpp"
 
