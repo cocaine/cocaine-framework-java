@@ -41,7 +41,7 @@ JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Client_sendMessage(
 
     boost::shared_ptr < response_t > dealer_response = dealer->send_message(
             text_str.data(), text_str.size(),
-            message_path_t(service_str, handle_str), policy);
+            message_path, policy);
     response_holder_t *response_ = new response_holder_t(dealer_response);
     return (jlong) response_;
 }
