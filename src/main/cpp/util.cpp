@@ -1,6 +1,8 @@
 #include "util.hpp"
 
-namespace cocaine { namespace dealer { namespace java {
+namespace cocaine {
+namespace dealer {
+namespace java {
 
 std::string to_string(JNIEnv* env, jstring string) {
     std::string value;
@@ -15,32 +17,36 @@ std::string to_string(JNIEnv* env, jstring string) {
     }
 
     return value;
-};
-
+}
+;
 
 jstring from_string(JNIEnv* env, std::string str) {
-	return env->NewStringUTF(str.c_str());
-};
+    return env->NewStringUTF(str.c_str());
+}
+;
 
-jint throw_timeout_exception( JNIEnv *env, std::string message ) {
-	std::string class_name = "java/util/concurrent/TimeoutException";
-	return throw_exception(env, class_name , message);
-};
+jint throw_timeout_exception(JNIEnv *env, std::string message) {
+    std::string class_name = "java/util/concurrent/TimeoutException";
+    return throw_exception(env, class_name, message);
+}
+;
 
-jint throw_runtime_exception( JNIEnv *env, std::string message ) {
-	std::string class_name = "java/lang/RuntimeException";
-	return throw_exception(env, class_name ,message);
-};
+jint throw_runtime_exception(JNIEnv *env, std::string message) {
+    std::string class_name = "java/lang/RuntimeException";
+    return throw_exception(env, class_name, message);
+}
+;
 
 jint throw_exception(JNIEnv *env, std::string class_name, std::string message) {
-	jclass ex_class = env->FindClass( class_name.c_str() );
-	if (ex_class==NULL) {
-		std::string no_class_def = "java/lang/NoClassDefFoundError";
-		return throw_exception(env, no_class_def ,"");
-	}
-	return env->ThrowNew( ex_class, message.c_str() );
-};
+    jclass ex_class = env->FindClass(class_name.c_str());
+    if (ex_class == NULL) {
+        std::string no_class_def = "java/lang/NoClassDefFoundError";
+        return throw_exception(env, no_class_def, "");
+    }
+    return env->ThrowNew(ex_class, message.c_str());
+}
+;
 
-
-
-}}}
+}
+}
+}
