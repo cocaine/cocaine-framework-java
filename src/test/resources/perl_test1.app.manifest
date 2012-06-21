@@ -1,6 +1,6 @@
 {
    "args" : {
-        "source" : "./src/test/resources/test.pl"
+        "script_name" : "test.pl"
     },
     "engine" : {
         "heartbeat-timeout" : 60,
@@ -24,6 +24,7 @@
            "emit":"test_handle_timeout"
        } 
     },
-    "type" : "perl"
+    "type" : "perl",
+    "path" : "./src/test/resources/test.pl"
 }
 
