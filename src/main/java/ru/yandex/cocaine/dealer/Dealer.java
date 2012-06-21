@@ -6,25 +6,25 @@ import java.util.concurrent.TimeUnit;
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
  */
 public class Dealer {
-    private long cDealerPtr = 0;
-
+    private Ptr cDealerPtr = new Ptr();
+    
     public Dealer(String configPath) {
-        cDealerPtr = init(configPath);
+        cDealerPtr = new Ptr(init(configPath));
     }
 
     public Response sendMessage(String path, Message message,
             MessagePolicy messagePolicy) {
-        if (cDealerPtr == 0) {
-            throw new IllegalStateException("client is closed");
+        if (!cDealerPtr.isReferring()){
+            throw new IllegalStateException("Dealer is closed");
         }
         String[] parts = path.split("/");
         String service = parts[0];
         String handle = parts[1];
-        double cocaineTimeout = toCocainTimestamp(
+        double cocaineTimeout = toNanoSeconds(
                 messagePolicy.timeoutDuration, messagePolicy.timeoutTimeUnit);
-        double cocaineDeadline = toCocainTimestamp(
+        double cocaineDeadline = toNanoSeconds(
                 messagePolicy.timeoutDuration, messagePolicy.timeoutTimeUnit);
-        long responsePtr = sendMessage(cDealerPtr, service, handle,
+        long responsePtr = sendMessage(cDealerPtr.get(), service, handle,
                 message.toString(), messagePolicy.sendToAllHosts,
                 messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
                 messagePolicy.maxRetries);
@@ -32,10 +32,10 @@ public class Dealer {
     }
 
     public void close() {
-        if (cDealerPtr != 0) {
-            delete(cDealerPtr);
+        if (cDealerPtr.isReferring()) {
+            delete(cDealerPtr.get());
         }
-        cDealerPtr = 0;
+        cDealerPtr.close();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class Dealer {
         close();
     }
 
-    public static double toCocainTimestamp(long timeout, TimeUnit timeUnit) {
+    public static double toNanoSeconds(long timeout, TimeUnit timeUnit) {
         return timeUnit.toMillis(timeout) / 1000000.0;
     }
 

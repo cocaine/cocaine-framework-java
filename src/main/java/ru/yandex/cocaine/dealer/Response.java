@@ -7,16 +7,16 @@ import java.util.concurrent.TimeoutException;
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
  */
 public class Response {
-    private long cResponsePtr;
+    private Ptr cResponsePtr;
     private long timeout;
     private TimeUnit timeUnit;
 
     Response(long cResponsePtr) {
-        this.cResponsePtr = cResponsePtr;
+        this.cResponsePtr = new Ptr(cResponsePtr);
     }
 
     public String get(long timeout, TimeUnit timeUnit) throws TimeoutException {
-        if (cResponsePtr == 0) {
+        if (!cResponsePtr.isReferring()) {
             throw new IllegalStateException("Response is closed");
         }
 
@@ -24,20 +24,20 @@ public class Response {
         // see response_impl.cpp: response_impl_t::get for cocaineTimeout
         // definition cocaineTimeout==1 is 1000 seconds
         double cocaineTimeout = milliseconds / 1000000.0;
-        return get(cResponsePtr, cocaineTimeout * 2);
+        return get(cResponsePtr.get(), cocaineTimeout * 2);
     }
 
     public void close() {
-        if (cResponsePtr != 0) {
-            close(cResponsePtr);
+        if (cResponsePtr.isReferring()) {
+            close(cResponsePtr.get());
         }
-        cResponsePtr = 0;
+        cResponsePtr.close();
     }
 
     @Override
     protected void finalize() throws Throwable {
         super.finalize();
-        close(cResponsePtr);
+        close();
     }
 
     private native String get(long cResponsePtr, double timeout)
