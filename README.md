@@ -14,7 +14,7 @@ $> ant
 
 Example
 ====================
-
+```java
  @Test
     public void testGood() throws TimeoutException {
         Client client = null;
@@ -39,7 +39,7 @@ Example
             }
         }
     }
-
+```
 
 Cocaine app
 ====================
