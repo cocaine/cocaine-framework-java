@@ -7,14 +7,17 @@ import org.junit.Test;
 
 import ru.yandex.misc.test.Assert;
 
+/**
+ * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
+ */
 public class ClientTest {
 	
 	private static final long TIMEOUT = 1000;
 	private static final TimeUnit TIME_UNIT = TimeUnit.MILLISECONDS;
 	private static final MessagePolicy policy = MessagePolicy.builder().timeout(TIMEOUT/3, TIME_UNIT).build();
-	
+
 	@Test
-	public void testGood() throws TimeoutException{
+	public void testGood() throws TimeoutException {
 		Client client = null;
 		String testString = "hello_world";
 		try{
@@ -31,7 +34,6 @@ public class ClientTest {
 					 response.close();
 				 }
 			 }
-			 
 		} finally {
 			if (client!=null){
 				client.close();
@@ -41,7 +43,7 @@ public class ClientTest {
 
 
 	@Test (expected = TimeoutException.class)
-	public void testTimeout() throws TimeoutException{
+	public void testTimeout() throws TimeoutException {
 		Client client = null;
 		String testString = "hello_world";
 		try{
@@ -55,7 +57,7 @@ public class ClientTest {
 					 response.close();
 				 }
 			 }
-			 
+
 		} finally {
 			if (client!=null){
 				client.close();

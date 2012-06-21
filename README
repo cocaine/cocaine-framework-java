@@ -12,13 +12,11 @@ make sure $JAVA_HOME points to jdk
 cd to cocaine-framework-java root dir
 $> ant
 
-Tests
+Example
 ====================
 
-there are 2 functional and 1 performance test
-in src/test/java
 
-when running them make sure LD_LIBRARY_PATH contains target/lib
+
 
 Cocaine app
 ====================
@@ -32,3 +30,23 @@ with the manifest srt/test/resources/perl_test1.app.manifers
 2 handles are defined:
 test_handle - echoes the request back
 test_handle_timeout - never returns - sleeps forever
+
+Tests
+====================
+
+there are 2 functional and 1 performance test
+in src/test/java 
+they depend on Cocaine app running in cocaine
+
+when running them make sure LD_LIBRARY_PATH contains target/lib
+
+Shortcomings
+====================
+
+1) Response.get does not throw Timeout exception if it was the get itself who timed out, not the server timeout
+specified in MessagePolicy
+
+2) No support for msgpack, only text messages currently. 
+Python cocaine framework supports of packing app responses with msgpack.
+so it should be possible to unpack them on java side (?)
+ 

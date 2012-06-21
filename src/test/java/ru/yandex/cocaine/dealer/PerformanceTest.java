@@ -17,7 +17,7 @@ public class PerformanceTest {
 				.timeout(100000, TimeUnit.MILLISECONDS).build();
 		Client c = null;
 		long cursum = 0;
-		
+
 		try {
 			c = new Client(CONFIG_PATH);
 			int counter = 1;
