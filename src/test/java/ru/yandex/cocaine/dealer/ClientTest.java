@@ -53,7 +53,7 @@ public class ClientTest {
             try {
                 response = client.sendMessage("app1/test_handle_timeout",
                         new TextMessage(testString), policy);
-                String responseStr = response.get(TIMEOUT, TIME_UNIT);
+                response.get(TIMEOUT, TIME_UNIT);
             } finally {
                 if (response != null) {
                     response.close();
