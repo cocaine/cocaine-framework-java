@@ -1,6 +1,10 @@
 Installation
 ====================
 
+if you are building cocaine-core from scratch 
+install eblob
+https://github.com/ioremap/eblob
+
 install cocaine-core (libcocaine-dealer is bundled into it)
 http://wiki.yandex-team.ru/Cocaine/Deployment
 
