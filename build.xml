@@ -31,7 +31,7 @@
 	<target name="compile-native" depends="generate-jni-interfaces">
 		<mkdir dir="target/obj"/>
 		<mkdir dir="target/lib"/>
-		<exec executable="src/main/bin/build-native.sh"/>
+		<exec executable="src/main/bin/build-native.sh" failonerror="true"/>
 	</target>
 
 	<patternset id="runtime.resources">
@@ -62,6 +62,7 @@
 	<target name="test" depends="compile">
 		<junit printsummary="yes" fork="yes" forkMode="once" failureproperty="test.failure">
 			<sysproperty key="ant.junit.runner" value="true" />
+			<sysproperty key="LD_LIBRARY_PATH" value="target/lib"/>	
 			<jvmarg value="-Dfile.encoding=UTF-8" />
 			<classpath>
 				<fileset dir="lib/jars" includes="*.jar" />
