@@ -44,10 +44,6 @@ public class Dealer {
         close();
     }
 
-    public static double toNanoSeconds(long timeout, TimeUnit timeUnit) {
-        return timeUnit.toNanos(timeout);
-    }
-
     public static double toSeconds(long timeout, TimeUnit timeUnit) {
         return timeUnit.toSeconds(timeout);
     }

@@ -22,7 +22,7 @@ public class Response {
 
         long milliseconds = timeUnit.toMillis(timeout);
         // see response_impl.cpp: response_impl_t::get for cocaineTimeout
-        // definition cocaineTimeout==1 is 1000 seconds
+        // cocaineTimeout==1 equals to 1000 seconds
         double cocaineTimeout = milliseconds / 1000000.0;
         return get(cResponsePtr.get(), cocaineTimeout * 2);
     }
