@@ -4,6 +4,8 @@ Installation
 install cocaine-core (libcocaine-dealer is bundled into it)
 http://wiki.yandex-team.ru/Cocaine/Deployment
 
+install cocaine-plugins (https://github.com/cocaine/cocaine-plugins)
+
 make sure $JAVA_HOME points to jdk
 
 cd to cocaine-framework-java root dir
