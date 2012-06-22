@@ -13,7 +13,6 @@ public class MessagePolicy {
     protected final long deadlineDuration;
     protected final TimeUnit deadlineTimeUnit;
     protected final int maxRetries;
-
     public MessagePolicy(boolean sendToAllHosts, boolean urgent,
             long timeoutDuration, TimeUnit timeoutTimeUnit,
             long deadlineDuration, TimeUnit deadlineTimeUnit, int maxRetries)
@@ -25,6 +24,14 @@ public class MessagePolicy {
         this.deadlineDuration = deadlineDuration;
         this.deadlineTimeUnit = deadlineTimeUnit;
         this.maxRetries = maxRetries;
+    }
+
+    public double cocaineTimeout() {
+        return timeoutTimeUnit.toMicros(timeoutDuration) / 1000000.0;
+    }
+    
+    public double cocaineDeadline() {
+        return deadlineTimeUnit.toMicros(deadlineDuration) / 1000000.0;
     }
 
     public static MessagePolicyBuilder builder() {

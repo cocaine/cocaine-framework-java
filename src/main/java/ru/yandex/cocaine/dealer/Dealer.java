@@ -1,6 +1,5 @@
 package ru.yandex.cocaine.dealer;
 
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
@@ -20,10 +19,8 @@ public class Dealer {
         String[] parts = path.split("/");
         String service = parts[0];
         String handle = parts[1];
-        double cocaineTimeout = toSeconds(
-                messagePolicy.timeoutDuration, messagePolicy.timeoutTimeUnit);
-        double cocaineDeadline = toSeconds(
-                messagePolicy.timeoutDuration, messagePolicy.timeoutTimeUnit);
+        double cocaineTimeout = messagePolicy.cocaineTimeout();
+        double cocaineDeadline = messagePolicy.cocaineDeadline();
         long responsePtr = sendMessage(cDealerPtr.get(), service, handle,
                 message.toString(), messagePolicy.sendToAllHosts,
                 messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
@@ -42,10 +39,6 @@ public class Dealer {
     protected void finalize() throws Throwable {
         super.finalize();
         close();
-    }
-
-    public static double toSeconds(long timeout, TimeUnit timeUnit) {
-        return timeUnit.toSeconds(timeout);
     }
 
     // returns pointer to a client
