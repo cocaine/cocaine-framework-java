@@ -1,6 +1,6 @@
 {
    "args" : {
-        "script_name" : "test.pl"
+        "script-file" : "test.pl"
     },
     "engine" : {
         "heartbeat-timeout" : 60,
@@ -14,17 +14,22 @@
            "type":"native-server",
            "endpoint" : "tcp://*:9400", 
            "path":"./src/test/resources/test.pl", 
-           "emit":"test_handle"
+           "emit":"test_handle",
+           "args" : {
+                "script-file" : "test.pl"
+            }
        } ,
        "test_handle_timeout" :
        {
            "type":"native-server",
            "endpoint" : "tcp://*:9401", 
            "path":"./src/test/resources/test.pl", 
-           "emit":"test_handle_timeout"
+           "emit":"test_handle_timeout",
+           "args" : {
+                "script-file" : "test.pl"
+            }
        } 
     },
-    "type" : "perl",
-    "path" : "./src/test/resources/test.pl"
+    "type" : "perl"
 }
 
