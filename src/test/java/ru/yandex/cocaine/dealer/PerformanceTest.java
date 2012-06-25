@@ -1,5 +1,7 @@
 package ru.yandex.cocaine.dealer;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -20,7 +22,7 @@ public class PerformanceTest {
                 .timeout(100000, TimeUnit.MILLISECONDS).build();
         Dealer dealer = null;
         long cursum = 0;
-
+        SimpleDateFormat sdf = new SimpleDateFormat();
         try {
             dealer = new Dealer(CONFIG_PATH);
             int counter = 1;
@@ -34,7 +36,8 @@ public class PerformanceTest {
                     long end = System.nanoTime();
                     cursum += (end - begin);
                     if (counter % 1000 == 0) {
-                        System.out.println(response + " " + total_counter + " "
+                        String date = sdf.format(Calendar.getInstance().getTime());
+                        System.out.println(date+" "+response + " " + total_counter + " "
                                 + ((cursum) / (counter * 1000000.0)));
                     }
                     if (counter % 10000 == 0) {
