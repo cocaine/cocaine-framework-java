@@ -1,5 +1,7 @@
 package ru.yandex.cocaine.dealer;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -15,6 +17,7 @@ public class Valgrind {
         long cursum = 0;
 
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat();
             dealer = new Dealer(CONFIG_PATH);
             int counter = 1;
             int total_counter = 1;
@@ -27,7 +30,8 @@ public class Valgrind {
                     long end = System.nanoTime();
                     cursum += (end - begin);
                     if (counter % 1000 == 0) {
-                        System.out.println(response + " " + total_counter + " "
+                        String date = sdf.format(Calendar.getInstance().getTime());
+                        System.out.println(date+" " + response + " " + total_counter + " "
                                 + ((cursum) / (counter * 1000000.0)));
                     }
                     if (counter % 10000 == 0) {
