@@ -18,7 +18,7 @@ public class Valgrind {
             dealer = new Dealer(CONFIG_PATH);
             int counter = 1;
             int total_counter = 1;
-            for (;total_counter<5;) {
+            for (;;) {
                 Response r = null;
                 try {
                     long begin = System.nanoTime();
