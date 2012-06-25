@@ -1,11 +1,11 @@
 #include <cocaine/dealer/utils/data_container.hpp>
 #include <cocaine/dealer/response.hpp>
 #include <cocaine/dealer/utils/error.hpp>
+#include <sstream>
 
 #include "response_holder.hpp"
 #include "ru_yandex_cocaine_dealer_Response.h"
 #include "util.hpp"
-
 using namespace cocaine::dealer::java;
 using namespace cocaine::dealer;
 
@@ -45,18 +45,31 @@ JNIEXPORT jstring JNICALL Java_ru_yandex_cocaine_dealer_Response_get(
     }
     return head;
 }
-
+/*enum error_code {
+    request_error   = 400,
+    location_error  = 404,
+    server_error    = 500,
+    app_error       = 502,
+    resource_error  = 503,
+    timeout_error   = 504,
+    deadline_error  = 520
+};*/
 jint deal_with_error(JNIEnv *env, dealer_error& error) {
     int res = 0;
+    std::string error_msg(error.what());
+    std::stringstream ss;
+    ss<<error.code();
+    ss<<" ";
+    ss<<error_msg;
     switch (error.code()) {
     case deadline_error:
-        res = throw_timeout_exception(env, "call timed out");
+        res = throw_timeout_exception(env, ss.str());
         break;
     case timeout_error:
-        res = throw_timeout_exception(env, "call timed out");
+        res = throw_timeout_exception(env, ss.str());
         break;
     default:
-        res = throw_runtime_exception(env, "generic_error");
+        res = throw_runtime_exception(env, ss.str());
         break;
     }
     return res;
