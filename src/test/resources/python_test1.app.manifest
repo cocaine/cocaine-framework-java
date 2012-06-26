@@ -1,0 +1,25 @@
+{
+   "args" : {},
+    "engine" : {
+        "heartbeat-timeout" : 60,
+        "pool-limit" : 100,
+        "queue-limit" : 250
+    },
+    "drivers" : 
+    {
+       "test_handle" : 
+       {
+           "type":"native-server",
+           "endpoint" : "tcp://*:9402", 
+           "emit":"test_handle"
+       } ,
+       "test_handle_timeout" :
+       {
+           "type":"native-server",
+           "endpoint" : "tcp://*:9403", 
+           "emit":"test_handle_timeout"
+       } 
+    },
+    "type" : "python"
+}
+

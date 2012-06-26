@@ -9,12 +9,19 @@
 
 	"services" :
 	{
-    	"app1" : {
-			"app" : "perl_test1",
-			"autodiscovery" : {
-				"type" : "FILE",
-				"source" : "./src/test/resources/hosts"
-			}
-		}
-	}
+        "app1" : {
+            "app" : "perl_test1",
+            "autodiscovery" : {
+                "type" : "FILE",
+                "source" : "./src/test/resources/hosts"
+            }
+        },
+        "python1" : {
+            "app" : "python_test1",
+            "autodiscovery" : {
+                "type" : "FILE",
+                "source" : "./src/test/resources/hosts"
+            }
+        }
+    }
 }

@@ -1,11 +1,16 @@
-package ru.yandex.cocaine.dealer;
+package ru.yandex.cocaine.dealer.util;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class Valgrind {
+import ru.yandex.cocaine.dealer.Dealer;
+import ru.yandex.cocaine.dealer.MessagePolicy;
+import ru.yandex.cocaine.dealer.Response;
+import ru.yandex.cocaine.dealer.TextMessage;
+
+public class MainSingleThreaded {
     private final static String CONFIG_PATH = "./src/test/resources/dealer_config.json";
     private final static String PATH = "app1/test_handle";
 
@@ -15,7 +20,10 @@ public class Valgrind {
                 .timeout(100000, TimeUnit.MILLISECONDS).build();
         Dealer dealer = null;
         long cursum = 0;
-
+        String appPath = PATH;
+        if (args.length>0) {
+            appPath = args[0];
+        }
         try {
             SimpleDateFormat sdf = new SimpleDateFormat();
             dealer = new Dealer(CONFIG_PATH);
@@ -25,7 +33,7 @@ public class Valgrind {
                 Response r = null;
                 try {
                     long begin = System.nanoTime();
-                    r = dealer.sendMessage(PATH, message, messagePolicy);
+                    r = dealer.sendMessage(appPath, message, messagePolicy);
                     String response = r.get(100000, TimeUnit.MILLISECONDS);
                     long end = System.nanoTime();
                     cursum += (end - begin);
