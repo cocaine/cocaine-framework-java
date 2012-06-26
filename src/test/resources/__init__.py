@@ -1,5 +1,4 @@
-from cocaine.decorators import native
-
-@native
-def test_handle(meta, request):
-    return request
+def test_handle(request):
+    reqStr = request.read()
+    line = "echo :" +str(type(request))+":"+reqStr
+    request.write(line)
