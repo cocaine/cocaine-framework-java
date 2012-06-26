@@ -59,11 +59,13 @@
 
 	<target name="rebuild" depends="clean, jar"/>
 
-	<target name="test" depends="compile">
-		<junit printsummary="yes" fork="yes" forkMode="once" failureproperty="test.failure">
+	<target name="perftest" depends="compile">
+		<junit printsummary="yes" fork="yes" forkMode="once" failureproperty="test.failure" showoutput="true">
 			<sysproperty key="ant.junit.runner" value="true" />
-			<sysproperty key="LD_LIBRARY_PATH" value="target/lib"/>	
+			<sysproperty key="LD_LIBRARY_PATH" value="./target/lib"/>	
 			<jvmarg value="-Dfile.encoding=UTF-8" />
+			<jvmarg value="-Djava.library.path=./target/lib" />
+			<jvmarg value="-Xloggc:gc.log"/>
 			<classpath>
 				<fileset dir="lib/jars" includes="*.jar" />
 				<pathelement location="target/classes" />
@@ -73,7 +75,7 @@
 
 			<batchtest todir="${basedir}">
 				<fileset dir="target/classes">
-					<include name="**/*Test.class" />
+					<include name="**/PerformanceTest.class" />
 					<exclude name="**/Abstract*.class" />
 				</fileset>
 				<formatter type="plain" usefile="no" />
