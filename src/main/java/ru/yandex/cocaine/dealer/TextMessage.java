@@ -11,8 +11,8 @@ public class TextMessage implements Message {
     }
 
     @Override
-    public String toString() {
-        return message;
+    public byte[] getBytes() {
+        return message.getBytes();
     }
 
 }

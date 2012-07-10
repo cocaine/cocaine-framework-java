@@ -22,7 +22,7 @@ public class Dealer {
         double cocaineTimeout = messagePolicy.cocaineTimeout();
         double cocaineDeadline = messagePolicy.cocaineDeadline();
         long responsePtr = sendMessage(cDealerPtr.get(), service, handle,
-                message.toString(), messagePolicy.sendToAllHosts,
+                message.getBytes(), messagePolicy.sendToAllHosts,
                 messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
                 messagePolicy.maxRetries);
         return new Response(responsePtr);
@@ -49,7 +49,7 @@ public class Dealer {
 
     // returns pointer to response
     private native long sendMessage(long cClientPtr, String service,
-            String handle, String message, boolean sendToAllHosts,
+            String handle, byte[] message, boolean sendToAllHosts,
             boolean urgent, double cocaineTimeOut, double cocaineDeadline,
             int maxRetries);
 

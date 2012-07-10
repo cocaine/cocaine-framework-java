@@ -1,7 +1,5 @@
 {
-   "args" : {
-        "script-file" : "test.pl"
-    },
+   "args" : {},
     "engine" : {
         "heartbeat-timeout" : 60,
         "pool-limit" : 100,
@@ -12,24 +10,23 @@
        "test_handle" : 
        {
            "type":"native-server",
-           "endpoint" : "tcp://*:9400", 
-           "path":"./src/test/resources/test.pl", 
-           "emit":"test_handle",
-           "args" : {
-                "script-file" : "test.pl"
-            }
+           "endpoint" : "tcp://*:9402", 
+           "emit":"test_handle"
+       } ,
+       "failing_handle" : 
+       {
+           "type":"native-server",
+           "endpoint" : "tcp://*:9403", 
+           "emit":"failing_handle"
        } ,
        "test_handle_timeout" :
        {
            "type":"native-server",
-           "endpoint" : "tcp://*:9401", 
-           "path":"./src/test/resources/test.pl", 
-           "emit":"test_handle_timeout",
-           "args" : {
-                "script-file" : "test.pl"
-            }
+           "endpoint" : "tcp://*:9404", 
+           "emit":"test_handle_timeout"
        } 
     },
-    "type" : "perl"
+    "type" : "python"
 }
+
 

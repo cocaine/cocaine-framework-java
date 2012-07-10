@@ -32,9 +32,26 @@ JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_init(JNIEnv *env,
     return 0;
 }
 
+struct msg_raii {
+    jbyte *m_data;
+    jsize m_size;
+    jbyteArray m_array;
+    JNIEnv *m_env;
+    msg_raii(JNIEnv *env, jbyteArray msg_byte_array) {
+        m_env = env;
+        m_array = msg_byte_array;
+        m_data = m_env->GetByteArrayElements(m_array, NULL);
+        m_size = m_env->GetArrayLength(m_array);
+    }
+
+    ~msg_raii() {
+        m_env->ReleaseByteArrayElements(m_array, m_data, JNI_ABORT);
+    }
+};
+
 JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_sendMessage(
         JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
-        jstring handle, jstring text, jboolean send_to_all_hosts,
+        jstring handle, jbyteArray msg_bytes, jboolean send_to_all_hosts,
         jboolean urgent, jdouble timeout, jdouble deadline, jint max_retries)
 {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
@@ -43,11 +60,11 @@ JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_sendMessage(
 
     std::string service_str = to_string(env, service);
     std::string handle_str = to_string(env, handle);
-    std::string text_str = to_string(env, text);
+    msg_raii msg(env, msg_bytes);
     message_path_t message_path(service_str, handle_str);
     try {
         boost::shared_ptr < response_t > dealer_response = dealer->send_message(
-            text_str.data(), text_str.size(),
+            msg.m_data, msg.m_size,
             message_path, policy);
         response_holder_t *response_ = new response_holder_t(dealer_response);
         return (jlong) response_;

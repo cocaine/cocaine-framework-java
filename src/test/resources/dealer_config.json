@@ -6,7 +6,10 @@
 		"flags" : "PLOG_ALL | PLOG_INTRO",
 		"file" : "./dealer.log"
 	},
-
+    "message_cache_t": 
+    {
+       "type":"RAM_ONLY"
+    },
 	"services" :
 	{
         "app1" : {

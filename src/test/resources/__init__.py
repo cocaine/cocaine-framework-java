@@ -1,4 +1,7 @@
+import time
 def test_handle(request):
-    reqStr = request.read()
-    line = "echo :" +str(type(request))+":"+reqStr
-    request.write(line)
+    aa = request.read()
+    request.write("time is now "+str(request)+" "+aa)
+
+def failing_handle(request):
+    raise Exception('spamm', 'egs')
