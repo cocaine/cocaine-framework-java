@@ -5,7 +5,7 @@ package ru.yandex.cocaine.dealer;
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
  */
 public class Dealer {
-    private Ptr cDealerPtr = new Ptr();
+    private final Ptr cDealerPtr;
     
     public Dealer(String configPath) {
         cDealerPtr = new Ptr(init(configPath));

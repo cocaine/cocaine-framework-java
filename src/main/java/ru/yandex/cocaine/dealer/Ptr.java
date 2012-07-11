@@ -1,29 +1,49 @@
 package ru.yandex.cocaine.dealer;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Ptr {
+    private final Lock globalLock = new ReentrantLock();
     private long ptr=0;
     private boolean isInit = false;
 
     public Ptr(long ptr) {
-        this.ptr = ptr;
-        this.isInit = true;
+        globalLock.lock();
+        try {
+            this.ptr = ptr;
+            this.isInit = true;
+        } finally {
+            globalLock.unlock();
+        }
     }
 
-    public Ptr(){
-        this.isInit = false;
-    }
-    
     public void close() {
-        isInit = false;
+        globalLock.lock();
+        try{
+            isInit = false;
+        } finally {
+            globalLock.unlock();
+        }
     }
-    
+
     public boolean isReferring(){
-        return this.isInit;
+        globalLock.lock();
+        try{
+            return this.isInit;
+        } finally {
+            globalLock.unlock();
+        }
     }
-    
+
     public long get() {
-        if (!isInit)
-            throw new IllegalStateException("already closed");
-        return ptr;
+        globalLock.lock();
+        try{
+            if (!isInit)
+                throw new IllegalStateException("already closed");
+            return ptr;
+        } finally {
+            globalLock.unlock();
+        }
     }
 }
