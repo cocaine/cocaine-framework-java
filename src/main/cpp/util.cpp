@@ -27,6 +27,11 @@ jint throw_timeout_exception(JNIEnv *env, std::string message) {
     return throw_exception(env, class_name, message);
 }
 
+jint throw_app_exception(JNIEnv *env, std::string message) {
+    std::string class_name = "ru/yandex/cocaine/dealer/exceptions/AppException";
+    return throw_exception(env, class_name, message);
+}
+
 jint throw_runtime_exception(JNIEnv *env, std::string message) {
     std::string class_name = "java/lang/RuntimeException";
     return throw_exception(env, class_name, message);

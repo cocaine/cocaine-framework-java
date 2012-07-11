@@ -1,10 +1,12 @@
 package ru.yandex.cocaine.dealer.util;
 
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import ru.yandex.cocaine.dealer.ByteBufferBackedMessage;
 import ru.yandex.cocaine.dealer.Dealer;
 import ru.yandex.cocaine.dealer.MessagePolicy;
 import ru.yandex.cocaine.dealer.Response;
@@ -18,6 +20,9 @@ public class MainSingleThreaded {
         TextMessage message = new TextMessage("hello world");
         MessagePolicy messagePolicy = MessagePolicy.builder()
                 .timeout(100000, TimeUnit.MILLISECONDS).build();
+        ByteBuffer buffer = ByteBuffer.allocateDirect(1000);
+        buffer.asCharBuffer().append("hi");
+        ByteBufferBackedMessage bbMsg = new ByteBufferBackedMessage(buffer);
         Dealer dealer = null;
         long cursum = 0;
         String appPath = PATH;
@@ -33,7 +38,7 @@ public class MainSingleThreaded {
                 Response r = null;
                 try {
                     long begin = System.nanoTime();
-                    r = dealer.sendMessage(appPath, message, messagePolicy);
+                    r = dealer.sendMessage(appPath, bbMsg, messagePolicy);
                     String response = r.get(100000, TimeUnit.MILLISECONDS);
                     long end = System.nanoTime();
                     cursum += (end - begin);

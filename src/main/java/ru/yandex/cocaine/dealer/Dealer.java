@@ -1,5 +1,7 @@
 package ru.yandex.cocaine.dealer;
 
+import java.nio.ByteBuffer;
+
 
 /**
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
@@ -21,10 +23,19 @@ public class Dealer {
         String handle = parts[1];
         double cocaineTimeout = messagePolicy.cocaineTimeout();
         double cocaineDeadline = messagePolicy.cocaineDeadline();
-        long responsePtr = sendMessage(cDealerPtr.get(), service, handle,
-                message.getBytes(), messagePolicy.sendToAllHosts,
-                messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
-                messagePolicy.maxRetries);
+        long responsePtr;
+        if (message instanceof ByteBufferBackedMessage) {
+            ByteBufferBackedMessage bufferMsg = (ByteBufferBackedMessage) message;
+            responsePtr = sendMessageByteBuffer(cDealerPtr.get(), service, handle,
+                    bufferMsg.getByteBuffer(), messagePolicy.sendToAllHosts,
+                    messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
+                    messagePolicy.maxRetries);
+        } else {
+            responsePtr = sendMessage(cDealerPtr.get(), service, handle,
+                    message.getBytes(), messagePolicy.sendToAllHosts,
+                    messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
+                    messagePolicy.maxRetries);
+        }
         return new Response(responsePtr);
     }
 
@@ -47,6 +58,11 @@ public class Dealer {
     // deletes client
     private native void delete(long cClientPtr);
 
+    private native long sendMessageByteBuffer(long cClientPtr, String service,
+    String handle, ByteBuffer messageBuffer, boolean sendToAllHosts,
+    boolean urgent, double cocaineTimeOut, double cocaineDeadline,
+    int maxRetries);
+    
     // returns pointer to response
     private native long sendMessage(long cClientPtr, String service,
             String handle, byte[] message, boolean sendToAllHosts,

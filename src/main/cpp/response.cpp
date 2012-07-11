@@ -62,6 +62,9 @@ jint deal_with_error(JNIEnv *env, dealer_error& error) {
     ss<<" ";
     ss<<error_msg;
     switch (error.code()) {
+    case app_error:
+        res = throw_app_exception(env, ss.str());
+        break;
     case deadline_error:
         res = throw_timeout_exception(env, ss.str());
         break;

@@ -1,8 +1,10 @@
 package ru.yandex.cocaine.dealer.util;
 
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import ru.yandex.cocaine.dealer.ByteBufferBackedMessage;
 import ru.yandex.cocaine.dealer.Dealer;
 import ru.yandex.cocaine.dealer.MessagePolicy;
 import ru.yandex.cocaine.dealer.Response;
@@ -16,13 +18,17 @@ public class Once {
         Dealer dealer = null;
         Response response = null;
         MessagePolicy policy = MessagePolicy.builder().build();
+        TextMessage msg = new TextMessage("hi");
+        ByteBuffer buffer = ByteBuffer.allocateDirect(1000);
+        buffer.asCharBuffer().append("hi");
+        ByteBufferBackedMessage bbMsg = new ByteBufferBackedMessage(buffer);
         try{
             System.out.println("creating dealer");
             System.out.flush();
             dealer = new Dealer(CONFIG_PATH);
             System.out.println("created dealer");
             System.out.flush();
-            response = dealer.sendMessage(PATH, new TextMessage("hi"), policy);
+            response = dealer.sendMessage(PATH,msg, policy);
             System.out.println("send message");
             System.out.flush();
             String resp= response.get(1000, TimeUnit.MILLISECONDS);

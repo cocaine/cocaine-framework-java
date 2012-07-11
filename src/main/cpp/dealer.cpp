@@ -73,3 +73,33 @@ JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_sendMessage(
     }
     return 0;
 }
+
+JNIEXPORT jlong JNICALL Java_ru_yandex_cocaine_dealer_Dealer_sendMessageByteBuffer(
+        JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
+        jstring handle, jobject msg_byte_buffer, jboolean send_to_all_hosts,
+        jboolean urgent, jdouble timeout, jdouble deadline, jint max_retries)
+{
+    dealer_t *dealer = (dealer_t*) dealer_ptr;
+    struct message_policy_t policy(send_to_all_hosts, urgent, 0.0, timeout,
+            deadline, max_retries);
+
+    std::string service_str = to_string(env, service);
+    std::string handle_str = to_string(env, handle);
+    jbyte * data = (jbyte*) env->GetDirectBufferAddress(msg_byte_buffer);
+    if (data==NULL) {
+        // it is not a direct allocated byte buffer
+        throw_runtime_exception(env, "byteBuffer was not direct allocated");
+    }
+    jlong data_size = env->GetDirectBufferCapacity(msg_byte_buffer);
+    message_path_t message_path(service_str, handle_str);
+    try {
+        boost::shared_ptr < response_t > dealer_response = dealer->send_message(
+            data, data_size,
+            message_path, policy);
+        response_holder_t *response_ = new response_holder_t(dealer_response);
+        return (jlong) response_;
+    } catch (dealer_error& error) {
+        throw_runtime_exception(env, error.what());
+    }
+    return 0;
+}

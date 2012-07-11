@@ -14,6 +14,8 @@ jint throw_exception(JNIEnv *env, std::string class_name, std::string message);
 
 jint throw_timeout_exception(JNIEnv *env, std::string message);
 
+jint throw_app_exception(JNIEnv *env, std::string message);
+
 jint throw_runtime_exception(JNIEnv *env, std::string message);
 
 }}}
