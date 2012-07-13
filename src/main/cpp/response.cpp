@@ -57,7 +57,7 @@ JNIEXPORT jboolean JNICALL Java_cocaine_dealer_Response_get
         // could cache classes/fields retrieving
         jclass cls_array_holder = env->GetObjectClass(array_holder);
         jfieldID field_array = env->GetFieldID(cls_array_holder, "array",
-                        "Ljava/lang/byte[];");
+                        "[B");
         if (field_array==NULL) {
             throw_runtime_exception(env, "couldnot find an array field of ArrayHolder");
             return false;
