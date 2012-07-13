@@ -1,4 +1,4 @@
-#/bin/sh -e
+#!/bin/sh -e
 
 mkdir ./target/cocaine
 mkdir ./target/cocaine/ipc
