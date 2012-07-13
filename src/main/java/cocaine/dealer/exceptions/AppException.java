@@ -1,4 +1,4 @@
-package ru.yandex.cocaine.dealer.exceptions;
+package cocaine.dealer.exceptions;
 
 public class AppException extends RuntimeException{
 

@@ -1,4 +1,4 @@
-package ru.yandex.cocaine.dealer;
+package cocaine.dealer;
 
 /**
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>

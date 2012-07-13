@@ -9,7 +9,7 @@
 using namespace cocaine::dealer::java;
 using namespace cocaine::dealer;
 
-JNIEXPORT void JNICALL Java_ru_yandex_cocaine_dealer_Response_close
+JNIEXPORT void JNICALL Java_cocaine_dealer_Response_close
 (JNIEnv *, jobject, jlong c_response_ptr) {
     response_holder_t * response_ptr = (response_holder_t *)c_response_ptr;
     delete response_ptr;
@@ -17,7 +17,7 @@ JNIEXPORT void JNICALL Java_ru_yandex_cocaine_dealer_Response_close
 
 jint deal_with_error(JNIEnv *env, dealer_error& error);
 
-JNIEXPORT jstring JNICALL Java_ru_yandex_cocaine_dealer_Response_get(
+JNIEXPORT jstring JNICALL Java_cocaine_dealer_Response_get(
         JNIEnv *env, jobject obj, jlong c_response_ptr, jdouble timeout)
 {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
@@ -37,7 +37,7 @@ JNIEXPORT jstring JNICALL Java_ru_yandex_cocaine_dealer_Response_get(
         head = env->NewStringUTF(response_str.c_str());
     }
     if (has_next) {
-        jstring tail = Java_ru_yandex_cocaine_dealer_Response_get(env, obj,
+        jstring tail = Java_cocaine_dealer_Response_get(env, obj,
                 c_response_ptr, timeout);
         std::string tail_str = to_string(env, tail);
         std::string head_str = to_string(env, head);
@@ -45,15 +45,6 @@ JNIEXPORT jstring JNICALL Java_ru_yandex_cocaine_dealer_Response_get(
     }
     return head;
 }
-/*enum error_code {
-    request_error   = 400,
-    location_error  = 404,
-    server_error    = 500,
-    app_error       = 502,
-    resource_error  = 503,
-    timeout_error   = 504,
-    deadline_error  = 520
-};*/
 jint deal_with_error(JNIEnv *env, dealer_error& error) {
     int res = 0;
     std::string error_msg(error.what());
