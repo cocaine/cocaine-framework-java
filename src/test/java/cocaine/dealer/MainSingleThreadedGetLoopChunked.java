@@ -1,6 +1,5 @@
 package cocaine.dealer;
 
-import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
@@ -20,8 +19,6 @@ public class MainSingleThreadedGetLoopChunked {
         TextMessage message = new TextMessage("hello world");
         MessagePolicy messagePolicy = MessagePolicy.builder()
                 .timeout(100000, TimeUnit.MILLISECONDS).build();
-        ByteBuffer buffer = ByteBuffer.allocateDirect(1000);
-        buffer.asCharBuffer().append("hi");
         Dealer dealer = null;
         long cursum = 0;
         String appPath = PATH;

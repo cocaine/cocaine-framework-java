@@ -19,11 +19,11 @@
            "endpoint" : "tcp://*:9407", 
            "emit":"test_handle_chunked"
        } ,
-       "test_handle_timeout" :
+       "failing_handle" :
        {
            "type":"native-server",
            "endpoint" : "tcp://*:9406", 
-           "emit":"test_handle_timeout"
+           "emit":"failing_handle"
        } 
     },
     "type" : "python"
