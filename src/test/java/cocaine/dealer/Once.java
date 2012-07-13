@@ -18,7 +18,7 @@ public class Once {
         try{
             dealer = new Dealer(CONFIG_PATH);
             response = dealer.sendMessage(PATH,msg, policy);
-            String resp= response.get(1000, TimeUnit.MILLISECONDS);
+            String resp= response.getString(1000, TimeUnit.MILLISECONDS);
             System.out.println(resp);
         } catch (Throwable e) {
             e.printStackTrace();

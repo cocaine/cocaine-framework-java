@@ -10,15 +10,13 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class Response {
     private final Ptr cResponsePtr;
-    private long timeout;
-    private TimeUnit timeUnit;
     private final Lock lock = new ReentrantLock();
 
     Response(long cResponsePtr) {
         this.cResponsePtr = new Ptr(cResponsePtr);
     }
 
-    public String get(long timeout, TimeUnit timeUnit) throws TimeoutException {
+    public String getString(long timeout, TimeUnit timeUnit) throws TimeoutException {
         lock.lock();
         long milliseconds = timeUnit.toMillis(timeout);
         // see response_impl.cpp: response_impl_t::get for cocaineTimeout
@@ -28,7 +26,24 @@ public class Response {
             if (!cResponsePtr.isReferring()) {
                 throw new IllegalStateException("Response is closed");
             }
-            return get(cResponsePtr.get(), cocaineTimeout * 2);
+            return getString(cResponsePtr.get(), cocaineTimeout * 2);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean get(ArrayHolder data, long timeout, TimeUnit timeUnit) throws TimeoutException {
+        lock.lock();
+        long milliseconds = timeUnit.toMillis(timeout);
+        // see response_impl.cpp: response_impl_t::get for cocaineTimeout
+        // cocaineTimeout==1 equals to 1000 seconds
+        double cocaineTimeout = milliseconds / 1000000.0;
+        try {
+            if (!cResponsePtr.isReferring()) {
+                throw new IllegalStateException("Response is closed");
+            }
+            data.array = null;
+            return get(data, cResponsePtr.get(), cocaineTimeout * 2);
         } finally {
             lock.unlock();
         }
@@ -52,7 +67,9 @@ public class Response {
         close();
     }
 
-    private native String get(long cResponsePtr, double timeout)
+    private native String getString(long cResponsePtr, double timeout)
+            throws TimeoutException;
+    private native boolean get(ArrayHolder data, long cResponsePtr, double timeout)
             throws TimeoutException;
 
     private native void close(long cResponsePtr);

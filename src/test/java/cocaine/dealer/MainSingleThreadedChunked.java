@@ -12,9 +12,9 @@ import cocaine.dealer.Response;
 import cocaine.dealer.TextMessage;
 
 
-public class MainSingleThreaded {
+public class MainSingleThreadedChunked {
     private final static String CONFIG_PATH = "./src/test/resources/dealer_config.json";
-    private final static String PATH = "python1/test_handle";
+    private final static String PATH = "python1/test_handle_chunked";
 
     public static void main(String[] args) throws TimeoutException {
         TextMessage message = new TextMessage("hello world");
@@ -41,7 +41,7 @@ public class MainSingleThreaded {
                     String response = r.getString(100000, TimeUnit.MILLISECONDS);
                     long end = System.nanoTime();
                     cursum += (end - begin);
-                    if (counter % 1000 == 0) {
+                    if (counter % 100 == 0) {
                         String date = sdf.format(Calendar.getInstance().getTime());
                         System.out.println(date+" " + response + " " + total_counter + " "
                                 + ((cursum) / (counter * 1000000.0)));
