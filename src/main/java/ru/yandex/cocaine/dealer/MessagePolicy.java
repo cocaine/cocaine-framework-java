@@ -29,7 +29,7 @@ public class MessagePolicy {
     public double cocaineTimeout() {
         return timeoutTimeUnit.toMicros(timeoutDuration) / 1000000.0;
     }
-    
+
     public double cocaineDeadline() {
         return deadlineTimeUnit.toMicros(deadlineDuration) / 1000000.0;
     }

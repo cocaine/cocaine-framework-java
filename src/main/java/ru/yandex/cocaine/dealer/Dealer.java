@@ -1,49 +1,52 @@
 package ru.yandex.cocaine.dealer;
 
-import java.nio.ByteBuffer;
-
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
  */
 public class Dealer {
     private final Ptr cDealerPtr;
-    
+    private final Lock lock = new ReentrantLock();
+
     public Dealer(String configPath) {
         cDealerPtr = new Ptr(init(configPath));
     }
 
     public Response sendMessage(String path, Message message,
             MessagePolicy messagePolicy) {
-        if (!cDealerPtr.isReferring()){
-            throw new IllegalStateException("Dealer is closed");
-        }
         String[] parts = path.split("/");
         String service = parts[0];
         String handle = parts[1];
         double cocaineTimeout = messagePolicy.cocaineTimeout();
         double cocaineDeadline = messagePolicy.cocaineDeadline();
-        long responsePtr;
-        if (message instanceof ByteBufferBackedMessage) {
-            ByteBufferBackedMessage bufferMsg = (ByteBufferBackedMessage) message;
-            responsePtr = sendMessageByteBuffer(cDealerPtr.get(), service, handle,
-                    bufferMsg.getByteBuffer(), messagePolicy.sendToAllHosts,
-                    messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
-                    messagePolicy.maxRetries);
-        } else {
+        lock.lock();
+        try {
+            if (!cDealerPtr.isReferring()) {
+                throw new IllegalStateException("Dealer is closed");
+            }
+            long responsePtr;
             responsePtr = sendMessage(cDealerPtr.get(), service, handle,
                     message.getBytes(), messagePolicy.sendToAllHosts,
                     messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
                     messagePolicy.maxRetries);
+            return new Response(responsePtr);
+        } finally {
+            lock.unlock();
         }
-        return new Response(responsePtr);
     }
 
     public void close() {
-        if (cDealerPtr.isReferring()) {
-            delete(cDealerPtr.get());
+        lock.lock();
+        try {
+            if (cDealerPtr.isReferring()) {
+                delete(cDealerPtr.get());
+                cDealerPtr.close();
+            }
+        } finally {
+            lock.unlock();
         }
-        cDealerPtr.close();
     }
 
     @Override
@@ -58,11 +61,6 @@ public class Dealer {
     // deletes client
     private native void delete(long cClientPtr);
 
-    private native long sendMessageByteBuffer(long cClientPtr, String service,
-    String handle, ByteBuffer messageBuffer, boolean sendToAllHosts,
-    boolean urgent, double cocaineTimeOut, double cocaineDeadline,
-    int maxRetries);
-    
     // returns pointer to response
     private native long sendMessage(long cClientPtr, String service,
             String handle, byte[] message, boolean sendToAllHosts,
