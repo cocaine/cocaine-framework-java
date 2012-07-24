@@ -96,7 +96,7 @@ public class MessagePolicy {
             return this;
         }
 
-        public MessagePolicyBuilder duration(long timeout, TimeUnit timeUnit) {
+        public MessagePolicyBuilder deadline(long timeout, TimeUnit timeUnit) {
             this.deadlineDuration = timeout;
             this.deadlineTimeUnit = timeUnit;
             return this;
