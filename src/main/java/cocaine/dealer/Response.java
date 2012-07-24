@@ -58,11 +58,12 @@ public class Response {
     }
     
     /**
-     * Returns an iterator for traversing the byte[] chunks that might come from a cocaine app
+     * Returns an iterable for traversing the byte[] chunks that might come from a cocaine app
+     * Note: the iterator returned by the iterable might throw Timeout exception upon iterating 
      * the returned iterator is not thread safe 
      */
-    public Iterator<byte[]> getIterator(long timeout, TimeUnit timeUnit) {
-        return new ResponseChunkIterator(this, timeout, timeUnit);
+    public Iterable<byte[]> asIterable(long timeout, TimeUnit timeUnit) {
+        return new ResponseIterable(this, timeout, timeUnit);
     }
 
     private boolean get(ArrayHolder data, long timeout, TimeUnit timeUnit) throws TimeoutException {
@@ -104,6 +105,7 @@ public class Response {
 
     private native String getString(long cResponsePtr, double timeout)
             throws TimeoutException;
+
     private native boolean get(ArrayHolder data, long cResponsePtr, double timeout)
             throws TimeoutException;
 
@@ -112,7 +114,25 @@ public class Response {
     static {
         System.loadLibrary("cocaine-framework-java");
     }
+    
+    class ResponseIterable implements Iterable<byte[]> {
 
+        private final Response response;
+        private final long timeout;
+        private final TimeUnit timeUnit;
+
+        public ResponseIterable(Response response, long timeout, TimeUnit timeUnit) {
+            this.response = response;
+            this.timeout = timeout;
+            this.timeUnit = timeUnit;
+        }
+
+        @Override
+        public Iterator<byte[]> iterator() {
+            return new ResponseChunkIterator(response, timeout, timeUnit);
+        }
+
+    }
     /**
      * Iterator of byte[] chunks that a cocaine app might return
      */

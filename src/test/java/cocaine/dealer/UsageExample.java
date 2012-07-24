@@ -22,9 +22,8 @@ public class UsageExample {
             try {
                 response = dealer.sendMessage(appHandlePath, message,
                         messagePolicy);
-                for (Iterator<byte[]> iter = response.getIterator(10,
-                        TimeUnit.SECONDS); iter.hasNext();) {
-                    System.out.println(new String(iter.next()));
+                for (byte[] chunk : response.asIterable(10, TimeUnit.SECONDS)) {
+                    System.out.println(new String(chunk));
                 }
             } finally {
                 if (response != null) {

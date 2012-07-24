@@ -123,8 +123,8 @@ public class TestHelper {
                 try{
                     r = dealer.sendMessage(path, message, messagePolicy);
                     String response = "";
-                    for (Iterator<byte[]> iter = r.getIterator(10000, TimeUnit.SECONDS); iter.hasNext();) {
-                        response = response + new String(iter.next());
+                    for (byte[] chunk  : r.asIterable(1000, TimeUnit.SECONDS)) {
+                        response = response + new String(chunk);
                     }
                     return response;
                 } catch (AppException e) {
