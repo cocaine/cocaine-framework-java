@@ -1,6 +1,5 @@
 package cocaine.dealer;
 
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 public class UsageExample {
