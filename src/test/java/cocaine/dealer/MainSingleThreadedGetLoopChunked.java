@@ -1,64 +1,39 @@
+/*
+    Copyright (c) 2012 Vladimir Shakhov <bogdad@gmail.com>
+    Copyright (c) 2012 Other contributors as noted in the AUTHORS file.
+
+    This file is part of Cocaine.
+
+    Cocaine is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    Cocaine is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>. 
+*/
 package cocaine.dealer;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import cocaine.dealer.Dealer;
-import cocaine.dealer.MessagePolicy;
-import cocaine.dealer.Response;
-import cocaine.dealer.TextMessage;
-
 
 public class MainSingleThreadedGetLoopChunked {
     private final static String CONFIG_PATH = "./src/test/resources/dealer_config.json";
     private final static String PATH = "python1/test_handle_chunked";
 
-    public static void main(String[] args) throws TimeoutException {
-        TextMessage message = new TextMessage("hello world");
+    public static void main(String[] args) throws Exception {
+        byte[] message = TestHelper.getLargeMessage();
         MessagePolicy messagePolicy = MessagePolicy.builder()
+                .maxRetries(10)
                 .timeout(100000, TimeUnit.MILLISECONDS).build();
         Dealer dealer = null;
-        long cursum = 0;
-        String appPath = PATH;
-        if (args.length>0) {
-            appPath = args[0];
-        }
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat();
             dealer = new Dealer(CONFIG_PATH);
-            int counter = 1;
-            int total_counter = 1;
-            for (;;) {
-                Response r = null;
-                try {
-                    long begin = System.nanoTime();
-                    r = dealer.sendMessage(appPath, message, messagePolicy);
-                    ArrayHolder container = new ArrayHolder();
-                    String response = "";
-                    while (r.get(container, 100000, TimeUnit.MILLISECONDS)) {
-                        response = response + new String(container.array);
-                    }
-                    long end = System.nanoTime();
-                    cursum += (end - begin);
-                    if (counter % 100 == 0) {
-                        String date = sdf.format(Calendar.getInstance().getTime());
-                        System.out.println(date+" " + response + " " + total_counter + " "
-                                + ((cursum) / (counter * 1000000.0)));
-                    }
-                    if (counter % 10000 == 0) {
-                        cursum = cursum / counter;
-                        counter = 1;
-                    }
-                } finally {
-                    if (r != null) {
-                        r.close();
-                    }
-                }
-                counter++;
-                total_counter++;
-            }
+            TestHelper.timeIt(TestHelper.responseGetLoopCallable(dealer, PATH, message, messagePolicy));
         } finally {
             if (dealer != null) {
                 dealer.close();

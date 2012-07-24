@@ -1,7 +1,7 @@
 echo runnint perftest_$1
 src/test/resources/run_client.sh $1 &>perftest_$1.log &
 echo src/test/resources/run_client.sh $1
-sleep 2s
+sleep 4s
 perfpid="`greppid dealer.$1`"
 echo perfpid_$1=$perfpid
 echo running jstat

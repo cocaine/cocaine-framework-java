@@ -4,6 +4,8 @@ def test_handle(request):
     request.write("python replies: "+str(request)+" "+aa)
 
 def failing_handle(request):
+    request.write("reply")
+    time.sleep(0.01)
     raise Exception('spamm', 'egs')
 
 def test_handle_chunked(request):

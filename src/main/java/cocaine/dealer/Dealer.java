@@ -1,20 +1,50 @@
+/*
+    Copyright (c) 2012 Vladimir Shakhov <bogdad@gmail.com>
+    Copyright (c) 2012 Other contributors as noted in the AUTHORS file.
+
+    This file is part of Cocaine.
+
+    Cocaine is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    Cocaine is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>. 
+*/
 package cocaine.dealer;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
+/** 
+ * A wrapper around cocaine-dealer dealer_t
+ *
+ * @author Vladimir Shakhov <bogdad@gmail.com>
  */
 public class Dealer {
     private final Ptr cDealerPtr;
     private final Lock lock = new ReentrantLock();
 
+    /** Constructs the dealer with the specified filesystem path
+     *  to a dealer config json. For an example of dealer config see
+     *  {@link https://github.com/cocaine/cocaine-dealer/blob/master/README.md}
+     */
     public Dealer(String configPath) {
         cDealerPtr = new Ptr(init(configPath));
     }
 
-    public Response sendMessage(String path, Message message,
+    /**
+     * send a message(byte[]) to the specified cocaine app/path [='app/handle']
+     * with a specified MessagePolicy
+     * and receive a Response object for retrieving results
+     */
+    public Response sendMessage(String path, byte[] message,
             MessagePolicy messagePolicy) {
         String[] parts = path.split("/");
         String service = parts[0];
@@ -28,7 +58,7 @@ public class Dealer {
             }
             long responsePtr;
             responsePtr = sendMessage(cDealerPtr.get(), service, handle,
-                    message.getBytes(), messagePolicy.sendToAllHosts,
+                    message, messagePolicy.sendToAllHosts,
                     messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
                     messagePolicy.maxRetries);
             return new Response(responsePtr);
@@ -67,7 +97,7 @@ public class Dealer {
             boolean urgent, double cocaineTimeOut, double cocaineDeadline,
             int maxRetries);
 
-    {
+    static {
         System.loadLibrary("cocaine-framework-java");
     }
 }

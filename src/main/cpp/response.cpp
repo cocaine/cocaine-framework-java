@@ -1,3 +1,23 @@
+/*
+    Copyright (c) 2012 Vladimir Shakhov <bogdad@gmail.com>
+    Copyright (c) 2012 Other contributors as noted in the AUTHORS file.
+
+    This file is part of Cocaine.
+
+    Cocaine is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    Cocaine is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>. 
+*/
+
 #include <cocaine/dealer/utils/data_container.hpp>
 #include <cocaine/dealer/response.hpp>
 #include <cocaine/dealer/utils/error.hpp>
@@ -9,13 +29,15 @@
 using namespace cocaine::dealer::java;
 using namespace cocaine::dealer;
 
+namespace {
+    jint deal_with_error(JNIEnv *env, dealer_error& error); 
+}
+
 JNIEXPORT void JNICALL Java_cocaine_dealer_Response_close
 (JNIEnv *, jobject, jlong c_response_ptr) {
     response_holder_t * response_ptr = (response_holder_t *)c_response_ptr;
     delete response_ptr;
 }
-
-jint deal_with_error(JNIEnv *env, dealer_error& error);
 
 JNIEXPORT jstring JNICALL Java_cocaine_dealer_Response_getString(
         JNIEnv *env, jobject self, jlong c_response_ptr, jdouble timeout)
@@ -59,7 +81,7 @@ JNIEXPORT jboolean JNICALL Java_cocaine_dealer_Response_get
         jfieldID field_array = env->GetFieldID(cls_array_holder, "array",
                         "[B");
         if (field_array==NULL) {
-            throw_runtime_exception(env, "couldnot find an array field of ArrayHolder");
+            throw_runtime_exception(env, "could not find an array field of ArrayHolder");
             return false;
         }
         env->SetObjectField(array_holder, field_array, j_array);
@@ -67,8 +89,9 @@ JNIEXPORT jboolean JNICALL Java_cocaine_dealer_Response_get
     return has_next;
 }
 
+namespace {
 
-jint deal_with_error(JNIEnv *env, dealer_error& error) {
+jint deal_with_error(JNIEnv *env, dealer_error& error){
     int res = 0;
     std::string error_msg(error.what());
     std::stringstream ss;
@@ -90,4 +113,5 @@ jint deal_with_error(JNIEnv *env, dealer_error& error) {
         break;
     }
     return res;
+}
 }

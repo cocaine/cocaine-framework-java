@@ -1,9 +1,29 @@
+/*
+    Copyright (c) 2012 Vladimir Shakhov <bogdad@gmail.com>
+    Copyright (c) 2012 Other contributors as noted in the AUTHORS file.
+
+    This file is part of Cocaine.
+
+    Cocaine is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
+
+    Cocaine is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
+
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>. 
+*/
 package cocaine.dealer;
 
 import java.util.concurrent.TimeUnit;
 
-/**
- * @author Vladimir Shakhov <vshakhov@yandex-team.ru>
+/** Defines cocaine message handling policy
+ * 
+ * @author Vladimir Shakhov <bogdad@gmail.com>
  */
 public class MessagePolicy {
     protected final boolean sendToAllHosts;
@@ -13,6 +33,15 @@ public class MessagePolicy {
     protected final long deadlineDuration;
     protected final TimeUnit deadlineTimeUnit;
     protected final int maxRetries;
+    /**
+     * @param sendToAllHosts 
+     * @param urgent
+     * @param timeoutDuration
+     * @param timeoutTimeUnit
+     * @param deadlineDuration
+     * @param deadlineTimeUnit 
+     * @param maxRetries - number of retries dealer would try untill it receives ACK from cocaine node in time
+     */
     public MessagePolicy(boolean sendToAllHosts, boolean urgent,
             long timeoutDuration, TimeUnit timeoutTimeUnit,
             long deadlineDuration, TimeUnit deadlineTimeUnit, int maxRetries)

@@ -28,7 +28,7 @@ Example
             try {
                 response = client.sendMessage("app1/test_handle",
                         new TextMessage(testString), policy);
-                String responseStr = response.get(TIMEOUT, TIME_UNIT);
+                String responseStr = response.getString(TIMEOUT, TIME_UNIT);
                 Assert.assertContains(responseStr, testString);
                 response.close();
             } finally {
