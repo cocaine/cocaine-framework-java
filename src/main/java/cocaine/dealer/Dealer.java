@@ -24,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 /** 
  * cocaine-dealer dealer_t
- *
+ * see src/test/java/cocaine/dealer/UsageExample.java for usage example
  * @author Vladimir Shakhov <bogdad@gmail.com>
  */
 public class Dealer {
