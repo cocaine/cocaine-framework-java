@@ -33,15 +33,15 @@ namespace {
     jint deal_with_error(JNIEnv *env, dealer_error& error); 
 }
 
-JNIEXPORT void JNICALL Java_cocaine_dealer_Response_close
-(JNIEnv *, jobject, jlong c_response_ptr) {
+JNIEXPORT void JNICALL
+Java_cocaine_dealer_Response_close (JNIEnv *, jobject, jlong c_response_ptr) {
     response_holder_t * response_ptr = (response_holder_t *)c_response_ptr;
     delete response_ptr;
 }
 
-JNIEXPORT jstring JNICALL Java_cocaine_dealer_Response_getString(
-        JNIEnv *env, jobject self, jlong c_response_ptr, jdouble timeout)
-{
+JNIEXPORT jstring JNICALL
+Java_cocaine_dealer_Response_getString(
+        JNIEnv *env, jobject self, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
     data_container container;
     try {
@@ -59,9 +59,9 @@ JNIEXPORT jstring JNICALL Java_cocaine_dealer_Response_getString(
     }
 }
 
-JNIEXPORT jboolean JNICALL Java_cocaine_dealer_Response_get
-  (JNIEnv * env, jobject self, jobject array_holder, jlong c_response_ptr, jdouble timeout)
-{
+JNIEXPORT jboolean JNICALL
+Java_cocaine_dealer_Response_get
+  (JNIEnv * env, jobject self, jobject array_holder, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
     data_container container;
     bool has_next = false;
@@ -114,4 +114,5 @@ jint deal_with_error(JNIEnv *env, dealer_error& error){
     }
     return res;
 }
+
 }

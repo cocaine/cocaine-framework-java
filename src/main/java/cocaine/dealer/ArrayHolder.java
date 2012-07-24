@@ -23,6 +23,6 @@ package cocaine.dealer;
  * A wrapper class for returning bytes from Respone.get(...)
  * @author Vladimir Shakhov <bogdad@gmail.com>
  */
-public class ArrayHolder {
-    public byte[] array;
+class ArrayHolder {
+    public byte[] array = null;
 }

@@ -23,7 +23,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /** 
- * A wrapper around cocaine-dealer dealer_t
+ * cocaine-dealer dealer_t
  *
  * @author Vladimir Shakhov <bogdad@gmail.com>
  */
@@ -42,7 +42,7 @@ public class Dealer {
     /**
      * send a message(byte[]) to the specified cocaine app/path [='app/handle']
      * with a specified MessagePolicy
-     * and receive a Response object for retrieving results
+     * and returns a Response object for retrieving results
      */
     public Response sendMessage(String path, byte[] message,
             MessagePolicy messagePolicy) {
@@ -67,6 +67,9 @@ public class Dealer {
         }
     }
 
+    /**
+     * user should call close()
+     */
     public void close() {
         lock.lock();
         try {

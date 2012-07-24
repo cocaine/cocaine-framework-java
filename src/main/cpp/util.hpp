@@ -24,7 +24,9 @@
 #include <jni.h>
 #include <string>
 
-namespace cocaine { namespace dealer { namespace java {
+namespace cocaine {
+namespace dealer {
+namespace java {
 
 std::string to_string(JNIEnv* env, jstring str);
 
@@ -38,5 +40,7 @@ jint throw_app_exception(JNIEnv *env, std::string message);
 
 jint throw_runtime_exception(JNIEnv *env, std::string message);
 
-}}}
+} // namespace java
+} // namespace dealer
+} // namespace cocaine
 #endif

@@ -17,9 +17,12 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
+
 #include "util.hpp"
 
-namespace cocaine { namespace dealer { namespace java {
+namespace cocaine {
+namespace dealer {
+namespace java {
 
 std::string to_string(JNIEnv* env, jstring string) {
     std::string value;
@@ -65,4 +68,6 @@ jint throw_exception(JNIEnv *env, std::string class_name, std::string message) {
     return env->ThrowNew(ex_class, message.c_str());
 }
 
-}}}
+} // namespace java
+} // namespace dealer
+} // namespace cocaine

@@ -24,7 +24,9 @@
 #include <boost/shared_ptr.hpp>
 #include <cocaine/dealer/response.hpp>
 
-namespace cocaine { namespace dealer { namespace java {
+namespace cocaine {
+namespace dealer {
+namespace java {
 
 class response_holder_t {
 	public:
@@ -38,5 +40,7 @@ class response_holder_t {
 		boost::shared_ptr<response_t> m_response;
 };
 
-}}}
+} // namespace java
+} // namespace dealer
+} // namespace cocaine
 #endif

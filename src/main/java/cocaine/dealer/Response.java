@@ -19,12 +19,15 @@
 */
 package cocaine.dealer;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
+ * Response object allows for retrieving output of cocaine-apps after sending a message
  * @author Vladimir Shakhov <bogdad@gmail.com>
  */
 public class Response {
@@ -35,6 +38,9 @@ public class Response {
         this.cResponsePtr = new Ptr(cResponsePtr);
     }
 
+    /**
+     * Returns a concatenated string out of byte[] chunks returned by a cocaine app 
+     */
     public String getString(long timeout, TimeUnit timeUnit) throws TimeoutException {
         lock.lock();
         long milliseconds = timeUnit.toMillis(timeout);
@@ -49,8 +55,16 @@ public class Response {
             lock.unlock();
         }
     }
+    
+    /**
+     * Returns an iterator for traversing the byte[] chunks that might come from a cocaine app
+     * the returned iterator is not thread safe 
+     */
+    public Iterator<byte[]> getIterator(long timeout, TimeUnit timeUnit) {
+        return new ResponseChunkIterator(this, timeout, timeUnit);
+    }
 
-    public boolean get(ArrayHolder data, long timeout, TimeUnit timeUnit) throws TimeoutException {
+    private boolean get(ArrayHolder data, long timeout, TimeUnit timeUnit) throws TimeoutException {
         lock.lock();
         long milliseconds = timeUnit.toMillis(timeout);
         // cocaineTimeout==1 equals to 1000 seconds
@@ -66,6 +80,9 @@ public class Response {
         }
     }
 
+    /**
+     * should call close() after use
+     */
     public void close() {
         lock.lock();
         try {
@@ -93,5 +110,58 @@ public class Response {
 
     static {
         System.loadLibrary("cocaine-framework-java");
+    }
+
+    /**
+     * Iterator of byte[] chunks that a cocaine app might return
+     */
+    class ResponseChunkIterator implements Iterator<byte[]>{
+        private final Response response;
+        private final long timeout;
+        private TimeUnit timeUnit;
+        private NextChunk nextChunk = null;
+
+        
+        public ResponseChunkIterator(Response response, long timeout, TimeUnit timeUnit) {
+            this.response = response;
+            this.timeout = timeout;
+            this.timeUnit = timeUnit;
+        }
+
+        private void ensureNext() {
+            if (nextChunk!=null)
+                return;
+            nextChunk = new NextChunk();
+            try{
+                nextChunk.hasNext= response.get(nextChunk, timeout, timeUnit);
+            } catch (TimeoutException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        
+        @Override
+        public boolean hasNext() {
+            ensureNext();
+            return nextChunk.hasNext;
+        }
+
+        @Override
+        public byte[] next() {
+            ensureNext();
+            if (!hasNext())
+                throw new NoSuchElementException();
+            byte[] data = nextChunk.array;
+            nextChunk = null;
+            return data;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+
+        class NextChunk extends ArrayHolder{
+            public boolean hasNext = false;
+        }
     }
 }
