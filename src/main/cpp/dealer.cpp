@@ -44,9 +44,9 @@ JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_init(JNIEnv *env,
     try{
         dealer_t * dealer = new dealer_t(config_path_str);
         return (jlong) dealer;
-    } catch( dealer_error& error){
+    } catch( dealer_error& error) {
         throw_runtime_exception(env, error.what());
-    } catch (internal_error& error){
+    } catch (internal_error& error) {
         throw_runtime_exception(env, error.what());
     }
     return 0;

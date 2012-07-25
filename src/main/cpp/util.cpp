@@ -39,11 +39,6 @@ std::string to_string(JNIEnv* env, jstring string) {
     return value;
 }
 
-jstring from_string(JNIEnv* env, std::string str) {
-    return env->NewStringUTF(str.c_str());
-}
-
-
 jint throw_timeout_exception(JNIEnv *env, std::string message) {
     std::string class_name = "java/util/concurrent/TimeoutException";
     return throw_exception(env, class_name, message);

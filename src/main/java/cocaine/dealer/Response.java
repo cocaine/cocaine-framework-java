@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Response object allows for retrieving output of cocaine-apps after sending a message
  * see src/test/java/cocaine/dealer/UsageExample.java for usage example
+ * 
  * @author Vladimir Shakhov <bogdad@gmail.com>
  */
 public class Response {
