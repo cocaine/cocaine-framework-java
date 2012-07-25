@@ -81,7 +81,7 @@ public class TestHelper {
                 Response r = null;
                 try {
                     r = dealer.sendMessage(path, message, messagePolicy);
-                    return r.getString(10000, TimeUnit.SECONDS);
+                    return new String(r.getAllChunks(10000, TimeUnit.SECONDS));
                 } finally {
                     if (r != null) {
                         r.close();

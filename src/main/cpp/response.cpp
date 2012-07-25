@@ -39,21 +39,23 @@ Java_cocaine_dealer_Response_close (JNIEnv *, jobject, jlong c_response_ptr) {
     delete response_ptr;
 }
 
-JNIEXPORT jstring JNICALL
-Java_cocaine_dealer_Response_getString(
+JNIEXPORT jbyteArray JNICALL
+Java_cocaine_dealer_Response_getAllChunks(
         JNIEnv *env, jobject self, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
     data_container container;
     try {
-        std::string total;
+        std::vector<char> result;
         while (response_holder->get()->get(&container, timeout)) {
             if (!container.empty()) {
-                    std::string response_str((char*) container.data(), container.size());
-                    total = total + response_str;
+                    const char * beg = (char*) container.data();
+                    const char * end = beg + container.size();
+                    result.insert(result.end(), beg, end);
             }
         }
-        jstring head = from_string(env, total);
-        return head;
+        jbyteArray j_array = env->NewByteArray(result.size());
+        env->SetByteArrayRegion(j_array, 0, result.size(), (jbyte*) &result[0]);
+        return j_array;
     } catch (dealer_error& error) {
         int throw_result = deal_with_error(env, error);
     }

@@ -40,9 +40,9 @@ public class Response {
     }
 
     /**
-     * Returns a concatenated string out of byte[] chunks returned by a cocaine app 
+     * Returns a concatenated byte[] out of chunks returned by a cocaine app 
      */
-    public String getString(long timeout, TimeUnit timeUnit) throws TimeoutException {
+    public byte[] getAllChunks(long timeout, TimeUnit timeUnit) throws TimeoutException {
         lock.lock();
         long milliseconds = timeUnit.toMillis(timeout);
         // cocaineTimeout==1 equals to 1000 seconds
@@ -51,7 +51,7 @@ public class Response {
             if (!cResponsePtr.isReferring()) {
                 throw new IllegalStateException("Response is closed");
             }
-            return getString(cResponsePtr.get(), cocaineTimeout * 2);
+            return getAllChunks(cResponsePtr.get(), cocaineTimeout * 2);
         } finally {
             lock.unlock();
         }
@@ -60,7 +60,7 @@ public class Response {
     /**
      * Returns an iterable for traversing the byte[] chunks that might come from a cocaine app
      * Note: the iterator returned by the iterable might throw Timeout exception upon iterating 
-     * the returned iterator is not thread safe 
+     * the iterator is not thread safe! 
      */
     public Iterable<byte[]> asIterable(long timeout, TimeUnit timeUnit) {
         return new ResponseIterable(this, timeout, timeUnit);
@@ -103,7 +103,7 @@ public class Response {
         close();
     }
 
-    private native String getString(long cResponsePtr, double timeout)
+    private native byte[] getAllChunks(long cResponsePtr, double timeout)
             throws TimeoutException;
 
     private native boolean get(ArrayHolder data, long cResponsePtr, double timeout)
