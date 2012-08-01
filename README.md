@@ -6,6 +6,8 @@ Building
 
 Prerequisites
 ====================
+To build cocaine-framework-java you'll need
+
 libcocaine-dealer
 ant
 
@@ -20,5 +22,5 @@ Output
 ====================
 in cocaine-framework-java
 
-./target/jars/yandex-cocaine-dealer.jar
-./target/lib/lib-cocaine-framework-java.so
+* ./target/jars/yandex-cocaine-dealer.jar
+* ./target/lib/lib-cocaine-framework-java.so
