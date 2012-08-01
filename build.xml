@@ -10,9 +10,6 @@
 		<javac source="1.7" target="1.7" destdir="target/classes" debug="true" encoding="utf-8" includeantruntime="false">
 			<src path="src/main/java"/>
 			<src path="src/test/java"/>
-			<classpath>
-				<fileset dir="lib/jars" includes="*.jar"/>
-			</classpath>
 		</javac>
 	</target>
 
@@ -20,7 +17,6 @@
 		<mkdir dir="target/generated"/>
 		<javah destdir="target/generated" force="yes">
 			<classpath>
-				<fileset dir="lib/jars" includes="*.jar" />
 				<pathelement location="target/classes" />
 			</classpath>
 			<class name="cocaine.dealer.Dealer"/>
