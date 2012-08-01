@@ -1,19 +1,23 @@
 Cocaine dealer binding for java
+===============
 
-===Building
+Building
+====================
 
-====Prerequisites
-
+Prerequisites
+====================
 libcocaine-dealer
 ant
 
-====Building
+generating artifacts
+====================
+
 
 cd to cocaine-framework-java directory
 and run `ant`
 
-====Output
-
+Output
+====================
 in cocaine-framework-java
 
 ./target/jars/yandex-cocaine-dealer.jar
