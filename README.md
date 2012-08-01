@@ -8,8 +8,8 @@ Prerequisites
 ====================
 To build cocaine-framework-java you'll need
 
-libcocaine-dealer
-ant
+* libcocaine-dealer
+* ant
 
 generating artifacts
 ====================
