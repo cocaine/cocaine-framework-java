@@ -1,5 +1,7 @@
-Cocaine dealer binding for java
+Cocaine framework java
 ===============
+
+Currently it is only java-bindings for dealer
 
 Building
 ====================
