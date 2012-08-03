@@ -1,36 +1,22 @@
-Cocaine framework java
-===============
+/*
+    Copyright (c) 2012 Vladimir Shakhov <bogdad@gmail.com>
+    Copyright (c) 2012 Other contributors as noted in the AUTHORS file.
 
-Currently it is only java-bindings for dealer
+    This file is part of Cocaine.
 
-Building
-====================
+    Cocaine is free software; you can redistribute it and/or modify
+    it under the terms of the GNU Lesser General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 
-Prerequisites
-====================
-To build cocaine-framework-java you'll need
+    Cocaine is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU Lesser General Public License for more details.
 
-* libcocaine-dealer
-* ant
-
-generating artifacts
-====================
-
-
-cd to cocaine-framework-java directory
-and run `ant`
-
-Output
-====================
-in cocaine-framework-java
-
-* ./target/jars/yandex-cocaine-dealer.jar
-* ./target/lib/lib-cocaine-framework-java.so
-
-Usage example
-====================
-
-```java
+    You should have received a copy of the GNU Lesser General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>. 
+*/
 package cocaine.dealer;
 
 import java.util.concurrent.TimeUnit;
@@ -68,4 +54,3 @@ public class UsageExample {
         }
     }
 }
-```

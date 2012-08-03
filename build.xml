@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="cocaine-framework-java" basedir="." default="jar">
+	
+	<target name="clean">
+		<delete dir="target"/>
+	</target>
+
+	<target name="compile">
+		<mkdir dir="target/classes"/>
+		<javac source="1.7" target="1.7" destdir="target/classes" debug="true" encoding="utf-8" includeantruntime="false">
+			<src path="src/main/java"/>
+			<src path="src/test/java"/>
+		</javac>
+	</target>
+
+	<target name="generate-jni-interfaces" depends="compile">
+		<mkdir dir="target/generated"/>
+		<javah destdir="target/generated" force="yes">
+			<classpath>
+				<pathelement location="target/classes" />
+			</classpath>
+			<class name="cocaine.dealer.Dealer"/>
+			<class name="cocaine.dealer.Response"/>
+		</javah>
+	</target>
+	
+	<target name="compile-native" depends="generate-jni-interfaces">
+		<mkdir dir="target/obj"/>
+		<mkdir dir="target/lib"/>
+		<exec executable="src/main/bin/build-native.sh" failonerror="true"/>
+	</target>
+
+	<target name="jar" depends="compile, compile-native">
+		<mkdir dir="target/jars"/>
+		<jar destfile="target/jars/yandex-cocaine-dealer.jar">
+			<fileset dir="target/classes"/>
+		</jar>
+	</target>
+	<target name="rebuild" depends="clean, jar"/>
+</project>
