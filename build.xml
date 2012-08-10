@@ -32,7 +32,7 @@
 
 	<target name="jar" depends="compile, compile-native">
 		<mkdir dir="target/jars"/>
-		<jar destfile="target/jars/yandex-cocaine-dealer.jar">
+		<jar destfile="target/jars/cocaine-framework-java.jar">
 			<fileset dir="target/classes"/>
 		</jar>
 	</target>
