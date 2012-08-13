@@ -43,11 +43,11 @@ JNIEXPORT jbyteArray JNICALL
 Java_cocaine_dealer_Response_getAllChunks(
         JNIEnv *env, jobject self, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
-    data_container container;
+    chunk_data container;
     try {
         std::vector<char> result;
-        while (response_holder->get()->get(&container, timeout)) {
-            if (!container.empty()) {
+        while (response_holder->get()->get(container, timeout)) {
+            if (container.size() > 0) {
                     const char * beg = (char*) container.data();
                     const char * end = beg + container.size();
                     result.insert(result.end(), beg, end);
@@ -65,17 +65,17 @@ JNIEXPORT jboolean JNICALL
 Java_cocaine_dealer_Response_get
   (JNIEnv * env, jobject self, jobject array_holder, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
-    data_container container;
+    chunk_data container;
     bool has_next = false;
     try {
-        has_next = response_holder->get()->get(&container, timeout);
+        has_next = response_holder->get()->get(container, timeout);
     } catch (dealer_error& error) {
         int throw_result = deal_with_error(env, error);
         return false;
     }
     jbyteArray j_array = NULL;
 
-    if (!container.empty()) {
+    if (container.size() > 0) {
         j_array=env->NewByteArray(container.size());
         env->SetByteArrayRegion(j_array, 0, container.size(), (jbyte*) container.data());
         // could cache classes/fields retrieving
