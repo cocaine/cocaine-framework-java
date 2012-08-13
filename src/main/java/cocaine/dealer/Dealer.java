@@ -47,6 +47,9 @@ public class Dealer {
     public Response sendMessage(String path, byte[] message,
             MessagePolicy messagePolicy) {
         String[] parts = path.split("/");
+        if (parts.length!=2) {
+            throw new IllegalArgumentException("path should be in a form 'app/handle'");
+        }
         String service = parts[0];
         String handle = parts[1];
         double cocaineTimeout = messagePolicy.cocaineTimeout();
