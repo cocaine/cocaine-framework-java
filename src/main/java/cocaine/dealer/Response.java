@@ -112,10 +112,6 @@ public class Response {
 
     private native void close(long cResponsePtr);
 
-    static {
-        System.loadLibrary("cocaine-framework-java");
-    }
-    
     class ResponseIterable implements Iterable<byte[]> {
 
         private final Response response;

@@ -104,6 +104,6 @@ public class Dealer {
             int maxRetries);
 
     static {
-        System.loadLibrary("cocaine-framework-java");
+        Library.loadLib();
     }
 }
