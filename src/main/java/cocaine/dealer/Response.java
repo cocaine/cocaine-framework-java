@@ -46,8 +46,8 @@ public class Response {
     public byte[] getAllChunks(long timeout, TimeUnit timeUnit) throws TimeoutException {
         lock.lock();
         long milliseconds = timeUnit.toMillis(timeout);
-        // cocaineTimeout==1 equals to 1000 seconds
-        double cocaineTimeout = milliseconds / 1000000.0;
+        // cocaineTimeout is in seconds
+        double cocaineTimeout = milliseconds / 1000.0;
         try {
             if (!cResponsePtr.isReferring()) {
                 throw new IllegalStateException("Response is closed");
