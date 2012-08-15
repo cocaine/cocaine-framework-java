@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project name="cocaine-framework-java" basedir="." default="jar">
-	
+
 	<target name="clean">
 		<delete dir="target"/>
 	</target>
@@ -23,7 +23,7 @@
 			<class name="cocaine.dealer.Response"/>
 		</javah>
 	</target>
-	
+
 	<target name="compile-native" depends="generate-jni-interfaces">
 		<mkdir dir="target/obj"/>
 		<mkdir dir="target/lib"/>
@@ -34,6 +34,9 @@
 		<mkdir dir="target/jars"/>
 		<jar destfile="target/jars/cocaine-framework-java.jar">
 			<fileset dir="target/classes"/>
+		</jar>
+	    <jar destfile="target/jars/cocaine-framework-java-source.jar">
+			<fileset dir="src/main/java"/>
 		</jar>
 	</target>
 	<target name="rebuild" depends="clean, jar"/>
