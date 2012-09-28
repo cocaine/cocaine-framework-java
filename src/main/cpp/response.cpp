@@ -18,6 +18,7 @@
     along with this program. If not, see <http://www.gnu.org/licenses/>. 
 */
 
+#include <cocaine/dealer/dealer.hpp>
 #include <cocaine/dealer/utils/data_container.hpp>
 #include <cocaine/dealer/response.hpp>
 #include <cocaine/dealer/utils/error.hpp>
@@ -34,19 +35,27 @@ namespace {
 }
 
 JNIEXPORT void JNICALL
-Java_cocaine_dealer_Response_close (JNIEnv *, jobject, jlong c_response_ptr) {
+Java_cocaine_dealer_Response_nativeClose (JNIEnv *, jobject, jlong c_response_ptr) {
     response_holder_t * response_ptr = (response_holder_t *)c_response_ptr;
     delete response_ptr;
 }
 
+JNIEXPORT jint JNICALL Java_cocaine_dealer_Response_nativeRemoveStoredMessageFor
+  (JNIEnv * env, jobject self, jlong c_dealer_ptr , jlong c_response_ptr) {
+    dealer_t * dealer_ptr = (dealer_t*) c_dealer_ptr;
+    response_holder_t * response_ptr = (response_holder_t *)c_response_ptr;
+    dealer_ptr->remove_stored_message_for(response_ptr->get_shared());
+}
+
+
 JNIEXPORT jbyteArray JNICALL
-Java_cocaine_dealer_Response_getAllChunks(
+Java_cocaine_dealer_Response_nativeGetAllChunks(
         JNIEnv *env, jobject self, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
-    chunk_data container;
+    data_container container;
     try {
         std::vector<char> result;
-        while (response_holder->get()->get(container, timeout)) {
+        while (response_holder->get()->get(&container, timeout)) {
             if (container.size() > 0) {
                     const char * beg = (char*) container.data();
                     const char * end = beg + container.size();
@@ -58,17 +67,19 @@ Java_cocaine_dealer_Response_getAllChunks(
         return j_array;
     } catch (dealer_error& error) {
         int throw_result = deal_with_error(env, error);
+    } catch (std::exception& error) {
+        throw_runtime_exception(env, error.what());
     }
 }
 
 JNIEXPORT jboolean JNICALL
-Java_cocaine_dealer_Response_get
+Java_cocaine_dealer_Response_nativeGet
   (JNIEnv * env, jobject self, jobject array_holder, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
-    chunk_data container;
+    data_container container;
     bool has_next = false;
     try {
-        has_next = response_holder->get()->get(container, timeout);
+        has_next = response_holder->get()->get(&container, timeout);
     } catch (dealer_error& error) {
         int throw_result = deal_with_error(env, error);
         return false;

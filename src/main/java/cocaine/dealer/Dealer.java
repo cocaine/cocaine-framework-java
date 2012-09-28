@@ -19,6 +19,7 @@
 */
 package cocaine.dealer;
 
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -36,7 +37,7 @@ public class Dealer {
      *  {@link https://github.com/cocaine/cocaine-dealer/blob/master/README.md}
      */
     public Dealer(String configPath) {
-        cDealerPtr = new Ptr(init(configPath));
+        cDealerPtr = new Ptr(nativeInit(configPath));
     }
 
     /**
@@ -60,11 +61,43 @@ public class Dealer {
                 throw new IllegalStateException("Dealer is closed");
             }
             long responsePtr;
-            responsePtr = sendMessage(cDealerPtr.get(), service, handle,
-                    message, messagePolicy.sendToAllHosts,
-                    messagePolicy.urgent, cocaineTimeout, cocaineDeadline,
+            responsePtr = nativeSendMessage(cDealerPtr.get(), service, handle,
+                    message, messagePolicy.urgent, messagePolicy.persistent, cocaineTimeout, cocaineDeadline,
                     messagePolicy.maxRetries);
             return new Response(responsePtr);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public void removeStoredMessageFor(Response response) {
+        lock.lock();
+        try{
+            response.removedStoredMessageFor(cDealerPtr.get());
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public int getStoredMessagesCount(String serviceAlias) {
+        lock.lock();
+        try {
+            if (!cDealerPtr.isReferring()) {
+                throw new IllegalStateException("Dealer is closed");
+            }
+            return nativeGetStoredMessagesCount(cDealerPtr.get(), serviceAlias);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public List<Message> getStoredMessages(String serviceAlias) {
+        lock.lock();
+        try{
+            if (!cDealerPtr.isReferring()) {
+                throw new IllegalStateException("Dealer is closed");
+            }
+            return nativeGetStoredMessages(cDealerPtr.get(), serviceAlias);
         } finally {
             lock.unlock();
         }
@@ -77,7 +110,7 @@ public class Dealer {
         lock.lock();
         try {
             if (cDealerPtr.isReferring()) {
-                delete(cDealerPtr.get());
+                nativeDelete(cDealerPtr.get());
                 cDealerPtr.close();
             }
         } finally {
@@ -92,15 +125,22 @@ public class Dealer {
     }
 
     // returns pointer to a client
-    private native long init(String configPath);
+    private native long nativeInit(String configPath);
 
     // deletes client
-    private native void delete(long cClientPtr);
+    private native void nativeDelete(long cDealerPtr);
+
+    // retrieves the number of unsent messages
+    private native int nativeGetStoredMessagesCount(long cDealerPtr, String serviceAlias);
+
+    // retrieves the unsent messages
+    private native List<Message> nativeGetStoredMessages(long cDealerPtr, String service);
 
     // returns pointer to response
-    private native long sendMessage(long cClientPtr, String service,
-            String handle, byte[] message, boolean sendToAllHosts,
-            boolean urgent, double cocaineTimeOut, double cocaineDeadline,
+    private native long nativeSendMessage(long cClientPtr, String service,
+            String handle, byte[] message, 
+            boolean urgent, boolean persistent, 
+            double cocaineTimeOut, double cocaineDeadline,
             int maxRetries);
 
     static {

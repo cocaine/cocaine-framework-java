@@ -24,6 +24,16 @@ namespace cocaine {
 namespace dealer {
 namespace java {
 
+jbyteArray byte_array_from(JNIEnv* env, void* data, size_t size) {
+    jbyteArray array = env->NewByteArray(size);
+    env->SetByteArrayRegion(array, 0, size, (jbyte*)data);
+    return array;
+}
+
+jstring from_string(JNIEnv* env, std::string str) {
+    return env->NewStringUTF(str.c_str());
+}
+
 std::string to_string(JNIEnv* env, jstring string) {
     std::string value;
     if (string == NULL) {

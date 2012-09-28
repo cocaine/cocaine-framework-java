@@ -23,6 +23,12 @@ def test_handle(request):
     aa = request.read()
     request.write("python replies: "+str(request)+" "+aa)
 
+def sleeping_handle(request):
+    aa = request.read()
+    request.write("about to sleep")
+    time.sleep(3600)
+    request.write("replies!!")
+
 def failing_handle(request):
     request.write("reply")
     time.sleep(0.01)

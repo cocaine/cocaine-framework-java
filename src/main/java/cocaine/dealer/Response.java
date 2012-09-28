@@ -33,7 +33,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * @author Vladimir Shakhov <bogdad@gmail.com>
  */
 public class Response {
-    private final Ptr cResponsePtr;
+    final Ptr cResponsePtr;
     private final Lock lock = new ReentrantLock();
 
     Response(long cResponsePtr) {
@@ -52,7 +52,7 @@ public class Response {
             if (!cResponsePtr.isReferring()) {
                 throw new IllegalStateException("Response is closed");
             }
-            return getAllChunks(cResponsePtr.get(), cocaineTimeout * 2);
+            return nativeGetAllChunks(cResponsePtr.get(), cocaineTimeout * 2);
         } finally {
             lock.unlock();
         }
@@ -77,7 +77,7 @@ public class Response {
                 throw new IllegalStateException("Response is closed");
             }
             data.array = null;
-            return get(data, cResponsePtr.get(), cocaineTimeout * 2);
+            return nativeGet(data, cResponsePtr.get(), cocaineTimeout * 2);
         } finally {
             lock.unlock();
         }
@@ -90,7 +90,7 @@ public class Response {
         lock.lock();
         try {
             if (cResponsePtr.isReferring()) {
-                close(cResponsePtr.get());
+                nativeClose(cResponsePtr.get());
                 cResponsePtr.close();
             }
         } finally {
@@ -104,13 +104,24 @@ public class Response {
         close();
     }
 
-    private native byte[] getAllChunks(long cResponsePtr, double timeout)
+    void removedStoredMessageFor(long cDealerPtr) {
+        lock.lock();
+        try{
+            nativeRemoveStoredMessageFor(cDealerPtr, cResponsePtr.get());
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    private native byte[] nativeGetAllChunks(long cResponsePtr, double timeout)
             throws TimeoutException;
 
-    private native boolean get(ArrayHolder data, long cResponsePtr, double timeout)
+    private native boolean nativeGet(ArrayHolder data, long cResponsePtr, double timeout)
             throws TimeoutException;
 
-    private native void close(long cResponsePtr);
+    private native int nativeRemoveStoredMessageFor(long cDealerPtr, long cResponsePtr);
+
+    private native void nativeClose(long cResponsePtr);
 
     class ResponseIterable implements Iterable<byte[]> {
 

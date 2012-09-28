@@ -26,8 +26,8 @@ import java.util.concurrent.TimeUnit;
  * @author Vladimir Shakhov <bogdad@gmail.com>
  */
 public class MessagePolicy {
-    protected final boolean sendToAllHosts;
     protected final boolean urgent;
+    protected final boolean persistent;
     protected final long timeoutDuration;
     protected final TimeUnit timeoutTimeUnit;
     protected final long deadlineDuration;
@@ -40,19 +40,26 @@ public class MessagePolicy {
      * @param timeoutTimeUnit
      * @param deadlineDuration
      * @param deadlineTimeUnit 
-     * @param maxRetries - number of retries dealer would try untill it receives ACK from cocaine node in time
+     * @param maxRetries - number of retries dealer would try until it receives ACK from cocaine node in time
      */
-    public MessagePolicy(boolean sendToAllHosts, boolean urgent,
+    public MessagePolicy(boolean urgent, boolean persistent,
             long timeoutDuration, TimeUnit timeoutTimeUnit,
             long deadlineDuration, TimeUnit deadlineTimeUnit, int maxRetries)
     {
-        this.sendToAllHosts = sendToAllHosts;
         this.urgent = urgent;
+        this.persistent = persistent;
         this.timeoutDuration = timeoutDuration;
         this.timeoutTimeUnit = timeoutTimeUnit;
         this.deadlineDuration = deadlineDuration;
         this.deadlineTimeUnit = deadlineTimeUnit;
         this.maxRetries = maxRetries;
+    }
+
+    public MessagePolicy(boolean urgent, boolean persistent, long timeoutMillis, 
+            long deadlineMillis, int maxRetries)
+    {
+        this(urgent, persistent, timeoutMillis, TimeUnit.MILLISECONDS, deadlineMillis, 
+                TimeUnit.MILLISECONDS, maxRetries);
     }
 
     public double cocaineTimeout() {
@@ -63,14 +70,29 @@ public class MessagePolicy {
         return deadlineTimeUnit.toMicros(deadlineDuration) / 1000000.0;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        if (this.urgent) {
+            builder.append("urgent ");
+        }
+        if (this.persistent) {
+            builder.append("persistent");
+        }
+        builder.append("timeout "+timeoutTimeUnit.toMillis(timeoutDuration)+" millis ");
+        builder.append("deadline "+deadlineTimeUnit.toMillis(deadlineDuration)+" millis ");
+        builder.append("max retries "+maxRetries+" ");
+        return builder.toString();
+    }
+
     public static MessagePolicyBuilder builder() {
         return new MessagePolicyBuilder();
     }
 
     public static class MessagePolicyBuilder {
 
-        private boolean sendToAllHosts = false;
         private boolean urgent = false;
+        private boolean persistent = false;
         private long timeoutDuration = 0;
         private TimeUnit timeoutTimeUnit = TimeUnit.MILLISECONDS;
         private long deadlineDuration = 0;
@@ -80,13 +102,13 @@ public class MessagePolicy {
         private MessagePolicyBuilder() {
         }
 
-        public MessagePolicyBuilder sendToAllHosts() {
-            this.sendToAllHosts = true;
+        public MessagePolicyBuilder urgent() {
+            this.urgent = true;
             return this;
         }
 
-        public MessagePolicyBuilder urgent() {
-            this.urgent = true;
+        public MessagePolicyBuilder persistent() {
+            this.persistent = true;
             return this;
         }
 
@@ -108,7 +130,7 @@ public class MessagePolicy {
         }
 
         public MessagePolicy build() {
-            return new MessagePolicy(sendToAllHosts, urgent, timeoutDuration,
+            return new MessagePolicy(urgent, persistent, timeoutDuration,
                     timeoutTimeUnit, deadlineDuration, deadlineTimeUnit,
                     maxRetries);
         }

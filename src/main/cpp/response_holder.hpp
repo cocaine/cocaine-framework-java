@@ -36,6 +36,9 @@ class response_holder_t {
 		response_t* get () {
 			return m_response.get();
 		}
+		boost::shared_ptr<response_t> get_shared() {
+		    return m_response;
+		}
 	private:
 		boost::shared_ptr<response_t> m_response;
 };

@@ -13,6 +13,12 @@
            "endpoint" : "tcp://*:9405", 
            "emit":"test_handle"
        } ,
+       "sleeping_handle" : 
+       {
+           "type":"native-server",
+           "endpoint" : "tcp://*:9505", 
+           "emit":"test_handle"
+       } ,
        "test_handle_chunked" : 
        {
            "type":"native-server",

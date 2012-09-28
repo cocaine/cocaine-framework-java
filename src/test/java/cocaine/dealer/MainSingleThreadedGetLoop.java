@@ -22,7 +22,6 @@ package cocaine.dealer;
 import java.util.concurrent.TimeUnit;
 
 public class MainSingleThreadedGetLoop {
-    private final static String CONFIG_PATH = "./src/test/resources/dealer_config.json";
     private final static String PATH = "python1/test_handle";
 
     public static void main(String[] args) throws Exception {
@@ -32,7 +31,7 @@ public class MainSingleThreadedGetLoop {
                 .timeout(100000, TimeUnit.MILLISECONDS).build();
         Dealer dealer = null;
         try {
-            dealer = new Dealer(CONFIG_PATH);
+            dealer = Helper.createDealer();
             TestHelper.timeIt(TestHelper.responseGetStringCallable(dealer, PATH, message, messagePolicy));
         } finally {
             if (dealer != null) {

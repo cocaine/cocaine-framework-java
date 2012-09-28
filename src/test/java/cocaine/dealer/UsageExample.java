@@ -30,7 +30,6 @@ public class UsageExample {
         byte[] message = "helloworld".getBytes();
         MessagePolicy messagePolicy = MessagePolicy.builder()
                 .maxRetries(10)
-                .sendToAllHosts()
                 .timeout(10, TimeUnit.SECONDS)
                 .deadline(10, TimeUnit.DAYS)
                 .build();
