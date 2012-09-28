@@ -24,8 +24,8 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 /** 
- * cocaine-dealer dealer_t
  * see src/test/java/cocaine/dealer/UsageExample.java for usage example
+ *
  * @author Vladimir Shakhov <bogdad@gmail.com>
  */
 public class Dealer {
@@ -70,6 +70,37 @@ public class Dealer {
         }
     }
 
+    /**
+     * get the stored messages for this app.
+     * Dealer stores messages in persistent storage
+     * until it receives a response from cocaine node.
+     * 
+     * Upon starting dealer up it is convinient to load
+     * all the persisted messages, and either resend them,
+     * or just remove from the store. 
+     * 
+     * this feature is turned off by default.
+     * to turn it on (on per message basis) :
+     *  `"use_persistense": true` in dealer_config.json
+     * and set persistent: true in the MessagePolicy for the message sent 
+     * 
+     */
+    public List<Message> getStoredMessages(String app) {
+        lock.lock();
+        try{
+            if (!cDealerPtr.isReferring()) {
+                throw new IllegalStateException("Dealer is closed");
+            }
+            return nativeGetStoredMessages(cDealerPtr.get(), app);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    
+    /**
+     * removes stored message for this Response
+     */
     public void removeStoredMessageFor(Response response) {
         lock.lock();
         try{
@@ -79,6 +110,9 @@ public class Dealer {
         }
     }
 
+    /**
+     * removes stored message for this Message
+     */
     public void removeStoredMessage(Message message) {
         lock.lock();
         try{
@@ -88,29 +122,22 @@ public class Dealer {
         }
     }
     
-    public int getStoredMessagesCount(String serviceAlias) {
+    /**
+     * get the number of stored messages for this app
+     * 
+     */
+    public int getStoredMessagesCount(String app) {
         lock.lock();
         try {
             if (!cDealerPtr.isReferring()) {
                 throw new IllegalStateException("Dealer is closed");
             }
-            return nativeGetStoredMessagesCount(cDealerPtr.get(), serviceAlias);
+            return nativeGetStoredMessagesCount(cDealerPtr.get(), app);
         } finally {
             lock.unlock();
         }
     }
 
-    public List<Message> getStoredMessages(String serviceAlias) {
-        lock.lock();
-        try{
-            if (!cDealerPtr.isReferring()) {
-                throw new IllegalStateException("Dealer is closed");
-            }
-            return nativeGetStoredMessages(cDealerPtr.get(), serviceAlias);
-        } finally {
-            lock.unlock();
-        }
-    }
 
     /**
      * user should call close()

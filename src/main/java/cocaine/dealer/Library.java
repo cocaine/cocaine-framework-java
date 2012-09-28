@@ -1,4 +1,3 @@
-package cocaine.dealer;
 /*
 Copyright (c) 2012 Vladimir Shakhov <bogdad@gmail.com>
 Copyright (c) 2012 Other contributors as noted in the AUTHORS file.
@@ -18,6 +17,8 @@ GNU Lesser General Public License for more details.
 You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>. 
 */
+
+package cocaine.dealer;
 public class Library {
     public static void loadLib() {
         String cfjLib = System.getenv("COCAINE_FRAMEWORK_JAVA_LIB");
