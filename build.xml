@@ -7,7 +7,7 @@
 
 	<target name="compile">
 		<mkdir dir="target/classes"/>
-		<javac source="1.7" target="1.7" destdir="target/classes" debug="true" encoding="utf-8" includeantruntime="false">
+		<javac source="1.6" target="1.6" destdir="target/classes" debug="true" encoding="utf-8" includeantruntime="false">
 			<src path="src/main/java"/>
 			<src path="src/test/java"/>
 		</javac>

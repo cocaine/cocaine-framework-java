@@ -33,9 +33,10 @@ public class MessagePolicy {
     protected final long deadlineDuration;
     protected final TimeUnit deadlineTimeUnit;
     protected final int maxRetries;
+
     /**
-     * @param sendToAllHosts 
      * @param urgent
+     * @param persistent
      * @param timeoutDuration
      * @param timeoutTimeUnit
      * @param deadlineDuration
@@ -62,12 +63,24 @@ public class MessagePolicy {
                 TimeUnit.MILLISECONDS, maxRetries);
     }
 
-    public double cocaineTimeout() {
+    public double getTimeoutSeconds() {
         return timeoutTimeUnit.toMicros(timeoutDuration) / 1000000.0;
     }
 
-    public double cocaineDeadline() {
+    public double getDeadlineSeconds() {
         return deadlineTimeUnit.toMicros(deadlineDuration) / 1000000.0;
+    }
+
+    public boolean getUrgent() {
+        return urgent;
+    }
+
+    public boolean getPersistent() {
+        return persistent;
+    }
+
+    public int getMaxRetries() {
+        return maxRetries;
     }
 
     @Override

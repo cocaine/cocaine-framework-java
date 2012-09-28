@@ -28,6 +28,10 @@ namespace cocaine {
 namespace dealer {
 namespace java {
 
+jclass get_class_or_throw(JNIEnv * env, std::string name);
+
+jmethodID get_method_or_throw(JNIEnv * env, jclass clas, std::string name, std::string signature);
+
 jbyteArray byte_array_from(JNIEnv* env, void* data, size_t size);
 
 jstring from_string(JNIEnv* env, std::string str);

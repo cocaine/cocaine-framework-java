@@ -19,10 +19,27 @@
 */
 
 #include "util.hpp"
-
+#include <cocaine/dealer/utils/error.hpp>
 namespace cocaine {
 namespace dealer {
 namespace java {
+
+jclass get_class_or_throw(JNIEnv * env, std::string name) {
+    jclass message_class = env->FindClass(name.c_str());
+    if (message_class == NULL) {
+        throw internal_error(name + "class not found ");
+    }
+    return message_class;
+}
+
+jmethodID get_method_or_throw(JNIEnv * env, jclass clas, std::string name, std::string signature) {
+    jmethodID m_method = env->GetMethodID(clas, name.c_str(), signature.c_str());
+    if (m_method == NULL) {
+        throw internal_error(name + " method not found ");
+    }
+    return m_method;
+}
+
 
 jbyteArray byte_array_from(JNIEnv* env, void* data, size_t size) {
     jbyteArray array = env->NewByteArray(size);

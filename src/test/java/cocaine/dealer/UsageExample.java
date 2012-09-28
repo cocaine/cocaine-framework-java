@@ -21,10 +21,11 @@ package cocaine.dealer;
 
 import java.util.concurrent.TimeUnit;
 
+import cocaine.dealer.util.Helper;
+
 public class UsageExample {
     public static void main(String[] args) {
 
-        String dealerConfig = "./src/test/resoueces/dealer_config.json";
         String appHandlePath = "myapp/myhandle";
         Dealer dealer = null;
         byte[] message = "helloworld".getBytes();
@@ -34,7 +35,7 @@ public class UsageExample {
                 .deadline(10, TimeUnit.DAYS)
                 .build();
         try {
-            dealer = new Dealer(dealerConfig);
+            dealer = Helper.createDealer();
             Response response = null;
             try {
                 response = dealer.sendMessage(appHandlePath, message,

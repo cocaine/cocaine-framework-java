@@ -53,8 +53,8 @@ public class Dealer {
         }
         String service = parts[0];
         String handle = parts[1];
-        double cocaineTimeout = messagePolicy.cocaineTimeout();
-        double cocaineDeadline = messagePolicy.cocaineDeadline();
+        double cocaineTimeout = messagePolicy.getTimeoutSeconds();
+        double cocaineDeadline = messagePolicy.getDeadlineSeconds();
         lock.lock();
         try {
             if (!cDealerPtr.isReferring()) {
@@ -79,6 +79,15 @@ public class Dealer {
         }
     }
 
+    public void removeStoredMessage(Message message) {
+        lock.lock();
+        try{
+            nativeRemoveStoredMessage(cDealerPtr.get(), message);
+        } finally {
+            lock.unlock();
+        }
+    }
+    
     public int getStoredMessagesCount(String serviceAlias) {
         lock.lock();
         try {
@@ -124,6 +133,8 @@ public class Dealer {
         close();
     }
 
+    private native void nativeRemoveStoredMessage(long cDealerPtr, Message message);
+    
     // returns pointer to a client
     private native long nativeInit(String configPath);
 
