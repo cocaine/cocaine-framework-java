@@ -1,10 +1,4 @@
 #!/usr/bin/make -f
 
-export JAVA_HOME=/usr/lib/jvm/default-java
-
-# Put depended upon jars in here
-# export CLASSPATH=
-
-%:
-	dh $@ --with javahelper
-
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/cmake.mk

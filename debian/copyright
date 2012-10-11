@@ -1,17 +1,22 @@
-Format: [URI OF THE FORMAT SPECIFICATION, SUCH AS http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=REVISION]
-Upstream-Name: [THE NAME UPSTREAM USES FOR THE SOFTWARE]
-Upstream-contact: [THE PREFERRED ADDRESS(ES) TO REACH THE UPSTREAM PROJECT]
-Source: [AN EXPLANATION FROM WHERE THE UPSTREAM SOURCE CAME FROM. TYPICALLY AN URL]
-[OTHER FIELDS]
+Copyright (c) 2011-2012, Vladimir Shakhov <bogdad@gmail.com>
+All rights reserved.
 
-Files: *
-Copyright: Copyright 2012 John Doe <jdoe@example.com>
-License: [STANDARD ABBREVIATION -- SEE "Short names" SECTION OF SPECIFICATION]
- [LICENSE TEXT]
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
 
-Files: debian/*
-Copyright: Copyright 2012 Vladimir Shakhov <vshakhov@yandex-team.ru>
-License: [STANDARD ABBREVIATION]
- [LICENSE TEXT]
+ * Redistributions of source code must retain the above copyright
+   notice, this list of conditions and the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright
+   notice, this list of conditions and the following disclaimer in the
+   documentation and/or other materials provided with the distribution.
 
-[OTHER FILE PARAGRAPHS]
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL ANDREY SIBIRYOV BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
