@@ -1,0 +1,17 @@
+Format: [URI OF THE FORMAT SPECIFICATION, SUCH AS http://svn.debian.org/wsvn/dep/web/deps/dep5.mdwn?op=file&rev=REVISION]
+Upstream-Name: [THE NAME UPSTREAM USES FOR THE SOFTWARE]
+Upstream-contact: [THE PREFERRED ADDRESS(ES) TO REACH THE UPSTREAM PROJECT]
+Source: [AN EXPLANATION FROM WHERE THE UPSTREAM SOURCE CAME FROM. TYPICALLY AN URL]
+[OTHER FIELDS]
+
+Files: *
+Copyright: Copyright 2012 John Doe <jdoe@example.com>
+License: [STANDARD ABBREVIATION -- SEE "Short names" SECTION OF SPECIFICATION]
+ [LICENSE TEXT]
+
+Files: debian/*
+Copyright: Copyright 2012 Vladimir Shakhov <vshakhov@yandex-team.ru>
+License: [STANDARD ABBREVIATION]
+ [LICENSE TEXT]
+
+[OTHER FILE PARAGRAPHS]

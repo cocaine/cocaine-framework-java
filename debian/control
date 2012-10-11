@@ -1,0 +1,23 @@
+Source: cocaine
+Section: java
+Priority: optional
+Maintainer: Vladimir Shakhov <vshakhov@yandex-team.ru>
+Build-Depends: debhelper (>= 8), default-jdk, javahelper (>= 0.40ubuntu1) , ant
+Standards-Version: 3.9.2
+Homepage: <homepage>
+
+Package: libcocaine-java
+Architecture: all
+Depends: ${java:Depends}, ${misc:Depends}
+Recommends: ${java:Recommends}
+Description: Short Description
+ Long Description
+
+Package: libcocaine-java-doc
+Architecture: all
+Depends: ${java:Depends}, ${misc:Depends}
+Recommends: ${java:Recommends}
+Description: Short Description - doc
+ Long Description
+ .
+ This package contains the Javadoc API
