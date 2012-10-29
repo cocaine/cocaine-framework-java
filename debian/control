@@ -1,0 +1,25 @@
+Source: cocaine-framework-java
+Section: java
+Priority: extra
+Maintainer: Vladimir Shakhov <bogdad@gmail.com>
+Build-Depends: 
+    cdbs,
+    debhelper (>= 7.0.13), 
+    default-jdk,
+    cmake,
+    libcocaine-dealer-dev
+Standards-Version: 3.9.1
+Homepage: https://github.com/cocaine/cocaine-framework-java
+Vcs-Git: git://github.com/cocaine/cocaine-framework-java.git
+Vcs-Browser: https://gihub.com/cocaine/cocaine-framework-java
+
+Package: libcocaine-framework-java
+Architecture: any
+Depends:
+    libcocaine-dealer1 (>= 0.9.4), 
+    ${shlibs:Depends}, 
+    ${misc:Depends}
+Provides: libcocaine-framework-java
+Replaces: libcocaine-framework-java
+Description: cocaine-framework-java
+ Java binding for cocaine-dealer.
