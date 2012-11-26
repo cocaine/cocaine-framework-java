@@ -54,6 +54,7 @@ public class Dealer {
         String service = parts[0];
         String handle = parts[1];
         double cocaineTimeout = messagePolicy.getTimeoutSeconds();
+        double cocaineAckTimeout = messagePolicy.getAckTimeoutSeconds();
         double cocaineDeadline = messagePolicy.getDeadlineSeconds();
         lock.lock();
         try {
@@ -62,7 +63,7 @@ public class Dealer {
             }
             long responsePtr;
             responsePtr = nativeSendMessage(cDealerPtr.get(), service, handle,
-                    message, messagePolicy.urgent, messagePolicy.persistent, cocaineTimeout, cocaineDeadline,
+                    message, messagePolicy.urgent, messagePolicy.persistent, cocaineTimeout, cocaineAckTimeout, cocaineDeadline,
                     messagePolicy.maxRetries);
             return new Response(responsePtr);
         } finally {
@@ -138,6 +139,21 @@ public class Dealer {
         }
     }
 
+    /**
+     * retrieve policy defined for service in dealer_config.json 
+     *
+     */
+    public MessagePolicy policyForService(String serviceAlias) {
+        lock.lock();
+        try {
+            if (!cDealerPtr.isReferring()) {
+                throw new IllegalStateException("Dealer is closed");
+            }
+            return nativePolicyForService(cDealerPtr.get(), serviceAlias);
+        } finally {
+            lock.unlock();
+        }
+    }
 
     /**
      * user should call close()
@@ -175,11 +191,13 @@ public class Dealer {
     private native List<Message> nativeGetStoredMessages(long cDealerPtr, String service);
 
     // returns pointer to response
-    private native long nativeSendMessage(long cClientPtr, String service,
+    private native long nativeSendMessage(long cDealerPtr, String service,
             String handle, byte[] message, 
             boolean urgent, boolean persistent, 
-            double cocaineTimeOut, double cocaineDeadline,
+            double cocaineTimeOut, double cocaineAckTimeout, double cocaineDeadline,
             int maxRetries);
+
+    private native MessagePolicy nativePolicyForService(long cDealerPtr, String serviceAlias);
 
     static {
         Library.loadLib();

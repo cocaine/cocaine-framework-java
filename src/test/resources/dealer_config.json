@@ -29,7 +29,11 @@
             "autodiscovery" : {
                 "type" : "FILE",
                 "source" : "./src/test/resources/hosts"
+            },
+            "policy" : {
+                "ack_timeout":100
             }
         }
+        
     }
 }
