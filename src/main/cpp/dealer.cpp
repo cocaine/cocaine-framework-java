@@ -57,16 +57,19 @@ void construct_message_policy(JNIEnv * env, jobject j_message_policy, message_po
     jmethodID m_urgent = get_method_or_throw(env, cls, "getUrgent", "()Z");
     jmethodID m_persistent = get_method_or_throw(env, cls, "getPersistent", "()Z");
     jmethodID m_timeout = get_method_or_throw(env, cls, "getTimeoutSeconds", "()D");
+    jmethodID m_ack_timeout = get_method_or_throw(env, cls, "getAckTimeoutSeconds", "()D");
     jmethodID m_deadline = get_method_or_throw(env, cls, "getDeadlineSeconds", "()D");
     jmethodID m_max_retries = get_method_or_throw(env, cls, "getMaxRetries", "()I");
     jboolean j_urgent = env->CallBooleanMethod(j_message_policy, m_urgent);
     jboolean j_persistent = env->CallBooleanMethod(j_message_policy, m_persistent);
     jdouble j_timeout = env->CallDoubleMethod(j_message_policy, m_timeout);
+    jdouble j_ack_timeout = env->CallDoubleMethod(j_message_policy, m_timeout);
     jdouble j_deadline = env->CallDoubleMethod(j_message_policy, m_deadline);
     jint j_max_retries = env->CallIntMethod(j_message_policy, m_max_retries);
     message_policy.urgent = j_urgent;
     message_policy.persistent = j_persistent;
     message_policy.timeout = j_timeout;
+    message_policy.ack_timeout = j_ack_timeout;
     message_policy.deadline = j_deadline;
     message_policy.max_retries = j_max_retries;
 }
@@ -95,9 +98,10 @@ jobject construct_java_message_policy(JNIEnv *env, const message_policy_t& polic
         jclass message_policy_class, jmethodID message_policy_constructor)
 {
     jlong timeout_millis = policy.timeout * 1000;
+    jlong ack_timeout_millis = policy.ack_timeout * 1000;
     jlong deadline_millis = policy.deadline * 1000;
     jobject message_policy_obj = env->NewObject(message_policy_class, message_policy_constructor,
-            policy.urgent, policy.persistent, timeout_millis, deadline_millis, policy.max_retries);
+            policy.urgent, policy.persistent, timeout_millis, ack_timeout_millis, deadline_millis, policy.max_retries);
     return message_policy_obj;
 }
 
@@ -190,7 +194,7 @@ JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeGetStoredMessages
         jmethodID list_constructor = get_method_or_throw(env, list_class, "<init>", "()V");
         jmethodID add_method = get_method_or_throw(env, list_class, "add", "(Ljava/lang/Object;)Z");
         jmethodID message_constructor = get_method_or_throw(env, message_class, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;[BLcocaine/dealer/MessagePolicy;)V");
-        jmethodID message_policy_constructor = get_method_or_throw(env, message_policy_class, "<init>", "(ZZJJI)V");
+        jmethodID message_policy_constructor = get_method_or_throw(env, message_policy_class, "<init>", "(ZZJJJI)V");
         jobject list = env->NewObject(list_class, list_constructor);
         for (std::vector<message_t>::iterator iter = messages.begin(); iter!=messages.end(); ++iter) {
             jobject message_obj = construct_java_message(env, *iter, message_class, message_constructor, message_policy_class, message_policy_constructor);
@@ -211,10 +215,10 @@ JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeGetStoredMessages
 
 JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage
   (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
-        jstring handle, jbyteArray msg_bytes, jboolean urgent, jboolean persistent, jdouble timeout, jdouble deadline, jint max_retries)
+        jstring handle, jbyteArray msg_bytes, jboolean urgent, jboolean persistent, jdouble timeout, jdouble ack_timeout, jdouble deadline, jint max_retries)
 {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
-    struct message_policy_t policy(urgent, persistent, timeout,
+    struct message_policy_t policy(urgent, persistent, timeout, ack_timeout,
             deadline, max_retries);
 
     std::string service_str = to_string(env, service);
@@ -231,7 +235,27 @@ JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage
         throw_runtime_exception(env, error.what());
     } catch (internal_error& error) {
         throw_runtime_exception(env, error.what());
-    } catch (std::exception & error) {
+    } catch (std::exception& error) {
+        throw_runtime_exception(env, error.what());
+    }
+    return 0;
+}
+
+JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativePolicyForService
+  (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service) {
+    dealer_t *dealer = (dealer_t*) dealer_ptr;
+    std::string service_str = to_string(env, service);
+    try {
+        message_policy_t policy  = dealer->policy_for_service(service_str);
+        jclass message_policy_class = get_class_or_throw(env, "cocaine/dealer/MessagePolicy");
+        jmethodID message_policy_constructor = get_method_or_throw(env, message_policy_class, "<init>", "(ZZJJJI)V");
+        jobject java_policy = construct_java_message_policy(env, policy, message_policy_class, message_policy_constructor);
+        return java_policy;
+    } catch (dealer_error& error) {
+        throw_runtime_exception(env, error.what());
+    } catch (internal_error& error) {
+        throw_runtime_exception(env, error.what());
+    } catch (std::exception& error) {
         throw_runtime_exception(env, error.what());
     }
     return 0;
