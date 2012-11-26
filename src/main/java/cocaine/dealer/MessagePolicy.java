@@ -30,6 +30,8 @@ public class MessagePolicy {
     protected final boolean persistent;
     protected final long timeoutDuration;
     protected final TimeUnit timeoutTimeUnit;
+    protected final long ackTimeoutDuration;
+    protected final TimeUnit ackTimeoutTimeUnit;
     protected final long deadlineDuration;
     protected final TimeUnit deadlineTimeUnit;
     protected final int maxRetries;
@@ -45,26 +47,34 @@ public class MessagePolicy {
      */
     public MessagePolicy(boolean urgent, boolean persistent,
             long timeoutDuration, TimeUnit timeoutTimeUnit,
+            long ackTimeoutDuration, TimeUnit ackTimeoutTimeUnit,
             long deadlineDuration, TimeUnit deadlineTimeUnit, int maxRetries)
     {
         this.urgent = urgent;
         this.persistent = persistent;
         this.timeoutDuration = timeoutDuration;
         this.timeoutTimeUnit = timeoutTimeUnit;
+        this.ackTimeoutDuration = ackTimeoutDuration;
+        this.ackTimeoutTimeUnit = ackTimeoutTimeUnit;
         this.deadlineDuration = deadlineDuration;
         this.deadlineTimeUnit = deadlineTimeUnit;
         this.maxRetries = maxRetries;
     }
 
-    public MessagePolicy(boolean urgent, boolean persistent, long timeoutMillis, 
+    public MessagePolicy(boolean urgent, boolean persistent, long timeoutMillis, long ackTimeoutMillis,
             long deadlineMillis, int maxRetries)
     {
-        this(urgent, persistent, timeoutMillis, TimeUnit.MILLISECONDS, deadlineMillis, 
-                TimeUnit.MILLISECONDS, maxRetries);
+        this(urgent, persistent, timeoutMillis, TimeUnit.MILLISECONDS,
+                ackTimeoutMillis, TimeUnit.MILLISECONDS,
+                deadlineMillis, TimeUnit.MILLISECONDS, maxRetries);
     }
 
     public double getTimeoutSeconds() {
         return timeoutTimeUnit.toMicros(timeoutDuration) / 1000000.0;
+    }
+
+    public double getAckTimeoutSeconds() {
+        return ackTimeoutTimeUnit.toMicros(ackTimeoutDuration) / 1000000.0;
     }
 
     public double getDeadlineSeconds() {
@@ -92,9 +102,10 @@ public class MessagePolicy {
         if (this.persistent) {
             builder.append("persistent");
         }
-        builder.append("timeout "+timeoutTimeUnit.toMillis(timeoutDuration)+" millis ");
-        builder.append("deadline "+deadlineTimeUnit.toMillis(deadlineDuration)+" millis ");
-        builder.append("max retries "+maxRetries+" ");
+        builder.append("timeout " + timeoutTimeUnit.toMillis(timeoutDuration) + " millis ");
+        builder.append("ack timeout " + ackTimeoutTimeUnit.toMillis(ackTimeoutDuration) +" millis ");
+        builder.append("deadline " + deadlineTimeUnit.toMillis(deadlineDuration) + " millis ");
+        builder.append("max retries " + maxRetries + " ");
         return builder.toString();
     }
 
@@ -108,6 +119,8 @@ public class MessagePolicy {
         private boolean persistent = false;
         private long timeoutDuration = 0;
         private TimeUnit timeoutTimeUnit = TimeUnit.MILLISECONDS;
+        private long ackTimeoutDuration = 0;
+        private TimeUnit ackTimeoutTimeUnit = TimeUnit.MILLISECONDS;
         private long deadlineDuration = 0;
         private TimeUnit deadlineTimeUnit = TimeUnit.MILLISECONDS;
         private int maxRetries = 0;
@@ -144,7 +157,7 @@ public class MessagePolicy {
 
         public MessagePolicy build() {
             return new MessagePolicy(urgent, persistent, timeoutDuration,
-                    timeoutTimeUnit, deadlineDuration, deadlineTimeUnit,
+                    timeoutTimeUnit, ackTimeoutDuration, ackTimeoutTimeUnit, deadlineDuration, deadlineTimeUnit,
                     maxRetries);
         }
     }
