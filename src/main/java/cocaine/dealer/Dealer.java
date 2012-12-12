@@ -19,6 +19,7 @@
 */
 package cocaine.dealer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,6 +41,61 @@ public class Dealer {
         cDealerPtr = new Ptr(nativeInit(configPath));
     }
 
+    public List<Response> sendMessages(String path, byte[] message, MessagePolicy policy) {
+        String[] parts = path.split("/");
+        if (parts.length!=2) {
+            throw new IllegalArgumentException("path should be in a form 'app/handle'");
+        }
+        String service = parts[0];
+        String handle = parts[1];
+        double cocaineTimeout = policy.getTimeoutSeconds();
+        double cocaineAckTimeout = policy.getAckTimeoutSeconds();
+        double cocaineDeadline = policy.getDeadlineSeconds();
+        lock.lock();
+        List<Response> responseList = new ArrayList<Response>();
+        try {
+            List<Long> responsePtrs = nativeSendMessages(
+                    cDealerPtr.get(), service, handle, message, policy.urgent, 
+                    policy.persistent, cocaineTimeout, cocaineAckTimeout, cocaineDeadline, policy.maxRetries);
+            for (Long responsePtr : responsePtrs) {
+                responseList.add(new Response(responsePtr));
+            }
+            return responseList;
+        } catch(Exception e) {
+            for(Response response : responseList) {
+                response.close();
+            }
+            throw new RuntimeException("sending failed",e);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public List<Response> sendMessages(String path, byte[] message) {
+        String[] parts = path.split("/");
+        if (parts.length!=2) {
+            throw new IllegalArgumentException("path should be in a form 'app/handle'");
+        }
+        String service = parts[0];
+        String handle = parts[1];
+        lock.lock();
+        List<Response> responseList = new ArrayList<Response>();
+        try {
+            List<Long> responsePtrs = nativeSendMessages(
+                    cDealerPtr.get(), service, handle, message);
+            for (Long responsePtr : responsePtrs) {
+                responseList.add(new Response(responsePtr));
+            }
+            return responseList;
+        } catch(Exception e) {
+            for(Response response : responseList) {
+                response.close();
+            }
+            throw new RuntimeException("sending failed",e);
+        } finally {
+            lock.unlock();
+        }
+    }
     /**
      * send a message(byte[]) to the specified cocaine app/path [='app/handle']
      * with a specified MessagePolicy
@@ -65,6 +121,30 @@ public class Dealer {
             responsePtr = nativeSendMessage(cDealerPtr.get(), service, handle,
                     message, messagePolicy.urgent, messagePolicy.persistent, cocaineTimeout, cocaineAckTimeout, cocaineDeadline,
                     messagePolicy.maxRetries);
+            return new Response(responsePtr);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * send a message(byte[]) to the specified cocaine app/path [='app/handle']
+     * and returns a Response object for retrieving results
+     */
+    public Response sendMessage(String path, byte[] message) {
+        String[] parts = path.split("/");
+        if (parts.length!=2) {
+            throw new IllegalArgumentException("path should be in a form 'app/handle'");
+        }
+        String service = parts[0];
+        String handle = parts[1];
+        lock.lock();
+        try {
+            if (!cDealerPtr.isReferring()) {
+                throw new IllegalStateException("Dealer is closed");
+            }
+            long responsePtr;
+            responsePtr = nativeSendMessage(cDealerPtr.get(), service, handle,message);
             return new Response(responsePtr);
         } finally {
             lock.unlock();
@@ -194,6 +274,21 @@ public class Dealer {
     private native long nativeSendMessage(long cDealerPtr, String service,
             String handle, byte[] message, 
             boolean urgent, boolean persistent, 
+            double cocaineTimeOut, double cocaineAckTimeout, double cocaineDeadline,
+            int maxRetries);
+
+    // returns pointer to response
+    private native long nativeSendMessage(long cDealerPtr, String service,
+            String handle, byte[] message);
+
+    // returns list of pointers to responses
+    private native List<Long> nativeSendMessages(long cDealerPtr, String service,
+            String handle, byte[] message);
+
+    // returns list of pointers to responses
+    private native List<Long> nativeSendMessages(long cDealerPtr, String service,
+            String handle, byte[] message,
+            boolean urgent, boolean persistent,
             double cocaineTimeOut, double cocaineAckTimeout, double cocaineDeadline,
             int maxRetries);
 

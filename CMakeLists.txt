@@ -1,7 +1,7 @@
 PROJECT (cocaine-framework-java Java)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8.6)
 
-SET(DEALER_VERSION 0.9.4)
+SET(DEALER_VERSION 0.9.7)
 
 INCLUDE(cmake/locate_library.cmake)
 FIND_PACKAGE(Java)

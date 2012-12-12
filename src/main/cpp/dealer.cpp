@@ -213,7 +213,7 @@ JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeGetStoredMessages
     }
 }
 
-JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage
+JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage__JLjava_lang_String_2Ljava_lang_String_2_3BZZDDDI
   (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
         jstring handle, jbyteArray msg_bytes, jboolean urgent, jboolean persistent, jdouble timeout, jdouble ack_timeout, jdouble deadline, jint max_retries)
 {
@@ -236,6 +236,123 @@ JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage
     } catch (internal_error& error) {
         throw_runtime_exception(env, error.what());
     } catch (std::exception& error) {
+        throw_runtime_exception(env, error.what());
+    }
+    return 0;
+}
+
+JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage__JLjava_lang_String_2Ljava_lang_String_2_3B
+  (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service, jstring handle, jbyteArray msg_bytes)
+{
+    dealer_t *dealer = (dealer_t*) dealer_ptr;
+
+    std::string service_str = to_string(env, service);
+    std::string handle_str = to_string(env, handle);
+    msg_raii msg(env, msg_bytes);
+    message_path_t message_path(service_str, handle_str);
+    try {
+        boost::shared_ptr < response_t > dealer_response = dealer->send_message(
+            msg.m_data, msg.m_size, message_path);
+        response_holder_t *response_ = new response_holder_t(dealer_response);
+        return (jlong) response_;
+    } catch(dealer_error& error) {
+        throw_runtime_exception(env, error.what());
+    } catch (internal_error& error) {
+        throw_runtime_exception(env, error.what());
+    } catch (std::exception& error) {
+        throw_runtime_exception(env, error.what());
+    }
+    return 0;
+}
+
+typedef std::vector<response_holder_t*> response_holders_t;
+void delete_all(response_holders_t response_holders) {
+    for (response_holders_t::iterator iter = response_holders.begin(); iter != response_holders.end(); ++iter) {
+        delete *iter;
+    }
+}
+
+JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeSendMessages__JLjava_lang_String_2Ljava_lang_String_2_3BZZDDDI
+  (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
+          jstring handle, jbyteArray msg_bytes, jboolean urgent, jboolean persistent, jdouble timeout, jdouble ack_timeout, jdouble deadline, jint max_retries) {
+    dealer_t *dealer = (dealer_t*) dealer_ptr;
+    struct message_policy_t policy(urgent, persistent, timeout, ack_timeout,
+            deadline, max_retries);
+
+    std::string service_str = to_string(env, service);
+    std::string handle_str = to_string(env, handle);
+    msg_raii msg(env, msg_bytes);
+    message_path_t message_path(service_str, handle_str);
+    response_holders_t response_holders;
+    try {
+        dealer_t::responses_list_t dealer_responses = dealer->send_messages(msg.m_data, msg.m_size,
+                message_path, policy);
+        for (dealer_t::responses_list_t::iterator iter = dealer_responses.begin(); iter!=dealer_responses.end(); ++iter) {
+            response_holder_t *response = new response_holder_t(*iter);
+            response_holders.push_back(response);
+        }
+        jclass list_class = get_class_or_throw(env, "java/util/ArrayList");
+        jmethodID list_constructor = get_method_or_throw(env, list_class, "<init>", "()V");
+        jmethodID add_method = get_method_or_throw(env, list_class, "add", "(Ljava/lang/Object;)Z");
+        jobject list = env->NewObject(list_class, list_constructor);
+        jclass long_class = get_class_or_throw(env, "java/lang/Long");
+        jmethodID long_constructor = get_method_or_throw(env, long_class, "<init>", "(J)V");
+        for(response_holders_t::iterator iter = response_holders.begin(); iter != response_holders.end(); ++iter) {
+            jlong ptr_as_long = (jlong)(*iter);
+            jobject long_obj = env->NewObject(long_class, long_constructor, ptr_as_long);
+            env->CallBooleanMethod(list, add_method, long_obj);
+        }
+        return list;
+    } catch(dealer_error& error) {
+        delete_all(response_holders);
+        throw_runtime_exception(env, error.what());
+    } catch (internal_error& error) {
+        delete_all(response_holders);
+        throw_runtime_exception(env, error.what());
+    } catch (std::exception& error) {
+        delete_all(response_holders);
+        throw_runtime_exception(env, error.what());
+    }
+    return 0;
+}
+
+JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeSendMessages__JLjava_lang_String_2Ljava_lang_String_2_3B
+  (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
+          jstring handle, jbyteArray msg_bytes) {
+    dealer_t *dealer = (dealer_t*) dealer_ptr;
+
+    std::string service_str = to_string(env, service);
+    std::string handle_str = to_string(env, handle);
+    msg_raii msg(env, msg_bytes);
+    message_path_t message_path(service_str, handle_str);
+    response_holders_t response_holders;
+    try {
+        dealer_t::responses_list_t dealer_responses = dealer->send_messages(msg.m_data, msg.m_size,
+                message_path);
+        for (dealer_t::responses_list_t::iterator iter = dealer_responses.begin(); iter!=dealer_responses.end(); ++iter) {
+            response_holder_t *response = new response_holder_t(*iter);
+            response_holders.push_back(response);
+        }
+        jclass list_class = get_class_or_throw(env, "java/util/ArrayList");
+        jmethodID list_constructor = get_method_or_throw(env, list_class, "<init>", "()V");
+        jmethodID add_method = get_method_or_throw(env, list_class, "add", "(Ljava/lang/Object;)Z");
+        jobject list = env->NewObject(list_class, list_constructor);
+        jclass long_class = get_class_or_throw(env, "java/lang/Long");
+        jmethodID long_constructor = get_method_or_throw(env, long_class, "<init>", "(J)V");
+        for(response_holders_t::iterator iter = response_holders.begin(); iter != response_holders.end(); ++iter) {
+            jlong ptr_as_long = (jlong)*iter;
+            jobject long_obj = env->NewObject(long_class, long_constructor, ptr_as_long);
+            env->CallBooleanMethod(list, add_method, long_obj);
+        }
+        return list;
+    } catch(dealer_error& error) {
+        delete_all(response_holders);
+        throw_runtime_exception(env, error.what());
+    } catch (internal_error& error) {
+        delete_all(response_holders);
+        throw_runtime_exception(env, error.what());
+    } catch (std::exception& error) {
+        delete_all(response_holders);
         throw_runtime_exception(env, error.what());
     }
     return 0;
