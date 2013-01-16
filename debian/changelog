@@ -1,3 +1,9 @@
+cocaine-framework-java (0.9.7.3) precise; urgency=low
+
+  * rebuilt. works with 0.9.7
+
+ -- Vladimir Shakhov <vshakhov@yandex-team.ru>  Wed, 16 Jan 2013 18:58:06 +0400
+
 cocaine-framework-java (0.9.7.2) precise; urgency=low
 
   * works with 0.9.7, extracted Dealer, Response interfaces, added get(..) methods without timeouts
