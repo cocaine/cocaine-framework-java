@@ -59,6 +59,13 @@ public class Response {
     }
     
     /**
+     * Returns a concatenated byte[] out of chunks returned by a cocaine app 
+     */
+    public byte[] getAllChunks() throws TimeoutException {
+        return getAllChunks(-1, TimeUnit.MILLISECONDS);
+    }
+
+    /**
      * Returns an iterable for traversing the byte[] chunks that might come from a cocaine app
      * Note: the iterator returned by the iterable might throw Timeout exception upon iterating 
      * the iterator is not thread safe! 

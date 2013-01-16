@@ -26,7 +26,7 @@
 #include <cocaine/dealer/message_path.hpp>
 #include <cocaine/dealer/utils/error.hpp>
 
-#include "cocaine_dealer_Dealer.h"
+#include "cocaine_dealer_DealerImpl.h"
 #include "response_holder.hpp"
 #include "util.hpp"
 
@@ -125,13 +125,13 @@ jobject construct_java_message(JNIEnv *env, const message_t& message,
     return message_obj;
 }
 
-JNIEXPORT void JNICALL Java_cocaine_dealer_Dealer_nativeDelete
+JNIEXPORT void JNICALL Java_cocaine_dealer_DealerImpl_nativeDelete
   (JNIEnv *, jobject, jlong dealer_ptr) {
     dealer_t * dealer = (dealer_t *) dealer_ptr;
     delete dealer;
 }
 
-JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeInit(JNIEnv *env,
+JNIEXPORT jlong JNICALL Java_cocaine_dealer_DealerImpl_nativeInit(JNIEnv *env,
         jobject, jstring config_path) {
     std::string config_path_str = to_string(env, config_path);
     try{
@@ -147,7 +147,7 @@ JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeInit(JNIEnv *env,
     return 0;
 }
 
-JNIEXPORT jint JNICALL Java_cocaine_dealer_Dealer_nativeGetStoredMessagesCount
+JNIEXPORT jint JNICALL Java_cocaine_dealer_DealerImpl_nativeGetStoredMessagesCount
   (JNIEnv *env, jobject self, jlong dealer_ptr, jstring j_service_alias) {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
     std::string service_alias = to_string(env, j_service_alias);
@@ -165,7 +165,7 @@ JNIEXPORT jint JNICALL Java_cocaine_dealer_Dealer_nativeGetStoredMessagesCount
 }
 
 
-JNIEXPORT void JNICALL Java_cocaine_dealer_Dealer_nativeRemoveStoredMessage
+JNIEXPORT void JNICALL Java_cocaine_dealer_DealerImpl_nativeRemoveStoredMessage
   (JNIEnv *env, jobject self, jlong dealer_ptr, jobject j_message) {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
     try{
@@ -181,7 +181,7 @@ JNIEXPORT void JNICALL Java_cocaine_dealer_Dealer_nativeRemoveStoredMessage
     }
 }
 
-JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeGetStoredMessages
+JNIEXPORT jobject JNICALL Java_cocaine_dealer_DealerImpl_nativeGetStoredMessages
   (JNIEnv * env, jobject, jlong dealer_ptr, jstring service_alias) {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
     try {
@@ -213,7 +213,7 @@ JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeGetStoredMessages
     }
 }
 
-JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage__JLjava_lang_String_2Ljava_lang_String_2_3BZZDDDI
+JNIEXPORT jlong JNICALL Java_cocaine_dealer_DealerImpl_nativeSendMessage__JLjava_lang_String_2Ljava_lang_String_2_3BZZDDDI
   (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
         jstring handle, jbyteArray msg_bytes, jboolean urgent, jboolean persistent, jdouble timeout, jdouble ack_timeout, jdouble deadline, jint max_retries)
 {
@@ -241,7 +241,7 @@ JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage__JLjava_lan
     return 0;
 }
 
-JNIEXPORT jlong JNICALL Java_cocaine_dealer_Dealer_nativeSendMessage__JLjava_lang_String_2Ljava_lang_String_2_3B
+JNIEXPORT jlong JNICALL Java_cocaine_dealer_DealerImpl_nativeSendMessage__JLjava_lang_String_2Ljava_lang_String_2_3B
   (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service, jstring handle, jbyteArray msg_bytes)
 {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
@@ -272,7 +272,7 @@ void delete_all(response_holders_t response_holders) {
     }
 }
 
-JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeSendMessages__JLjava_lang_String_2Ljava_lang_String_2_3BZZDDDI
+JNIEXPORT jobject JNICALL Java_cocaine_dealer_DealerImpl_nativeSendMessages__JLjava_lang_String_2Ljava_lang_String_2_3BZZDDDI
   (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
           jstring handle, jbyteArray msg_bytes, jboolean urgent, jboolean persistent, jdouble timeout, jdouble ack_timeout, jdouble deadline, jint max_retries) {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
@@ -316,7 +316,7 @@ JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeSendMessages__JLjava_
     return 0;
 }
 
-JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeSendMessages__JLjava_lang_String_2Ljava_lang_String_2_3B
+JNIEXPORT jobject JNICALL Java_cocaine_dealer_DealerImpl_nativeSendMessages__JLjava_lang_String_2Ljava_lang_String_2_3B
   (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service,
           jstring handle, jbyteArray msg_bytes) {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
@@ -358,7 +358,7 @@ JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativeSendMessages__JLjava_
     return 0;
 }
 
-JNIEXPORT jobject JNICALL Java_cocaine_dealer_Dealer_nativePolicyForService
+JNIEXPORT jobject JNICALL Java_cocaine_dealer_DealerImpl_nativePolicyForService
   (JNIEnv *env, jobject self, jlong dealer_ptr, jstring service) {
     dealer_t *dealer = (dealer_t*) dealer_ptr;
     std::string service_str = to_string(env, service);

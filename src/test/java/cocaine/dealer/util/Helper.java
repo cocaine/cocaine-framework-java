@@ -20,10 +20,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 package cocaine.dealer.util;
 
 import cocaine.dealer.Dealer;
+import cocaine.dealer.DealerImpl;
 
 public class Helper {
     private final static String CONFIG_PATH = "./src/test/resources/dealer_config.json";
     public static Dealer createDealer() {
-        return new Dealer(CONFIG_PATH);
+        return new DealerImpl(CONFIG_PATH);
     }
 }
