@@ -20,7 +20,7 @@
 				<pathelement location="target/classes" />
 			</classpath>
 			<class name="cocaine.dealer.DealerImpl"/>
-			<class name="cocaine.dealer.Response"/>
+			<class name="cocaine.dealer.ResponseImpl"/>
 		</javah>
 	</target>
 

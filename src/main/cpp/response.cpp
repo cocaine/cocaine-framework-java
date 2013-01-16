@@ -25,7 +25,7 @@
 #include <sstream>
 
 #include "response_holder.hpp"
-#include "cocaine_dealer_Response.h"
+#include "cocaine_dealer_ResponseImpl.h"
 #include "util.hpp"
 using namespace cocaine::dealer::java;
 using namespace cocaine::dealer;
@@ -35,12 +35,12 @@ namespace {
 }
 
 JNIEXPORT void JNICALL
-Java_cocaine_dealer_Response_nativeClose (JNIEnv *, jobject, jlong c_response_ptr) {
+Java_cocaine_dealer_ResponseImpl_nativeClose (JNIEnv *, jobject, jlong c_response_ptr) {
     response_holder_t * response_ptr = (response_holder_t *)c_response_ptr;
     delete response_ptr;
 }
 
-JNIEXPORT jint JNICALL Java_cocaine_dealer_Response_nativeRemoveStoredMessageFor
+JNIEXPORT jint JNICALL Java_cocaine_dealer_ResponseImpl_nativeRemoveStoredMessageFor
   (JNIEnv * env, jobject self, jlong c_dealer_ptr , jlong c_response_ptr) {
     dealer_t * dealer_ptr = (dealer_t*) c_dealer_ptr;
     response_holder_t * response_ptr = (response_holder_t *)c_response_ptr;
@@ -49,7 +49,7 @@ JNIEXPORT jint JNICALL Java_cocaine_dealer_Response_nativeRemoveStoredMessageFor
 
 
 JNIEXPORT jbyteArray JNICALL
-Java_cocaine_dealer_Response_nativeGetAllChunks(
+Java_cocaine_dealer_ResponseImpl_nativeGetAllChunks(
         JNIEnv *env, jobject self, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
     data_container container;
@@ -73,7 +73,7 @@ Java_cocaine_dealer_Response_nativeGetAllChunks(
 }
 
 JNIEXPORT jboolean JNICALL
-Java_cocaine_dealer_Response_nativeGet
+Java_cocaine_dealer_ResponseImpl_nativeGet
   (JNIEnv * env, jobject self, jobject array_holder, jlong c_response_ptr, jdouble timeout) {
     response_holder_t *response_holder = (response_holder_t *) c_response_ptr;
     data_container container;

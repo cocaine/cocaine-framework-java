@@ -16,7 +16,8 @@ SET (SRC
 	src/main/java/cocaine/dealer/Message.java
 	src/main/java/cocaine/dealer/MessagePolicy.java
 	src/main/java/cocaine/dealer/Ptr.java
-	src/main/java/cocaine/dealer/Response.java
+    src/main/java/cocaine/dealer/Response.java
+    src/main/java/cocaine/dealer/ResponseImpl.java
 	src/main/java/cocaine/dealer/exceptions/AppException.java)
 ADD_JAR(cocaine-framework-java ${SRC})
 
@@ -41,15 +42,15 @@ FILE(GLOB CPP_SOURCES
     "src/main/cpp/*.cpp")
 
 ADD_CUSTOM_COMMAND(
-	 OUTPUT target/generated/cocaine_dealer_DealerImpl.h target/generated/cocaine_dealer_Response.h
-	 COMMAND ${Java_JAVAH_EXECUTABLE} -jni -d target/generated -classpath ${JARFILE} cocaine.dealer.Dealer cocaine.dealer.Response
+	 OUTPUT target/generated/cocaine_dealer_DealerImpl.h target/generated/cocaine_dealer_ResponseImpl.h
+	 COMMAND ${Java_JAVAH_EXECUTABLE} -jni -d target/generated -classpath ${JARFILE} cocaine.dealer.DealerImpl cocaine.dealer.ResponseImpl
          WORKING_DIRECTORY 
          COMMENT "generating jni header files"
          )
 
 ADD_LIBRARY(cocaine-framework-java-lib SHARED
     target/generated/cocaine_dealer_DealerImpl.h
-    target/generated/cocaine_dealer_Response.h
+    target/generated/cocaine_dealer_ResponseImpl.h
     ${CPP_SOURCES}
 )
 

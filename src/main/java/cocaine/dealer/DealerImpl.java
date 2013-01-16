@@ -62,7 +62,7 @@ public class DealerImpl implements Dealer {
                     cDealerPtr.get(), service, handle, message, policy.urgent, 
                     policy.persistent, cocaineTimeout, cocaineAckTimeout, cocaineDeadline, policy.maxRetries);
             for (Long responsePtr : responsePtrs) {
-                responseList.add(new Response(responsePtr));
+                responseList.add(new ResponseImpl(responsePtr));
             }
             return responseList;
         } catch(Exception e) {
@@ -92,7 +92,7 @@ public class DealerImpl implements Dealer {
             List<Long> responsePtrs = nativeSendMessages(
                     cDealerPtr.get(), service, handle, message);
             for (Long responsePtr : responsePtrs) {
-                responseList.add(new Response(responsePtr));
+                responseList.add(new ResponseImpl(responsePtr));
             }
             return responseList;
         } catch(Exception e) {
@@ -128,7 +128,7 @@ public class DealerImpl implements Dealer {
             responsePtr = nativeSendMessage(cDealerPtr.get(), service, handle,
                     message, messagePolicy.urgent, messagePolicy.persistent, cocaineTimeout, cocaineAckTimeout, cocaineDeadline,
                     messagePolicy.maxRetries);
-            return new Response(responsePtr);
+            return new ResponseImpl(responsePtr);
         } finally {
             lock.unlock();
         }
@@ -152,7 +152,7 @@ public class DealerImpl implements Dealer {
             }
             long responsePtr;
             responsePtr = nativeSendMessage(cDealerPtr.get(), service, handle,message);
-            return new Response(responsePtr);
+            return new ResponseImpl(responsePtr);
         } finally {
             lock.unlock();
         }
@@ -182,7 +182,7 @@ public class DealerImpl implements Dealer {
     public void removeStoredMessageFor(Response response) {
         lock.lock();
         try{
-            response.removedStoredMessageFor(cDealerPtr.get());
+            ((ResponseImpl)response).removedStoredMessageFor(cDealerPtr.get());
         } finally {
             lock.unlock();
         }
