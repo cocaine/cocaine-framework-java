@@ -1,3 +1,9 @@
+cocaine-framework-java (0.9.7.4) precise; urgency=low
+
+  * added Dealer.getConfigPath() method
+
+ -- Vladimir Shakhov <vshakhov@yandex-team.ru>  Fri, 18 Jan 2013 13:31:32 +0400
+
 cocaine-framework-java (0.9.7.3) precise; urgency=low
 
   * rebuilt. works with 0.9.7
