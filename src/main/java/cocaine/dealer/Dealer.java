@@ -87,6 +87,11 @@ public interface Dealer {
     MessagePolicy policyForService(String serviceAlias);
 
     /**
+     * returns the config path, the dealer was created with
+     */
+    String getConfigPath();
+
+    /**
      * user should call close()
      */
     void close();

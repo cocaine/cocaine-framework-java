@@ -32,6 +32,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class DealerImpl implements Dealer {
     private final Ptr cDealerPtr;
     private final Lock lock = new ReentrantLock();
+    private final String configPath;
 
     /** Constructs the dealer with the specified filesystem path
      *  to a dealer config json. For an example of dealer config see
@@ -39,6 +40,7 @@ public class DealerImpl implements Dealer {
      */
     public DealerImpl(String configPath) {
         cDealerPtr = new Ptr(nativeInit(configPath));
+        this.configPath = configPath;
     }
 
     /* (non-Javadoc)
@@ -233,6 +235,11 @@ public class DealerImpl implements Dealer {
         }
     }
 
+    @Override
+    public String getConfigPath() {
+        return configPath;
+    }
+
     /* (non-Javadoc)
      * @see cocaine.dealer.Dealer#close()
      */
@@ -296,4 +303,5 @@ public class DealerImpl implements Dealer {
     static {
         Library.loadLib();
     }
+
 }
