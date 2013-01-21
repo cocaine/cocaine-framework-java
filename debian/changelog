@@ -1,3 +1,9 @@
+cocaine-framework-java (0.9.7.6) precise; urgency=low
+
+  * ackTimeout + infiniteTimeouts in MessagePolicyBuilder
+
+ -- Vladimir Shakhov <vshakhov@yandex-team.ru>  Mon, 21 Jan 2013 13:54:37 +0400
+
 cocaine-framework-java (0.9.7.5) precise; urgency=low
 
   * MessagePolicyBuilder allows construction from message policy
