@@ -160,5 +160,19 @@ public class MessagePolicy {
                     timeoutTimeUnit, ackTimeoutDuration, ackTimeoutTimeUnit, deadlineDuration, deadlineTimeUnit,
                     maxRetries);
         }
+
+        public static MessagePolicyBuilder from(MessagePolicy policy) {
+            MessagePolicyBuilder builder = new MessagePolicyBuilder();
+            builder.ackTimeoutDuration = policy.ackTimeoutDuration;
+            builder.ackTimeoutTimeUnit = policy.ackTimeoutTimeUnit;
+            builder.deadlineDuration = policy.deadlineDuration;
+            builder.deadlineTimeUnit = policy.deadlineTimeUnit;
+            builder.maxRetries = policy.maxRetries;
+            builder.persistent = policy.persistent;
+            builder.timeoutDuration = policy.timeoutDuration;
+            builder.timeoutTimeUnit = policy.timeoutTimeUnit;
+            builder.urgent = policy.urgent;
+            return builder;
+        }
     }
 }
