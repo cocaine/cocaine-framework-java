@@ -138,9 +138,33 @@ public class MessagePolicy {
             return this;
         }
 
+        public MessagePolicyBuilder timeoutInfinite() {
+            this.timeoutDuration = -1L;
+            this.timeoutTimeUnit = TimeUnit.MILLISECONDS;
+            return this;
+        }
+
         public MessagePolicyBuilder timeout(long timeout, TimeUnit timeUnit) {
             this.timeoutDuration = timeout;
             this.timeoutTimeUnit = timeUnit;
+            return this;
+        }
+
+        public MessagePolicyBuilder ackTimeoutInfinite() {
+            this.ackTimeoutDuration = -1L;
+            this.ackTimeoutTimeUnit = TimeUnit.MILLISECONDS;
+            return this;
+        }
+
+        public MessagePolicyBuilder ackTimeout(long timeout, TimeUnit timeUnit) {
+            this.ackTimeoutDuration = timeout;
+            this.ackTimeoutTimeUnit = timeUnit;
+            return this;
+        }
+
+        public MessagePolicyBuilder deadlineInfinite() {
+            this.deadlineDuration = -1L;
+            this.deadlineTimeUnit = TimeUnit.MILLISECONDS;
             return this;
         }
 
