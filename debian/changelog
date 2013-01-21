@@ -1,3 +1,9 @@
+cocaine-framework-java (0.9.7.5) precise; urgency=low
+
+  * MessagePolicyBuilder allows construction from message policy
+
+ -- Vladimir Shakhov <vshakhov@yandex-team.ru>  Mon, 21 Jan 2013 13:07:50 +0400
+
 cocaine-framework-java (0.9.7.4) precise; urgency=low
 
   * added Dealer.getConfigPath() method
