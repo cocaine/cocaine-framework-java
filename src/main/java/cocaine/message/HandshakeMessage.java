@@ -1,23 +1,25 @@
 package cocaine.message;
 
+import java.util.UUID;
+
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
 public class HandshakeMessage extends Message {
 
-    private final String uniqueId;
+    private final UUID id;
 
-    public HandshakeMessage(long session, String uniqueId) {
+    public HandshakeMessage(long session, UUID id) {
         super(Type.HANDSHAKE, session);
-        this.uniqueId = uniqueId;
+        this.id = id;
     }
 
-    public String getUniqueId() {
-        return uniqueId;
+    public UUID getId() {
+        return id;
     }
 
     @Override
     public String toString() {
-        return "HandshakeMessage/" + getSession() + ": " + uniqueId;
+        return "HandshakeMessage/" + getSession() + ": " + id;
     }
 }
