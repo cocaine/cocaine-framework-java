@@ -1,5 +1,7 @@
 package cocaine.message;
 
+import java.util.UUID;
+
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
@@ -48,6 +50,34 @@ public abstract class Message {
 
     public long getSession() {
         return session;
+    }
+
+    public static Message choke(long session) {
+        return new ChokeMessage(session);
+    }
+
+    public static Message chunk(long session, byte[] data) {
+        return new ChunkMessage(session, data);
+    }
+
+    public static Message error(long session, int code, String message) {
+        return new ErrorMessage(session, code, message);
+    }
+
+    public static Message handshake(long session, UUID id) {
+        return new HandshakeMessage(session, id);
+    }
+
+    public static Message heartbeat(long session) {
+        return new HeartbeatMessage(session);
+    }
+
+    public static Message invoke(long session, String event) {
+        return new InvokeMessage(session, event);
+    }
+
+    public static Message terminate(long session, TerminateMessage.Reason reason, String message) {
+        return new TerminateMessage(session, reason, message);
     }
 
 }
