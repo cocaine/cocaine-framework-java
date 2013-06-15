@@ -9,8 +9,8 @@ public class HandshakeMessage extends Message {
 
     private final UUID id;
 
-    public HandshakeMessage(long session, UUID id) {
-        super(Type.HANDSHAKE, session);
+    public HandshakeMessage(UUID id) {
+        super(Type.HANDSHAKE, 0L);
         this.id = id;
     }
 

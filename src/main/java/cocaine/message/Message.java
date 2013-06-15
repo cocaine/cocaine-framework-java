@@ -52,32 +52,32 @@ public abstract class Message {
         return session;
     }
 
-    public static Message choke(long session) {
-        return new ChokeMessage(session);
+    public static Message handshake(UUID id) {
+        return new HandshakeMessage(id);
     }
 
-    public static Message chunk(long session, byte[] data) {
-        return new ChunkMessage(session, data);
+    public static Message heartbeat() {
+        return new HeartbeatMessage();
     }
 
-    public static Message error(long session, int code, String message) {
-        return new ErrorMessage(session, code, message);
-    }
-
-    public static Message handshake(long session, UUID id) {
-        return new HandshakeMessage(session, id);
-    }
-
-    public static Message heartbeat(long session) {
-        return new HeartbeatMessage(session);
+    public static Message terminate(TerminateMessage.Reason reason, String message) {
+        return new TerminateMessage(reason, message);
     }
 
     public static Message invoke(long session, String event) {
         return new InvokeMessage(session, event);
     }
 
-    public static Message terminate(long session, TerminateMessage.Reason reason, String message) {
-        return new TerminateMessage(session, reason, message);
+    public static Message chunk(long session, byte[] data) {
+        return new ChunkMessage(session, data);
+    }
+
+    public static Message choke(long session) {
+        return new ChokeMessage(session);
+    }
+
+    public static Message error(long session, int code, String message) {
+        return new ErrorMessage(session, code, message);
     }
 
 }

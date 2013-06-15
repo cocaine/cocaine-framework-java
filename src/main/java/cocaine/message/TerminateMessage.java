@@ -32,8 +32,8 @@ public class TerminateMessage extends Message {
     private final Reason reason;
     private final String message;
 
-    public TerminateMessage(long session, Reason reason, String message) {
-        super(Type.TERMINATE, session);
+    public TerminateMessage(Reason reason, String message) {
+        super(Type.TERMINATE, 0L);
         this.reason = reason;
         this.message = message;
     }

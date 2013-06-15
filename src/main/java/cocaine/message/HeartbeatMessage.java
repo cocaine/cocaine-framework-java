@@ -5,8 +5,8 @@ package cocaine.message;
  */
 public class HeartbeatMessage extends Message {
 
-    public HeartbeatMessage(long session) {
-        super(Type.HEARTBEAT, session);
+    public HeartbeatMessage() {
+        super(Type.HEARTBEAT, 0L);
     }
 
     @Override
