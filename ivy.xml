@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ivy-module version="2.0">
+    <info organisation="cocaine" module="cocaine-framework-java">
+        <description>Cocaine Framework Java</description>
+    </info>
+
+    <configurations>
+        <conf name="compile"/>
+        <conf name="runtime" extends="compile"/>
+        <conf name="sources"/>
+        <conf name="test"/>
+        <conf name="test-integration"/>
+    </configurations>
+
+    <dependencies defaultconfmapping="runtime->master;sources">
+
+        <!-- General Frameworks -->
+        <dependency org="com.google.guava" name="guava" rev="14.0.1"/>
+        <dependency org="javassist" name="javassist" rev="3.3"/>
+        <dependency org="log4j" name="log4j" rev="1.2.17"/>
+        <dependency org="org.msgpack" name="msgpack" rev="0.6.7"/>
+        <dependency org="io.netty" name="netty-all" rev="4.0.0.CR2"/>
+
+    </dependencies>
+</ivy-module>
