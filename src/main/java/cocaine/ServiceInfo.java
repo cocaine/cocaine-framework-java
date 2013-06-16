@@ -3,7 +3,6 @@ package cocaine;
 import java.net.SocketAddress;
 import java.util.Map;
 
-import cocaine.exceptions.UnknownMethodException;
 import com.google.common.base.Joiner;
 
 /**
