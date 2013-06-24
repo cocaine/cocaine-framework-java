@@ -1,8 +1,6 @@
 Cocaine framework java
 ===============
 
-Currently it is only java-bindings for dealer
-
 Building
 ====================
 
@@ -10,7 +8,6 @@ Prerequisites
 ====================
 To build cocaine-framework-java you'll need
 
-* libcocaine-dealer
 * ant
 
 generating artifacts
@@ -24,8 +21,8 @@ Output
 ====================
 in cocaine-framework-java
 
-* ./target/jars/yandex-cocaine-dealer.jar
-* ./target/lib/lib-cocaine-framework-java.so
+* ./target/jars/cocaine-framework-java.jar
+* ./target/jars/cocaine-framework-java-sources.jar
 
 Usage example
 ====================
