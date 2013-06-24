@@ -26,4 +26,11 @@ public class MessagePackableEncoder extends MessageToByteEncoder<MessagePackable
         logger.debug("Encoding packable: " + msg);
         out.writeBytes(pack.write(msg));
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error(cause.getMessage(), cause);
+        ctx.fireExceptionCaught(cause);
+    }
+
 }

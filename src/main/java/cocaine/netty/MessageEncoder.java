@@ -27,4 +27,11 @@ public class MessageEncoder extends MessageToByteEncoder<Message> {
         logger.debug("Encoding message: " + msg);
         out.writeBytes(pack.write(msg, MessageTemplate.getInstance()));
     }
+
+    @Override
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+        logger.error(cause.getMessage(), cause);
+        ctx.fireExceptionCaught(cause);
+    }
+
 }
