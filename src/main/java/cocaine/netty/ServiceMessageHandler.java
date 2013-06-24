@@ -2,8 +2,9 @@ package cocaine.netty;
 
 import java.io.IOException;
 
-import cocaine.ServiceSessions;
+import cocaine.ConnectionHolder;
 import cocaine.ServiceErrorException;
+import cocaine.Sessions;
 import cocaine.UnexpectedMessageException;
 import cocaine.message.ChunkMessage;
 import cocaine.message.ErrorMessage;
@@ -20,11 +21,13 @@ public class ServiceMessageHandler extends ChannelInboundMessageHandlerAdapter<M
     private static final Logger logger = Logger.getLogger(ServiceMessageHandler.class);
 
     private final String service;
-    private final ServiceSessions sessions;
+    private final ConnectionHolder connection;
+    private final Sessions sessions;
 
-    public ServiceMessageHandler(String service, ServiceSessions sessions) {
+    public ServiceMessageHandler(String service, ConnectionHolder connection, Sessions sessions) {
         super(Message.class);
         this.service = service;
+        this.connection = connection;
         this.sessions = sessions;
     }
 
@@ -45,11 +48,11 @@ public class ServiceMessageHandler extends ChannelInboundMessageHandlerAdapter<M
             }
             case ERROR: {
                 ErrorMessage error = ErrorMessage.class.cast(msg);
-                sessions.setException(session, new ServiceErrorException(service, error.getMessage(), error.getCode()));
+                sessions.error(session, new ServiceErrorException(service, error.getMessage(), error.getCode()));
                 break;
             }
             default: {
-                sessions.setException(session, new UnexpectedMessageException(service, msg));
+                sessions.error(session, new UnexpectedMessageException(service, msg));
                 break;
             }
         }
@@ -58,5 +61,12 @@ public class ServiceMessageHandler extends ChannelInboundMessageHandlerAdapter<M
     @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
         logger.error(cause.getMessage(), cause);
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) throws Exception {
+        logger.error("Service channel is inactive");
+        sessions.close();
+        connection.reconnect();
     }
 }

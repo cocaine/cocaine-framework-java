@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import cocaine.netty.ServiceMessageHandler;
 import com.google.common.base.Joiner;
-import io.netty.channel.ChannelFuture;
+import com.google.common.base.Supplier;
+import io.netty.bootstrap.Bootstrap;
+import org.apache.log4j.Logger;
 import org.msgpack.MessagePackable;
 import org.msgpack.packer.Packer;
 import org.msgpack.unpacker.Unpacker;
@@ -16,36 +17,41 @@ import org.msgpack.unpacker.Unpacker;
  */
 public class Service {
 
-    private static final ServiceSessions sessions = new ServiceSessions();
+    private static final Logger logger = Logger.getLogger(Service.class);
 
-    private final ServiceInfo info;
-    private final ChannelFuture connection;
+    private final String name;
+    private final Sessions sessions;
+    private final ConnectionHolder connection;
 
-    public Service(ServiceInfo info, ChannelFuture connection) {
-        this.info = info;
+    private Service(String name, Sessions sessions, ConnectionHolder connection) {
+        this.name = name;
+        this.sessions = sessions;
         this.connection = connection;
-        this.connection.channel().pipeline().addLast(new ServiceMessageHandler(info.getName(), sessions));
+        this.connection.connect();
     }
 
-    public ServiceSession invoke(String method, Object... args) {
+    public static Service create(String name, Bootstrap bootstrap, Supplier<ServiceInfo> infoSupplier) {
+        Sessions sessions = new Sessions(name);
+        return new Service(name, sessions, ConnectionHolder.create(name, bootstrap, sessions, infoSupplier));
+    }
+
+    public SessionFuture invoke(String method, Object... args) {
         return invoke(method, Arrays.asList(args));
     }
 
-    public ServiceSession invoke(String method, List<Object> args) {
-        ServiceSession session = sessions.create(info.getName());
-        int requestedMethod = info.getMethod(method);
-        connection.channel().write(new InvocationRequest(requestedMethod, session.getId(), args));
+    public SessionFuture invoke(String method, List<Object> args) {
+        logger.debug("Invoking " + method + "(" + Joiner.on(", ").join(args) + ")");
+
+        SessionFuture session = sessions.create();
+        int requestedMethod = connection.getServiceInfo().getMethod(method);
+        connection.write(new InvocationRequest(requestedMethod, session.getId(), args));
 
         return session;
     }
 
-    public ServiceInfo getInfo() {
-        return info;
-    }
-
     @Override
     public String toString() {
-        return info.toString();
+        return name + " [" + connection.getServiceInfo().getEndpoint() + "]";
     }
 
     private static class InvocationRequest implements MessagePackable {
