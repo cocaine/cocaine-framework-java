@@ -1,18 +1,17 @@
 package cocaine;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.AbstractIterator;
 
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class SessionFuture {
+public class SessionFuture extends AbstractIterator<byte[]> {
 
     private static final byte[] POISON_PILL = new byte[0];
 
@@ -71,48 +70,29 @@ public class SessionFuture {
         }
     }
 
-    public byte[] next() throws InterruptedException, ServiceException {
-        byte[] data;
-        takeLock.lockInterruptibly();
+    @Override
+    protected byte[] computeNext() {
         try {
-            while (count.get() == 0) {
-                notEmpty.await();
-            }
-            tryThrowException();
-
-            data = dequeue();
-            int newSize = count.decrementAndGet();
-            if (newSize > 0) {
-                notEmpty.signal();
-            }
-        } finally {
-            takeLock.unlock();
-        }
-        return data;
-    }
-
-    public byte[] next(long timeout, TimeUnit unit) throws InterruptedException, TimeoutException {
-        byte[] data = null;
-        long nanos = unit.toNanos(timeout);
-        takeLock.lockInterruptibly();
-        try {
-            while (count.get() == 0) {
-                if (nanos <= 0) {
-                    throw new TimeoutException("Timed out while waiting for the chunk");
+            byte[] data;
+            takeLock.lockInterruptibly();
+            try {
+                while (count.get() == 0) {
+                    notEmpty.await();
                 }
-                nanos = notEmpty.awaitNanos(nanos);
-            }
-            tryThrowException();
+                tryThrowException();
 
-            data = dequeue();
-            int newSize = count.decrementAndGet();
-            if (newSize > 0) {
-                notEmpty.signal();
+                data = dequeue();
+                int newSize = count.decrementAndGet();
+                if (newSize > 0) {
+                    notEmpty.signal();
+                }
+            } finally {
+                takeLock.unlock();
             }
-        } finally {
-            takeLock.unlock();
+            return isPoisonPill(data) ? endOfData() : data;
+        } catch (InterruptedException e) {
+            throw new ServiceException(name, e.getMessage());
         }
-        return data;
     }
 
     @Override
@@ -123,7 +103,6 @@ public class SessionFuture {
     @Override
     public boolean equals(Object o) {
         return this == o || o != null && getClass() == o.getClass() && id == SessionFuture.class.cast(o).id;
-
     }
 
     @Override
@@ -131,7 +110,7 @@ public class SessionFuture {
         return (int) (id ^ (id >>> 32));
     }
 
-    public static boolean isPoisonPill(byte[] chunk) {
+    private static boolean isPoisonPill(byte[] chunk) {
         return POISON_PILL == chunk;
     }
 
