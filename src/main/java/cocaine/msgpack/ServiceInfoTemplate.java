@@ -5,6 +5,7 @@ import java.net.SocketAddress;
 import java.util.Map;
 
 import cocaine.ServiceInfo;
+import com.google.common.collect.ImmutableBiMap;
 import org.msgpack.packer.Packer;
 import org.msgpack.template.AbstractTemplate;
 import org.msgpack.template.Template;
@@ -39,7 +40,7 @@ public class ServiceInfoTemplate extends AbstractTemplate<ServiceInfo> {
         Map<Integer, String> api = unpacker.read(Templates.tMap(Templates.TInteger, Templates.TString));
         unpacker.readArrayEnd();
 
-        return new ServiceInfo(name, endpoint, api);
+        return new ServiceInfo(name, endpoint, ImmutableBiMap.copyOf(api).inverse());
     }
 
 }

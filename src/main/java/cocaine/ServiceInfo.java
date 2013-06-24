@@ -1,9 +1,9 @@
 package cocaine;
 
 import java.net.SocketAddress;
-import java.util.Map;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
@@ -12,38 +12,29 @@ public class ServiceInfo {
 
     private final String name;
     private final SocketAddress endpoint;
-    private final Map<Integer, String> api;
+    private final ImmutableMap<String, Integer> api;
 
-    public ServiceInfo(String name, SocketAddress endpoint, Map<Integer, String> api) {
+    public ServiceInfo(String name, SocketAddress endpoint, ImmutableMap<String, Integer> api) {
         this.name = name;
         this.endpoint = endpoint;
         this.api = api;
+    }
+
+    public int getMethod(String method) {
+        Integer number = api.get(method);
+        if (number == null) {
+            throw new UnknownMethodException(name, method);
+        }
+        return number;
     }
 
     public SocketAddress getEndpoint() {
         return endpoint;
     }
 
-    public int getMethod(String method) {
-        for (Map.Entry<Integer, String> entry : api.entrySet()) {
-            if (entry.getValue().equals(method)) {
-                return entry.getKey();
-            }
-        }
-        throw new UnknownMethodException(name, method);
-    }
-
-    public Map<Integer, String> getApi() {
-        return api;
-    }
-
-    public String getName() {
-        return name;
-    }
-
     @Override
     public String toString() {
-        return "Endpoint: " + endpoint + "; Service API: { "
+        return "Service: " + name + "; Endpoint: " + endpoint + "; Service API: { "
                 + Joiner.on(", ").withKeyValueSeparator(": ").join(api) + " }";
     }
 }
