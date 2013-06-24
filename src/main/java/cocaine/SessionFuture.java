@@ -131,6 +131,10 @@ public class SessionFuture {
         return (int) (id ^ (id >>> 32));
     }
 
+    public static boolean isPoisonPill(byte[] chunk) {
+        return POISON_PILL == chunk;
+    }
+
     private void tryThrowException() {
         ServiceException exception = this.exception.get();
         if (exception != null) {
