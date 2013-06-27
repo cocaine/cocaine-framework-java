@@ -35,16 +35,30 @@ public class Service {
         return new Service(name, sessions, ConnectionHolder.create(name, bootstrap, sessions, infoSupplier));
     }
 
-    public SessionFuture invoke(String method, Object... args) {
+    public SyncServiceResponse invoke(String method, Object... args) {
         return invoke(method, Arrays.asList(args));
     }
 
-    public SessionFuture invoke(String method, List<Object> args) {
-        logger.debug("Invoking " + method + "(" + Joiner.on(", ").join(args) + ")");
+    public SyncServiceResponse invoke(String method, List<Object> args) {
+        logger.debug("Invoking " + method + "(" + Joiner.on(", ").join(args) + ") synchronously");
 
-        SessionFuture session = sessions.create();
+        SyncServiceSession session = sessions.createSync();
         int requestedMethod = connection.getServiceInfo().getMethod(method);
-        connection.write(new InvocationRequest(requestedMethod, session.getId(), args));
+        connection.write(new InvocationRequest(requestedMethod, session.getSession(), args));
+
+        return session;
+    }
+
+    public AsyncServiceResponse invokeAsync(String method, Object... args) {
+        return invokeAsync(method, Arrays.asList(args));
+    }
+
+    public AsyncServiceResponse invokeAsync(String method, List<Object> args) {
+        logger.debug("Invoking " + method + "(" + Joiner.on(", ").join(args) + ") asynchronously");
+
+        AsyncServiceSession session = sessions.createAsync();
+        int requestedMethod = connection.getServiceInfo().getMethod(method);
+        connection.write(new InvocationRequest(requestedMethod, session.getSession(), args));
 
         return session;
     }

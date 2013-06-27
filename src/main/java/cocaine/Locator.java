@@ -89,7 +89,7 @@ public final class Locator implements AutoCloseable {
     private ServiceInfo resolve(String name) {
         logger.info("Resolving service info for " + name);
         try {
-            SessionFuture result = service.invoke("resolve", name);
+            SyncServiceResponse result = service.invoke("resolve", name);
             return pack.read(result.next(), ServiceInfoTemplate.create(name));
         } catch (Exception e) {
             throw new LocatorResolveException(name, endpoint, e);

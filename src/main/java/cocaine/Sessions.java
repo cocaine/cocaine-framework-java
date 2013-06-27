@@ -15,7 +15,7 @@ public final class Sessions {
     private static final Logger logger = Logger.getLogger(Sessions.class);
 
     private final AtomicLong counter;
-    private final Map<Long, SessionFuture> sessions;
+    private final Map<Long, ServiceResponseHolder> sessions;
     private final String service;
 
     public Sessions(String service) {
@@ -24,15 +24,22 @@ public final class Sessions {
         this.sessions = new ConcurrentHashMap<>();
     }
 
-    public SessionFuture create() {
-        SessionFuture session = SessionFuture.create(counter.getAndIncrement(), service);
-        logger.debug("Creating new session: " + session);
-        sessions.put(session.getId(), session);
+    public AsyncServiceSession createAsync() {
+        AsyncServiceSession session = AsyncServiceSession.create(counter.getAndIncrement(), service);
+        logger.debug("Creating new asynchronous session: " + session);
+        sessions.put(session.getSession(), session);
+        return session;
+    }
+
+    public SyncServiceSession createSync() {
+        SyncServiceSession session = SyncServiceSession.create(counter.getAndIncrement(), service);
+        logger.debug("Creating new synchronous session: " + session);
+        sessions.put(session.getSession(), session);
         return session;
     }
 
     public void pushChunk(long id, byte[] chunk) {
-        SessionFuture session = sessions.get(id);
+        ServiceResponseHolder session = sessions.get(id);
         if (session != null) {
             logger.debug("Pushing new chunk " + Arrays.toString(chunk) + " to " + session);
             session.push(chunk);
@@ -42,7 +49,7 @@ public final class Sessions {
     }
 
     public void close(long id) {
-        SessionFuture session = sessions.get(id);
+        ServiceResponseHolder session = sessions.get(id);
         if (session != null) {
             logger.debug("Closing " + session);
             session.complete();
@@ -52,7 +59,7 @@ public final class Sessions {
     }
 
     public void error(long id, ServiceException exception) {
-        SessionFuture session = sessions.get(id);
+        ServiceResponseHolder session = sessions.get(id);
         if (session != null) {
             logger.debug("Setting exception " + exception.getMessage() + " for " + session);
             session.error(exception);
@@ -63,15 +70,15 @@ public final class Sessions {
 
     public void close() {
         logger.debug("Closing all sessions of " + service);
-        for (SessionFuture session : sessions.values()) {
+        for (ServiceResponseHolder session : sessions.values()) {
             session.complete();
         }
     }
 
     public void error(ServiceException exception) {
         logger.debug("Setting exception for all session of " + service);
-        for (SessionFuture session : sessions.values()) {
-            session.error(exception);
+        for (ServiceResponseHolder session : sessions.values()) {
+            session.complete(exception);
         }
     }
 }

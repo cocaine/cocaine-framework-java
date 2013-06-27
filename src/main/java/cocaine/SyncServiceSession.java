@@ -11,7 +11,7 @@ import com.google.common.collect.AbstractIterator;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class SessionFuture extends AbstractIterator<byte[]> {
+public class SyncServiceSession extends AbstractIterator<byte[]> implements SyncServiceResponse, ServiceResponseHolder {
 
     private static final byte[] POISON_PILL = new byte[0];
 
@@ -19,40 +19,54 @@ public class SessionFuture extends AbstractIterator<byte[]> {
     private final ReentrantLock takeLock = new ReentrantLock();
     private final Condition notEmpty = takeLock.newCondition();
     private final ReentrantLock putLock = new ReentrantLock();
-    private final AtomicReference<ServiceException> exception = new AtomicReference<>();
+    private final AtomicReference<RuntimeException> exception = new AtomicReference<>();
 
     private final String name;
-    private final long id;
+    private final long session;
 
     private Chunk head;
     private Chunk last;
 
-    private SessionFuture(long id, String name) {
+    private SyncServiceSession(long session, String name) {
         this.name = name;
-        this.id = id;
+        this.session = session;
         this.last = this.head = new Chunk();
     }
 
-    public static SessionFuture create(long id, String name) {
-        return new SessionFuture(id, name);
+    public static SyncServiceSession create(long id, String name) {
+        return new SyncServiceSession(id, name);
     }
 
-    public long getId() {
-        return id;
+    @Override
+    public long getSession() {
+        return session;
     }
 
-    public void error(ServiceException t) {
-        Preconditions.checkNotNull(exception, "Exception can not be null");
+    @Override
+    public String getServiceName() {
+        return name;
+    }
 
-        if (exception.compareAndSet(null, t)) {
+    @Override
+    public void error(RuntimeException exception) {
+        Preconditions.checkNotNull(this.exception, "Exception can not be null");
+
+        if (this.exception.compareAndSet(null, exception)) {
             signalNotEmpty();
         }
     }
 
+    @Override
     public void complete() {
         push(POISON_PILL);
     }
 
+    @Override
+    public void complete(RuntimeException exception) {
+        complete();
+    }
+
+    @Override
     public void push(byte[] data) {
         Preconditions.checkNotNull(data, "Chunk can not be null");
 
@@ -97,17 +111,17 @@ public class SessionFuture extends AbstractIterator<byte[]> {
 
     @Override
     public String toString() {
-        return "Session " + name + "/" + id;
+        return "Session " + name + "/" + session;
     }
 
     @Override
     public boolean equals(Object o) {
-        return this == o || o != null && getClass() == o.getClass() && id == SessionFuture.class.cast(o).id;
+        return this == o || o != null && getClass() == o.getClass() && session == SyncServiceSession.class.cast(o).session;
     }
 
     @Override
     public int hashCode() {
-        return (int) (id ^ (id >>> 32));
+        return (int) (session ^ (session >>> 32));
     }
 
     private static boolean isPoisonPill(byte[] chunk) {
@@ -115,7 +129,7 @@ public class SessionFuture extends AbstractIterator<byte[]> {
     }
 
     private void tryThrowException() {
-        ServiceException exception = this.exception.get();
+        RuntimeException exception = this.exception.get();
         if (exception != null) {
             throw exception;
         }
