@@ -28,9 +28,12 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
     private Chunk last;
 
     private SyncServiceSession(long session, String name) {
+        Preconditions.checkNotNull(name, "Service name can not be null");
+
         this.name = name;
         this.session = session;
-        this.last = this.head = new Chunk();
+        this.head = new Chunk();
+        this.last = this.head;
     }
 
     public static SyncServiceSession create(long id, String name) {
@@ -48,10 +51,10 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
     }
 
     @Override
-    public void error(RuntimeException exception) {
-        Preconditions.checkNotNull(this.exception, "Exception can not be null");
+    public void error(RuntimeException e) {
+        Preconditions.checkNotNull(exception, "Exception can not be null");
 
-        if (this.exception.compareAndSet(null, exception)) {
+        if (exception.compareAndSet(null, e)) {
             signalNotEmpty();
         }
     }
@@ -116,12 +119,22 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
 
     @Override
     public boolean equals(Object o) {
-        return this == o || o != null && getClass() == o.getClass() && session == SyncServiceSession.class.cast(o).session;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        SyncServiceSession that = (SyncServiceSession) o;
+        return session == that.session && name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return (int) (session ^ (session >>> 32));
+        int result = name.hashCode();
+        result = 31 * result + (int) (session ^ (session >>> 32));
+        return result;
     }
 
     private static boolean isPoisonPill(byte[] chunk) {
@@ -129,9 +142,9 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
     }
 
     private void tryThrowException() {
-        RuntimeException exception = this.exception.get();
-        if (exception != null) {
-            throw exception;
+        RuntimeException e = exception.get();
+        if (e != null) {
+            throw e;
         }
     }
 
@@ -145,7 +158,8 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
     }
 
     private void enqueue(Chunk node) {
-        last = last.next = node;
+        last.next = node;
+        last = last.next;
     }
 
     private byte[] dequeue() {

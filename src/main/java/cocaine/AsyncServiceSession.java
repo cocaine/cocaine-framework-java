@@ -6,7 +6,6 @@ import java.util.Queue;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Supplier;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
@@ -103,21 +102,18 @@ public class AsyncServiceSession implements AsyncServiceResponse, ServiceRespons
 
     @Override
     public void push(byte[] data) {
-        Preconditions.checkState(state.get() == State.RUNNING, "Pushing chunk to the closed session");
-
+        SettableFuture<byte[]> future;
         lock.lock();
         try {
-            SettableFuture<byte[]> future = outgoing.poll();
-            if (future != null) {
-                future.set(data);
-            } else {
+            future = outgoing.poll();
+            if (future == null) {
                 future = state.get().newFuture();
-                future.set(data);
                 incoming.add(future);
             }
         } finally {
             lock.unlock();
         }
+        future.set(data);
     }
 
     @Override
@@ -127,20 +123,20 @@ public class AsyncServiceSession implements AsyncServiceResponse, ServiceRespons
 
     @Override
     public ListenableFuture<byte[]> next() {
+        SettableFuture<byte[]> future;
         lock.lock();
         try {
-            SettableFuture<byte[]> future = incoming.poll();
-            if (future != null) {
-                return future;
+            future = incoming.poll();
+            if (future == null) {
+                future = state.get().newFuture();
+                if (state.get() == State.RUNNING) {
+                    outgoing.add(future);
+                }
             }
-            future = state.get().newFuture();
-            if (state.get() == State.RUNNING) {
-                outgoing.add(future);
-            }
-            return future;
         } finally {
             lock.unlock();
         }
+        return future;
     }
 
     @Override
@@ -164,6 +160,5 @@ public class AsyncServiceSession implements AsyncServiceResponse, ServiceRespons
         }
 
     }
-
 
 }
