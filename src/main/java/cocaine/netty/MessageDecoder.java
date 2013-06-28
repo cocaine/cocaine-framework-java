@@ -30,16 +30,11 @@ public class MessageDecoder extends ByteToMessageDecoder {
         logger.debug("Decoding message");
         in.markReaderIndex();
 
-        int available = in.readableBytes();
-        ByteBuffer buffer = ByteBuffer.allocate(available);
-        logger.debug("Reading " + available + " bytes");
-        in.readBytes(buffer);
-        buffer.position(0);
-
+        ByteBuffer buffer = in.nioBuffer();
         try {
             Message message = pack.read(buffer, MessageTemplate.getInstance());
             logger.debug("Message was successfully decoded: " + message);
-            in.readerIndex(in.readerIndex() - buffer.remaining());
+            in.readerIndex(in.readerIndex() + buffer.position());
             out.add(message);
         } catch (EOFException e) {
             logger.debug("Not enough bytes. Resetting reader index");
