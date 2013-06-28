@@ -38,7 +38,7 @@ public class ServiceMessageHandler extends ChannelInboundMessageHandlerAdapter<M
 
         switch (msg.getType()) {
             case CHUNK: {
-                ChunkMessage chunk = ChunkMessage.class.cast(msg);
+                ChunkMessage chunk = (ChunkMessage) msg;
                 sessions.pushChunk(session, chunk.getData());
                 break;
             }
@@ -47,7 +47,7 @@ public class ServiceMessageHandler extends ChannelInboundMessageHandlerAdapter<M
                 break;
             }
             case ERROR: {
-                ErrorMessage error = ErrorMessage.class.cast(msg);
+                ErrorMessage error = (ErrorMessage) msg;
                 sessions.error(session, new ServiceErrorException(service, error.getMessage(), error.getCode()));
                 break;
             }
