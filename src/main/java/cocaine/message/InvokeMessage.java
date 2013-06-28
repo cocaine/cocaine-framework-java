@@ -1,5 +1,7 @@
 package cocaine.message;
 
+import com.google.common.base.Preconditions;
+
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
@@ -8,7 +10,9 @@ public class InvokeMessage extends Message {
     private final String event;
 
     public InvokeMessage(long session, String event) {
-        super(Type.INVOKE, session);
+        super(MessageType.INVOKE, session);
+        Preconditions.checkNotNull(event, "Event can not be null");
+
         this.event = event;
     }
 
@@ -20,4 +24,28 @@ public class InvokeMessage extends Message {
     public String toString() {
         return "InvokeMessage/" + getSession() + ": " + event;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        InvokeMessage that = (InvokeMessage) o;
+        return event.equals(that.event);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + event.hashCode();
+        return result;
+    }
+
 }

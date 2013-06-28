@@ -1,50 +1,25 @@
 package cocaine.message;
 
-import java.util.UUID;
-
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
 public abstract class Message {
 
-    public static enum Type {
-        HANDSHAKE(0),
-        HEARTBEAT(1),
-        TERMINATE(2),
-        INVOKE(3),
-        CHUNK(4),
-        ERROR(5),
-        CHOKE(6);
+    private static final long SYSTEM_SESSION = 0L;
 
-        private final int value;
-
-        private Type(int value) {
-            this.value = value;
-        }
-
-        public int value() {
-            return value;
-        }
-
-        public static Type fromValue(int value) {
-            for (Type type : values()) {
-                if (type.value == value) {
-                    return type;
-                }
-            }
-            throw new IllegalArgumentException("Invalid MessageType: " + value);
-        }
-    }
-
-    private final Type type;
+    private final MessageType type;
     private final long session;
 
-    protected Message(Type type, long session) {
+    protected Message(MessageType type, long session) {
         this.type = type;
         this.session = session;
     }
 
-    public Type getType() {
+    protected Message(MessageType type) {
+        this(type, SYSTEM_SESSION);
+    }
+
+    public MessageType getType() {
         return type;
     }
 
@@ -52,32 +27,24 @@ public abstract class Message {
         return session;
     }
 
-    public static Message handshake(UUID id) {
-        return new HandshakeMessage(id);
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        Message message = (Message) o;
+        return session == message.session && type == message.type;
     }
 
-    public static Message heartbeat() {
-        return new HeartbeatMessage();
-    }
-
-    public static Message terminate(TerminateMessage.Reason reason, String message) {
-        return new TerminateMessage(reason, message);
-    }
-
-    public static Message invoke(long session, String event) {
-        return new InvokeMessage(session, event);
-    }
-
-    public static Message chunk(long session, byte[] data) {
-        return new ChunkMessage(session, data);
-    }
-
-    public static Message choke(long session) {
-        return new ChokeMessage(session);
-    }
-
-    public static Message error(long session, int code, String message) {
-        return new ErrorMessage(session, code, message);
+    @Override
+    public int hashCode() {
+        int result = type.hashCode();
+        result = 31 * result + (int) (session ^ (session >>> 32));
+        return result;
     }
 
 }

@@ -3,10 +3,10 @@ package cocaine.message;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class ChokeMessage extends Message {
+public final class ChokeMessage extends Message {
 
     public ChokeMessage(long session) {
-        super(Type.CHOKE, session);
+        super(MessageType.CHOKE, session);
     }
 
     @Override

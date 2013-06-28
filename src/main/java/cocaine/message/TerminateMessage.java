@@ -1,5 +1,7 @@
 package cocaine.message;
 
+import com.google.common.base.Preconditions;
+
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
@@ -33,7 +35,10 @@ public class TerminateMessage extends Message {
     private final String message;
 
     public TerminateMessage(Reason reason, String message) {
-        super(Type.TERMINATE, 0L);
+        super(MessageType.TERMINATE);
+        Preconditions.checkNotNull(reason, "Termination reason can not be null");
+        Preconditions.checkNotNull(message, "Message can not be null");
+
         this.reason = reason;
         this.message = message;
     }
@@ -50,4 +55,29 @@ public class TerminateMessage extends Message {
     public String toString() {
         return "TerminateMessage/" + getSession() + ": " + reason.name() + " - " + message;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        if (!super.equals(o)) {
+            return false;
+        }
+
+        TerminateMessage that = (TerminateMessage) o;
+        return message.equals(that.message) && reason == that.reason;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + reason.hashCode();
+        result = 31 * result + message.hashCode();
+        return result;
+    }
+
 }

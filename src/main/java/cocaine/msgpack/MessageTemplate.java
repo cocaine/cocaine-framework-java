@@ -8,6 +8,8 @@ import cocaine.message.ErrorMessage;
 import cocaine.message.HandshakeMessage;
 import cocaine.message.InvokeMessage;
 import cocaine.message.Message;
+import cocaine.message.MessageType;
+import cocaine.message.Messages;
 import cocaine.message.TerminateMessage;
 import org.msgpack.packer.Packer;
 import org.msgpack.template.AbstractTemplate;
@@ -35,14 +37,14 @@ public class MessageTemplate extends AbstractTemplate<Message> {
 
         switch (message.getType()) {
             case HANDSHAKE: {
-                HandshakeMessage handshakeMessage = HandshakeMessage.class.cast(message);
+                HandshakeMessage handshakeMessage = (HandshakeMessage) message;
                 packer.writeArrayBegin(1);
                 UUIDTemplate.getInstance().write(packer, handshakeMessage.getId());
                 packer.writeArrayEnd();
                 break;
             }
             case TERMINATE: {
-                TerminateMessage terminateMessage = TerminateMessage.class.cast(message);
+                TerminateMessage terminateMessage = (TerminateMessage) message;
                 packer.writeArrayBegin(2);
                 packer.write(terminateMessage.getReason().value());
                 packer.write(terminateMessage.getMessage());
@@ -50,21 +52,21 @@ public class MessageTemplate extends AbstractTemplate<Message> {
                 break;
             }
             case INVOKE: {
-                InvokeMessage invokeMessage = InvokeMessage.class.cast(message);
+                InvokeMessage invokeMessage = (InvokeMessage) message;
                 packer.writeArrayBegin(1);
                 packer.write(invokeMessage.getEvent());
                 packer.writeArrayEnd();
                 break;
             }
             case CHUNK: {
-                ChunkMessage chunkMessage = ChunkMessage.class.cast(message);
+                ChunkMessage chunkMessage = (ChunkMessage) message;
                 packer.writeArrayBegin(1);
                 packer.write(chunkMessage.getData());
                 packer.writeArrayEnd();
                 break;
             }
             case ERROR: {
-                ErrorMessage errorMessage = ErrorMessage.class.cast(message);
+                ErrorMessage errorMessage = (ErrorMessage) message;
                 packer.writeArrayBegin(2);
                 packer.write(errorMessage.getCode());
                 packer.write(errorMessage.getMessage());
@@ -87,44 +89,44 @@ public class MessageTemplate extends AbstractTemplate<Message> {
         Message result;
 
         unpacker.readArrayBegin();
-        Message.Type type = Message.Type.fromValue(unpacker.readInt());
+        MessageType type = MessageType.fromValue(unpacker.readInt());
         long session = unpacker.readLong();
 
         unpacker.readArrayBegin();
         switch (type) {
             case HANDSHAKE: {
                 UUID id = unpacker.read(UUIDTemplate.getInstance());
-                result = Message.handshake(id);
+                result = Messages.handshake(id);
                 break;
             }
             case HEARTBEAT: {
-                result = Message.heartbeat();
+                result = Messages.heartbeat();
                 break;
             }
             case TERMINATE: {
                 TerminateMessage.Reason reason = TerminateMessage.Reason.fromValue(unpacker.readInt());
                 String msg = unpacker.readString();
-                result = Message.terminate(reason, msg);
+                result = Messages.terminate(reason, msg);
                 break;
             }
             case INVOKE: {
                 String event = unpacker.readString();
-                result = Message.invoke(session, event);
+                result = Messages.invoke(session, event);
                 break;
             }
             case CHUNK: {
                 byte[] data = unpacker.readByteArray();
-                result = Message.chunk(session, data);
+                result = Messages.chunk(session, data);
                 break;
             }
             case ERROR: {
                 int code = unpacker.readInt();
                 String msg = unpacker.readString();
-                result = Message.error(session, code, msg);
+                result = Messages.error(session, code, msg);
                 break;
             }
             case CHOKE: {
-                result = Message.choke(session);
+                result = Messages.choke(session);
                 break;
             }
             default: {
