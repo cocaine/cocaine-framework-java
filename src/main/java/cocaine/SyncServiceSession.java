@@ -19,7 +19,7 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
     private final ReentrantLock takeLock = new ReentrantLock();
     private final Condition notEmpty = takeLock.newCondition();
     private final ReentrantLock putLock = new ReentrantLock();
-    private final AtomicReference<RuntimeException> exception = new AtomicReference<>();
+    private final AtomicReference<Exception> exception = new AtomicReference<>();
 
     private final String name;
     private final long session;
@@ -51,7 +51,7 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
     }
 
     @Override
-    public void error(RuntimeException e) {
+    public void error(Exception e) {
         Preconditions.checkNotNull(exception, "Exception can not be null");
 
         if (exception.compareAndSet(null, e)) {
@@ -65,7 +65,7 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
     }
 
     @Override
-    public void complete(RuntimeException exception) {
+    public void complete(Exception e) {
         complete();
     }
 
@@ -142,9 +142,9 @@ public class SyncServiceSession extends AbstractIterator<byte[]> implements Sync
     }
 
     private void tryThrowException() {
-        RuntimeException e = exception.get();
+        Throwable e = exception.get();
         if (e != null) {
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 

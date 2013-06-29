@@ -9,8 +9,8 @@ public interface ServiceResponseHolder {
 
     void complete();
 
-    void complete(RuntimeException throwable);
+    void complete(Exception exception);
 
-    void error(RuntimeException throwable);
+    void error(Exception exception);
 
 }
