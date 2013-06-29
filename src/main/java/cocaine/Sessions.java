@@ -44,7 +44,7 @@ public final class Sessions {
             logger.debug("Pushing new chunk " + Arrays.toString(chunk) + " to " + session);
             session.push(chunk);
         } else {
-            logger.warn("Attempt to push chunk to not opened session: " + id);
+            logger.warn("Attempt to push chunk to unopened session: " + id);
         }
     }
 
@@ -54,7 +54,7 @@ public final class Sessions {
             logger.debug("Closing " + session);
             session.complete();
         } else {
-            logger.warn("Attempt to close not opened session: " + id);
+            logger.warn("Attempt to close unopened session: " + id);
         }
     }
 
@@ -64,7 +64,7 @@ public final class Sessions {
             logger.debug("Setting exception " + exception.getMessage() + " for " + session);
             session.error(exception);
         } else {
-            logger.warn("Attempt to set exception for not opened session: " + id, exception);
+            logger.warn("Attempt to set exception for unopened session: " + id, exception);
         }
     }
 
