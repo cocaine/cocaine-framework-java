@@ -25,7 +25,7 @@ public abstract class BaseSerializer implements CocaineSerializer {
             if (parameterDescriptor == null) {
                 result = values[0];
             } else {
-                result = Collections.singletonMap(parameterDescriptor.value(), parameters[0]);
+                result = Collections.singletonMap(parameterDescriptor.value(), values[0]);
             }
         } else {
             Map<String, Object> map = Maps.newHashMap();
