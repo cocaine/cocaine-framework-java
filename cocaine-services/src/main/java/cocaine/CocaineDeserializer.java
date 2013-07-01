@@ -1,14 +1,13 @@
 package cocaine;
 
 import java.io.IOException;
-
-import com.google.common.reflect.TypeToken;
+import java.lang.reflect.Type;
 
 /**
  * @author Anton Bobukh <anton@bobukh.ru>
  */
 public interface CocaineDeserializer {
 
-    Object deserialize(byte[] bytes, TypeToken<?> type) throws IOException;
+    Object deserialize(byte[] bytes, Type type) throws IOException;
 
 }
