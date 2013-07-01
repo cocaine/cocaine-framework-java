@@ -11,7 +11,8 @@ public enum MessageType {
     INVOKE(3),
     CHUNK(4),
     ERROR(5),
-    CHOKE(6);
+    CHOKE(6),
+    ;
 
     private final int value;
 

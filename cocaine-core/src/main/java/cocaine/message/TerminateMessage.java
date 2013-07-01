@@ -9,8 +9,9 @@ public class TerminateMessage extends Message {
 
     public static enum Reason {
         NORMAL(1),
-        ABNORMAL(2)
+        ABNORMAL(2),
         ;
+
         private final int value;
 
         private Reason(int value) {
