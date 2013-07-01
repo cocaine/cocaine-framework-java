@@ -17,7 +17,7 @@ import cocaine.MessagePackSerializer;
 @Target(ElementType.METHOD)
 public @interface CocaineMethod {
 
-    String value();
+    String value() default "";
 
     Class<? extends CocaineSerializer> serializer() default MessagePackSerializer.class;
 
