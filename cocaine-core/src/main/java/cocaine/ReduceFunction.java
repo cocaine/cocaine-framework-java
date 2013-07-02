@@ -3,5 +3,8 @@ package cocaine;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public interface SyncServiceResponse extends ServiceResponse<byte[]> {
+interface ReduceFunction<V, R> {
+
+    V apply(V accumulator, R value);
+
 }

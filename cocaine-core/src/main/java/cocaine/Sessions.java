@@ -24,16 +24,9 @@ public final class Sessions {
         this.sessions = new ConcurrentHashMap<>();
     }
 
-    public AsyncServiceSession createAsync() {
-        AsyncServiceSession session = AsyncServiceSession.create(counter.getAndIncrement(), service);
+    public ServiceSession create() {
+        ServiceSession session = ServiceSession.create(counter.getAndIncrement(), service);
         logger.debug("Creating new asynchronous session: " + session);
-        sessions.put(session.getSession(), session);
-        return session;
-    }
-
-    public SyncServiceSession createSync() {
-        SyncServiceSession session = SyncServiceSession.create(counter.getAndIncrement(), service);
-        logger.debug("Creating new synchronous session: " + session);
         sessions.put(session.getSession(), session);
         return session;
     }

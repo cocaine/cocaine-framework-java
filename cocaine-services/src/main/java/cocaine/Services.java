@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -16,11 +15,8 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Iterators;
 import com.google.common.reflect.Invokable;
 import com.google.common.reflect.Parameter;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
@@ -103,24 +99,10 @@ public class Services {
 
             ResultInfo result = ResultInfo.fromType(invokable.getReturnType().getType());
 
-            if (result.isSync()) {
-                SyncServiceResponse invocationResult = service.invoke(method, arguments);
-                if (result.isSingle()) {
-                    return deserializer.deserialize(invocationResult.next(), result.getValueType());
-                } else {
-                    SyncTransformer transformer = new SyncTransformer(deserializer, result.getValueType());
-                    return Iterators.transform(invocationResult, transformer);
-                }
-            } else {
-                AsyncServiceResponse invocationResult = service.invokeAsync(method, arguments);
-                if (result.isSingle()) {
-                    SyncTransformer transformer = new SyncTransformer(deserializer, result.getValueType());
-                    return Futures.transform(invocationResult.next(), transformer);
-                } else {
-                    AsyncTransformer transformer = new AsyncTransformer(deserializer, result.getValueType());
-                    return Iterators.transform(invocationResult, transformer);
-                }
-            }
+            ServiceResponse<byte[]> invocationResult = service.invoke(method, arguments);
+            return result.isSingle()
+                    ? deserializer.deserialize(invocationResult.next(), result.getValueType())
+                    : invocationResult.map(new Transformer(deserializer, result.getValueType()));
         }
 
         protected abstract String getMethod(Method method);
@@ -173,21 +155,15 @@ public class Services {
     private static class ResultInfo {
 
         private final boolean single;
-        private final boolean sync;
         private final Type valueType;
 
-        private ResultInfo(boolean single, boolean sync, Type valueType) {
+        private ResultInfo(boolean single, Type valueType) {
             this.single = single;
-            this.sync = sync;
             this.valueType = valueType;
         }
 
         private boolean isSingle() {
             return single;
-        }
-
-        private boolean isSync() {
-            return sync;
         }
 
         private Type getValueType() {
@@ -197,31 +173,21 @@ public class Services {
         public static ResultInfo fromType(Type type) {
             if (type instanceof ParameterizedType) {
                 ParameterizedType parameterized = (ParameterizedType) type;
-                if (Iterator.class.isAssignableFrom((Class<?>) parameterized.getRawType())) {
-                    return fromType(parameterized.getActualTypeArguments()[0], false);
+                if (ServiceResponse.class.isAssignableFrom((Class<?>) parameterized.getRawType())) {
+                    return new ResultInfo(false, parameterized.getActualTypeArguments()[0]);
                 }
             }
-            return fromType(type, true);
-        }
-
-        private static ResultInfo fromType(Type type, boolean single) {
-            if (type instanceof ParameterizedType) {
-                ParameterizedType parameterized = (ParameterizedType) type;
-                if (ListenableFuture.class.isAssignableFrom((Class<?>) parameterized.getRawType())) {
-                    return new ResultInfo(single, false, parameterized.getActualTypeArguments()[0]);
-                }
-            }
-            return new ResultInfo(single, true, type);
+            return new ResultInfo(true, type);
         }
 
     }
 
-    private static class SyncTransformer implements Function<byte[], Object> {
+    private static class Transformer implements Function<byte[], Object> {
 
         private final CocaineDeserializer deserializer;
         private final Type type;
 
-        private SyncTransformer(CocaineDeserializer deserializer, Type type) {
+        private Transformer(CocaineDeserializer deserializer, Type type) {
             this.deserializer = deserializer;
             this.type = type;
         }
@@ -233,22 +199,6 @@ public class Services {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-    }
-
-    private static class AsyncTransformer implements Function<ListenableFuture<byte[]>, ListenableFuture<Object>> {
-
-        private final CocaineDeserializer deserializer;
-        private final Type type;
-
-        private AsyncTransformer(CocaineDeserializer deserializer, Type type) {
-            this.deserializer = deserializer;
-            this.type = type;
-        }
-
-        @Override
-        public ListenableFuture<Object> apply(ListenableFuture<byte[]> bytes) {
-            return Futures.transform(bytes, new SyncTransformer(deserializer, type));
         }
     }
 

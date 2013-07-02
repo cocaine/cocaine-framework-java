@@ -6,45 +6,28 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.google.common.base.Preconditions;
 import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.SettableFuture;
 
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class AsyncServiceSession implements AsyncServiceResponse, ServiceResponseHolder {
+public class ServiceSession extends BaseServiceResponse<byte[]> implements ServiceResponseHolder {
 
     private static final NoSuchElementException completedException =
-            new NoSuchElementException("All response chunks have already been read");
+            new NoSuchElementException("All chunks have already been read");
 
     private final AtomicReference<Exception> exception = new AtomicReference<>();
     private final Queue<SettableFuture<byte[]>> outgoing = new ConcurrentLinkedQueue<>();
     private final Queue<SettableFuture<byte[]>> incoming = new ConcurrentLinkedQueue<>();
     private final AtomicInteger counter = new AtomicInteger(0);
 
-    private final String name;
-    private final long session;
-
-    private AsyncServiceSession(long session, String name) {
-        Preconditions.checkNotNull(name, "Service name can not be null");
-
-        this.name = name;
-        this.session = session;
+    private ServiceSession(long session, String name) {
+        super(name, session);
     }
 
-    public static AsyncServiceSession create(long session, String service) {
-        return new AsyncServiceSession(session, service);
-    }
-
-    @Override
-    public String getServiceName() {
-        return name;
-    }
-
-    @Override
-    public long getSession() {
-        return session;
+    public static ServiceSession create(long session, String service) {
+        return new ServiceSession(session, service);
     }
 
     @Override
@@ -67,7 +50,6 @@ public class AsyncServiceSession implements AsyncServiceResponse, ServiceRespons
         if (counter.getAndIncrement() < 0) {
             future = outgoing.poll();
             while (future == null) {
-                Thread.yield();
                 future = outgoing.poll();
             }
         } else {
@@ -83,7 +65,6 @@ public class AsyncServiceSession implements AsyncServiceResponse, ServiceRespons
         if (counter.getAndIncrement() < 0) {
             future = outgoing.poll();
             while (future == null) {
-                Thread.yield();
                 future = outgoing.poll();
             }
         } else {
@@ -94,34 +75,22 @@ public class AsyncServiceSession implements AsyncServiceResponse, ServiceRespons
     }
 
     @Override
-    public boolean hasNext() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public ListenableFuture<byte[]> next() {
+    public ListenableFuture<byte[]> poll() {
         SettableFuture<byte[]> future;
         if (counter.getAndDecrement() > 0) {
             future = incoming.poll();
             while (future == null) {
-                Thread.yield();
                 future = incoming.poll();
             }
         } else {
             future = SettableFuture.create();
             Throwable throwable = exception.get();
-            if (throwable == null) {
-                outgoing.offer(future);
-            } else {
+            if (throwable != null) {
                 future.setException(throwable);
             }
+            outgoing.offer(future);
         }
         return future;
-    }
-
-    @Override
-    public void remove() {
-        throw new UnsupportedOperationException();
     }
 
 }
