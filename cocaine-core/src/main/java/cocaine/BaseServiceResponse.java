@@ -1,7 +1,9 @@
 package cocaine;
 
+import java.util.ArrayDeque;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Queue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
@@ -20,6 +22,9 @@ import com.google.common.util.concurrent.SettableFuture;
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
 public abstract class BaseServiceResponse<T> implements ServiceResponse<T> {
+
+    protected static final NoSuchElementException completedException =
+            new NoSuchElementException("All chunks have already been read");
 
     private final String name;
     private final long session;
@@ -83,13 +88,30 @@ public abstract class BaseServiceResponse<T> implements ServiceResponse<T> {
     }
 
     @Override
-    public <V> ServiceResponse<V> map(Function<T, V> mapper) {
-        return new MappingServiceResponse<>(mapper, this);
+    public <V> ServiceResponse<V> map(final Function<T, V> mapper) {
+        return new BaseServiceResponse<V>(name, session) {
+            @Override
+            public ListenableFuture<V> poll() {
+                return Futures.transform(BaseServiceResponse.this.poll(), mapper);
+            }
+        };
     }
 
     @Override
     public ServiceResponse<T> take(int count) {
-        return new TakingServiceResponse<>(count, this);
+        final ListenableFuture<T> stopElement = Futures.immediateFailedFuture(completedException);
+        final Queue<ListenableFuture<T>> elements = new ArrayDeque<>(count);
+        for (int i = 0; i < count; i++) {
+            elements.add(poll());
+        }
+
+        return new BaseServiceResponse<T>(name, session) {
+            @Override
+            public ListenableFuture<T> poll() {
+                ListenableFuture<T> result = elements.poll();
+                return result == null ? stopElement : result;
+            }
+        };
     }
 
     @Override
