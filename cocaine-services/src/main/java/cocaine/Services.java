@@ -138,7 +138,7 @@ public class Services {
 
         @Override
         protected String getMethod(Method method) {
-            return "invoke";
+            return "enqueue";
         }
 
         @Override

@@ -1,4 +1,4 @@
-package cocaine.services;
+package cocaine;
 
 import java.util.List;
 
@@ -13,6 +13,9 @@ public interface Node {
 
     @CocaineMethod("info")
     NodeInfo info();
+
+    @CocaineMethod("info")
+    ServiceResponse<NodeInfo> asyncInfo();
 
     @CocaineMethod("start_app")
     void startApps(Runlist runlist);

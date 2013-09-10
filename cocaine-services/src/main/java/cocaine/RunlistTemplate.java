@@ -1,4 +1,4 @@
-package cocaine.services;
+package cocaine;
 
 import java.io.IOException;
 import java.util.Map;

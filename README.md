@@ -1,53 +1,27 @@
 Cocaine framework java
 ===============
 
-Building
-====================
-
-Prerequisites
-====================
-To build cocaine-framework-java you'll need
-
-* ant
-
-generating artifacts
-====================
-
-
-cd to cocaine-framework-java directory
-and run `ant`
-
-Output
-====================
-in cocaine-framework-java
-
-* ./target/jars/cocaine-framework-java.jar
-* ./target/jars/cocaine-framework-java-sources.jar
-
 Usage example
 ====================
 
 ```java
 package example;
 
-import java.util.Iterator;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-import cocaine.AsyncServiceResponse;
+import cocaine.AsyncCallback;
+import cocaine.Callback;
 import cocaine.Locator;
+import cocaine.ReduceFunctions;
 import cocaine.Service;
-
+import cocaine.ServiceResponse;
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Iterators;
-import com.google.common.util.concurrent.AsyncFunction;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.FutureFallback;
 import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 import org.apache.log4j.Logger;
-import org.msgpack.MessagePack;
-import org.msgpack.template.Template;
-import org.msgpack.template.Templates;
 
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
@@ -56,110 +30,67 @@ public class Example {
 
     private static final Logger logger = Logger.getLogger(Example.class);
 
-    public static class MessagePackUnpacker<T> implements AsyncFunction<byte[], T> {
+    public static void main(String[] args) throws Exception {
+        final Executor executor = Executors.newFixedThreadPool(2);
 
-        private final MessagePack messagePack;
-        private final Template<T> template;
-
-        public MessagePackUnpacker(Template<T> template) {
-            this.messagePack = new MessagePack();
-            this.template = template;
-        }
-
-        @Override
-        public ListenableFuture<T> apply(byte[] input) throws Exception {
-            T result = input == null ? null : messagePack.read(input, template);
-            return Futures.immediateFuture(result);
-        }
-    }
-
-    public static class LoggerCallback<T> implements FutureCallback<T> {
-
-        @Override
-        public void onSuccess(T result) {
-            logger.info(result);
-        }
-
-        @Override
-        public void onFailure(Throwable throwable) {
-            logger.error(throwable.getMessage(), throwable);
-        }
-
-    }
-
-    public static class Unpack<F, T>
-            implements Function<ListenableFuture<F>, ListenableFuture<T>>
-    {
-
-        private final AsyncFunction<F, T> transformer;
-
-        public Unpack(AsyncFunction<F, T> transformer) {
-            this.transformer = transformer;
-        }
-
-        @Override
-        public ListenableFuture<T> apply(ListenableFuture<F> input) {
-            return Futures.transform(input, transformer);
-        }
-    }
-
-    public static class WithFallback<T>
-            implements Function<ListenableFuture<T>, ListenableFuture<T>>
-    {
-
-        private final FutureFallback<T> fallback;
-
-        public WithFallback(FutureFallback<T> fallback) {
-            this.fallback = fallback;
-        }
-
-        @Override
-        public ListenableFuture<T> apply(ListenableFuture<T> input) {
-            return Futures.withFallback(input, fallback);
-        }
-    }
-
-    public static class NullFallback<T> implements FutureFallback<T> {
-
-        @Override
-        public ListenableFuture<T> create(Throwable throwable) throws Exception {
-            logger.error(throwable.getMessage(), throwable);
-            return Futures.immediateFuture(null);
-        }
-    }
-
-    public static void main(String[] args) {
         try (Locator locator = Locator.create()) {
 
             Service node = locator.service("echo");
-            AsyncServiceResponse response = node.invokeAsync("echo");
+            ServiceResponse<byte[]> response = node.invoke("invoke", 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
 
-            final Iterator<ListenableFuture<byte[]>> responseWithFallback = Iterators.transform(
-                    response,
-                    new WithFallback<>(new NullFallback<byte[]>())
-            );
+            ListenableFuture<Long> result = response.map(new Function<byte[], String>() {
 
-            final Iterator<ListenableFuture<String>> responseAsStrings = Iterators.transform(
-                    responseWithFallback,
-                    new Unpack<>(new MessagePackUnpacker<>(Templates.TString))
-            );
-
-            Futures.addCallback(responseAsStrings.next(), new FutureCallback<String>() {
                 @Override
-                public void onSuccess(String result) {
-                    Futures.addCallback(responseAsStrings.next(), new LoggerCallback<String>());
+                public String apply(byte[] bytes) {
+                    return new String(bytes, Charsets.UTF_8);
+                }
 
-                    Preconditions.checkNotNull(result, "First chunk is null");
-                    logger.info(result);
+            }).then(new AsyncCallback<String, Long>() {
+
+                @Override
+                public ListenableFuture<Long> onSuccess(String value, ServiceResponse<String> response)
+                        throws Exception
+                {
+                    logger.info(value);
+
+                    response.then(new Callback<String, Void>() {
+                        @Override
+                        public Void onSuccess(String value, ServiceResponse<String> response) throws Exception {
+                            logger.info(value);
+                            return null;
+                        }
+
+                        @Override
+                        public Void onFailure(Throwable throwable, ServiceResponse<String> response) throws Throwable {
+                            logger.error(throwable.getMessage());
+                            return null;
+                        }
+                    });
+
+                    return response.map(new Function<String, Long>() {
+                        @Override
+                        public Long apply(String value) {
+                            return Long.valueOf(value);
+                        }
+                    }).reduce(0L, ReduceFunctions.adder(), executor);
                 }
 
                 @Override
-                public void onFailure(Throwable throwable) {
-                    logger.error(throwable.getMessage(), throwable);
+                public ListenableFuture<Long> onFailure(Throwable throwable, ServiceResponse<String> response)
+                        throws Throwable
+                {
+                    if (throwable instanceof NoSuchElementException) {
+                        return Futures.immediateFuture(0L);
+                    }
+                    throw throwable;
                 }
-            });
+
+            }, executor);
+
+            logger.info(result.get());
 
         }
     }
+
 }
 ```

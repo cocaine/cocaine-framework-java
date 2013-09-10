@@ -20,13 +20,13 @@ public class ReduceFunctions {
         }
     }
 
-    public static ReduceFunction<Integer, Integer> adder() {
+    public static ReduceFunction<Long, Long> adder() {
         return new Adder();
     }
 
-    private static class Adder implements ReduceFunction<Integer, Integer> {
+    private static class Adder implements ReduceFunction<Long, Long> {
         @Override
-        public Integer apply(Integer accumulator, Integer value) {
+        public Long apply(Long accumulator, Long value) {
             return accumulator + value;
         }
     }

@@ -1,4 +1,4 @@
-package cocaine.services;
+package cocaine;
 
 import java.util.HashMap;
 import java.util.Map;
