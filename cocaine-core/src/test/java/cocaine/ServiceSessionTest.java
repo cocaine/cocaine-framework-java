@@ -53,10 +53,10 @@ public class ServiceSessionTest {
 
         executor.execute(new Pusher(session));
 
-        ListenableFuture<Integer> result = session.map(new ToString()).then(new AsyncCallback<String, Integer>() {
+        ListenableFuture<Long> result = session.map(new ToString()).then(new AsyncCallback<String, Long>() {
 
             @Override
-            public ListenableFuture<Integer> onSuccess(String value, ServiceResponse<String> response)
+            public ListenableFuture<Long> onSuccess(String value, ServiceResponse<String> response)
                     throws Exception {
                 System.out.println(value);
 
@@ -74,19 +74,19 @@ public class ServiceSessionTest {
                     }
                 });
 
-                return response.map(new Function<String, Integer>() {
+                return response.map(new Function<String, Long>() {
                     @Override
-                    public Integer apply(String value) {
-                        return Integer.valueOf(value);
+                    public Long apply(String value) {
+                        return Long.valueOf(value);
                     }
-                }).reduce(0, ReduceFunctions.adder(), executor);
+                }).reduce(0L, ReduceFunctions.adder(), executor);
             }
 
             @Override
-            public ListenableFuture<Integer> onFailure(Throwable throwable, ServiceResponse<String> response)
+            public ListenableFuture<Long> onFailure(Throwable throwable, ServiceResponse<String> response)
                     throws Throwable {
                 if (throwable instanceof NoSuchElementException) {
-                    return Futures.immediateFuture(0);
+                    return Futures.immediateFuture(0L);
                 }
                 throw throwable;
             }
@@ -104,12 +104,12 @@ public class ServiceSessionTest {
 
         executor.execute(new Pusher(session));
 
-        ServiceResponse<Integer> ints = session.map(new ToString()).map(new ParseInt());
+        ServiceResponse<Long> ints = session.map(new ToString()).map(new ParseLong());
 
-        ListenableFuture<Integer> one = ints.take(10).reduce(0, ReduceFunctions.adder());
-        ListenableFuture<Integer> two = ints.take(10).reduce(0, ReduceFunctions.adder());
-        ListenableFuture<Integer> three = ints.take(10).reduce(0, ReduceFunctions.adder());
-        ListenableFuture<Integer> four = ints.reduce(0, ReduceFunctions.adder());
+        ListenableFuture<Long> one = ints.take(10).reduce(0L, ReduceFunctions.adder());
+        ListenableFuture<Long> two = ints.take(10).reduce(0L, ReduceFunctions.adder());
+        ListenableFuture<Long> three = ints.take(10).reduce(0L, ReduceFunctions.adder());
+        ListenableFuture<Long> four = ints.reduce(0L, ReduceFunctions.adder());
 
         System.out.println(one.get());
         System.out.println(two.get());
@@ -117,10 +117,10 @@ public class ServiceSessionTest {
         System.out.println(four.get());
     }
 
-    private static class ParseInt implements Function<String, Integer> {
+    private static class ParseLong implements Function<String, Long> {
         @Override
-        public Integer apply(String value) {
-            return Integer.valueOf(value);
+        public Long apply(String value) {
+            return Long.valueOf(value);
         }
     }
 
