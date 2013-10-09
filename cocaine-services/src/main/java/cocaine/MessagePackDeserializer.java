@@ -20,9 +20,10 @@ public class MessagePackDeserializer implements CocaineDeserializer {
         this.messagePack = messagePack;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Object deserialize(byte[] bytes, Type type) throws IOException {
-        Template<?> template = messagePack.lookup(type);
+    public <T> T deserialize(byte[] bytes, Type type) throws IOException {
+        Template<T> template = (Template<T>) messagePack.lookup(type);
         return messagePack.read(bytes, template);
     }
 

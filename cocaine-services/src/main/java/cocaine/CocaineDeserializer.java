@@ -8,6 +8,6 @@ import java.lang.reflect.Type;
  */
 public interface CocaineDeserializer {
 
-    Object deserialize(byte[] bytes, Type type) throws IOException;
+    <T> T deserialize(byte[] bytes, Type type) throws IOException;
 
 }

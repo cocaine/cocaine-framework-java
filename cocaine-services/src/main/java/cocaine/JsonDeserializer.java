@@ -21,7 +21,7 @@ public class JsonDeserializer implements CocaineDeserializer {
     }
 
     @Override
-    public Object deserialize(byte[] bytes, Type type) throws IOException {
+    public <T> T deserialize(byte[] bytes, Type type) throws IOException {
         return gson.fromJson(new String(bytes, Charsets.UTF_8), type);
     }
 
