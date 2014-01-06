@@ -5,15 +5,13 @@ import com.google.common.base.Preconditions;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class InvokeMessage extends Message {
+public final class InvokeMessage extends Message {
 
     private final String event;
 
     public InvokeMessage(long session, String event) {
         super(MessageType.INVOKE, session);
-        Preconditions.checkNotNull(event, "Event can not be null");
-
-        this.event = event;
+        this.event = Preconditions.checkNotNull(event, "Event can not be null");
     }
 
     public String getEvent() {

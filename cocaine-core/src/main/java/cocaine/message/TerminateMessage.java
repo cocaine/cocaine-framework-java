@@ -1,16 +1,25 @@
 package cocaine.message;
 
+import java.util.Arrays;
+import java.util.Map;
+
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class TerminateMessage extends Message {
+public final class TerminateMessage extends Message {
 
     public static enum Reason {
+
         NORMAL(1),
         ABNORMAL(2),
         ;
+
+        private static final Map<Integer, Reason> mapping =
+                Maps.uniqueIndex(Arrays.asList(Reason.values()), Reason.valueF());
 
         private final int value;
 
@@ -23,12 +32,20 @@ public class TerminateMessage extends Message {
         }
 
         public static Reason fromValue(int value) {
-            for (Reason reason : values()) {
-                if (reason.value == value) {
-                    return reason;
-                }
+            Reason result = mapping.get(value);
+            if (result == null) {
+                throw new IllegalArgumentException("Reason " + value + " does not exist");
             }
-            throw new IllegalArgumentException("Invalid Reason: " + value);
+            return result;
+        }
+
+        public static Function<Reason, Integer> valueF() {
+            return new Function<Reason, Integer>() {
+                @Override
+                public Integer apply(Reason reason) {
+                    return reason.value();
+                }
+            };
         }
     }
 
@@ -37,11 +54,8 @@ public class TerminateMessage extends Message {
 
     public TerminateMessage(Reason reason, String message) {
         super(MessageType.TERMINATE);
-        Preconditions.checkNotNull(reason, "Termination reason can not be null");
-        Preconditions.checkNotNull(message, "Message can not be null");
-
-        this.reason = reason;
-        this.message = message;
+        this.reason = Preconditions.checkNotNull(reason, "Termination reason can not be null");
+        this.message = Preconditions.checkNotNull(message, "Message can not be null");
     }
 
     public Reason getReason() {

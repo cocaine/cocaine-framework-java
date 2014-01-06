@@ -5,7 +5,7 @@ import java.util.UUID;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class Messages {
+public final class Messages {
 
     public static Message handshake(UUID id) {
         return new HandshakeMessage(id);
@@ -34,4 +34,6 @@ public class Messages {
     public static Message error(long session, int code, String message) {
         return new ErrorMessage(session, code, message);
     }
+
+    private Messages() { }
 }

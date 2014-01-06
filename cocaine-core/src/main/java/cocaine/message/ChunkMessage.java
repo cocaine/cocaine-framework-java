@@ -7,7 +7,7 @@ import com.google.common.base.Preconditions;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class ChunkMessage extends Message {
+public final class ChunkMessage extends Message {
 
     private final byte[] data;
 

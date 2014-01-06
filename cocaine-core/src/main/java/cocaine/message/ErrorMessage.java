@@ -5,17 +5,15 @@ import com.google.common.base.Preconditions;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class ErrorMessage extends Message {
+public final class ErrorMessage extends Message {
 
     private final int code;
     private final String message;
 
     public ErrorMessage(long session, int code, String message) {
         super(MessageType.ERROR, session);
-        Preconditions.checkNotNull(message, "Error message can not be null");
-
         this.code = code;
-        this.message = message;
+        this.message = Preconditions.checkNotNull(message, "Error message can not be null");;
     }
 
     public int getCode() {

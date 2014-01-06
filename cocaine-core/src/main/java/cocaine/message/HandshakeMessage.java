@@ -7,15 +7,13 @@ import com.google.common.base.Preconditions;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class HandshakeMessage extends Message {
+public final class HandshakeMessage extends Message {
 
     private final UUID id;
 
     public HandshakeMessage(UUID id) {
         super(MessageType.HANDSHAKE);
-        Preconditions.checkNotNull(id, "ID can not be null");
-
-        this.id = id;
+        this.id = Preconditions.checkNotNull(id, "ID can not be null");
     }
 
     public UUID getId() {
