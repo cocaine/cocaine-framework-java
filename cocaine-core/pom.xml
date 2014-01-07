@@ -54,6 +54,11 @@
             <artifactId>msgpack</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.netflix.rxjava</groupId>
+            <artifactId>rxjava-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

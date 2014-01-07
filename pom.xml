@@ -114,6 +114,12 @@
                 <version>0.6.7</version>
                 <scope>compile</scope>
             </dependency>
+            <dependency>
+                <groupId>com.netflix.rxjava</groupId>
+                <artifactId>rxjava-core</artifactId>
+                <version>0.15.1</version>
+                <scope>compile</scope>
+            </dependency>
 
             <dependency>
                 <groupId>junit</groupId>

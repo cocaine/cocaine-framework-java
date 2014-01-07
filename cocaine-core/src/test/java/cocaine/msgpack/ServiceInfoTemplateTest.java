@@ -31,6 +31,6 @@ public class ServiceInfoTemplateTest {
         ServiceInfo result = pack.read(bytes, ServiceInfoTemplate.create(service));
 
         Assert.assertEquals(endpoint, result.getEndpoint());
-        Assert.assertEquals(0, result.getMethod("invoke"));
+        Assert.assertEquals(0, result.getApi().getMethod("invoke"));
     }
 }

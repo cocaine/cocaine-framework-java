@@ -12,14 +12,13 @@ import cocaine.netty.MessageEncoder;
 import cocaine.netty.MessagePackableEncoder;
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableMap;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.aio.AioEventLoopGroup;
-import io.netty.channel.socket.aio.AioSocketChannel;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
 import org.apache.log4j.Logger;
 import org.msgpack.MessagePack;
 
@@ -30,24 +29,22 @@ public final class Locator implements AutoCloseable {
 
     private static final SocketAddress localhost = new InetSocketAddress("localhost", 10053);
     private static final Logger logger = Logger.getLogger(Locator.class);
-    private static final MessagePack pack = new MessagePack();
 
-    static {
-        pack.register(Message.class, MessageTemplate.getInstance());
-    }
-
+    private final SocketAddress endpoint;
     private final EventLoopGroup eventLoop;
+    private final MessagePack pack;
     private final Bootstrap bootstrap;
     private final Service service;
-    private final SocketAddress endpoint;
 
     private Locator(SocketAddress endpoint) {
         this.endpoint = endpoint;
-        this.eventLoop = new AioEventLoopGroup();
+        this.eventLoop = new NioEventLoopGroup();
+        this.pack = new MessagePack();
+        this.pack.register(Message.class, MessageTemplate.getInstance());
         this.bootstrap = new Bootstrap()
                 .group(eventLoop)
 
-                .channel(AioSocketChannel.class)
+                .channel(NioSocketChannel.class)
 
                 .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, (int) TimeUnit.SECONDS.toMillis(4))
                 .option(ChannelOption.TCP_NODELAY, true)
@@ -62,8 +59,8 @@ public final class Locator implements AutoCloseable {
                     }
                 });
 
-        ServiceInfo locator = new ServiceInfo("locator", endpoint, ImmutableMap.of("resolve", 0));
-        this.service = Service.create("locator", bootstrap, Suppliers.ofInstance(locator));
+        ServiceApi locator = ServiceApi.of("locator", "resolve", 0);
+        this.service = Service.create("locator", bootstrap, Suppliers.ofInstance(endpoint), locator);
     }
 
     public static Locator create() {
@@ -75,9 +72,14 @@ public final class Locator implements AutoCloseable {
         return new Locator(endpoint);
     }
 
-    public Service service(String name) {
+    public Service service(final String name) {
         logger.info("Creating service " + name);
-        return Service.create(name, bootstrap, new ServiceInfoSupplier(name));
+        return Service.create(name, bootstrap, new Supplier<SocketAddress>() {
+            @Override
+            public SocketAddress get() {
+                return resolve(name).getEndpoint();
+            }
+        }, resolve(name).getApi());
     }
 
     @Override
@@ -89,24 +91,10 @@ public final class Locator implements AutoCloseable {
     private ServiceInfo resolve(String name) {
         logger.info("Resolving service info for " + name);
         try {
-            ServiceResponse<byte[]> result = service.invoke("resolve", name);
-            return pack.read(result.next(), ServiceInfoTemplate.create(name));
+            byte[] result = service.invoke("resolve", name).toBlockingObservable().single();
+            return pack.read(result, ServiceInfoTemplate.create(name));
         } catch (Exception e) {
             throw new LocatorResolveException(name, endpoint, e);
-        }
-    }
-
-    private class ServiceInfoSupplier implements Supplier<ServiceInfo> {
-
-        private final String name;
-
-        private ServiceInfoSupplier(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public ServiceInfo get() {
-            return resolve(name);
         }
     }
 
