@@ -83,7 +83,7 @@
             <dependency>
                 <groupId>io.netty</groupId>
                 <artifactId>netty-all</artifactId>
-                <version>4.0.0.CR2</version>
+                <version>4.0.13.Final</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>

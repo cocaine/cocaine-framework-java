@@ -2,6 +2,7 @@ package cocaine.netty;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelPromise;
 import io.netty.handler.codec.MessageToByteEncoder;
 import org.apache.log4j.Logger;
 import org.msgpack.MessagePack;
@@ -22,15 +23,15 @@ public class MessagePackableEncoder extends MessageToByteEncoder<MessagePackable
     }
 
     @Override
-    protected void encode(ChannelHandlerContext ctx, MessagePackable msg, ByteBuf out) throws Exception {
-        logger.debug("Encoding packable: " + msg);
-        out.writeBytes(pack.write(msg));
+    public void write(ChannelHandlerContext ctx, Object msg, ChannelPromise promise) throws Exception {
+        super.write(ctx, msg, promise);
+        ctx.flush();
     }
 
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
-        logger.error(cause.getMessage(), cause);
-        ctx.fireExceptionCaught(cause);
+    protected void encode(ChannelHandlerContext ctx, MessagePackable msg, ByteBuf out) throws Exception {
+        logger.debug("Encoding message packable: " + msg);
+        out.writeBytes(pack.write(msg));
     }
 
 }
