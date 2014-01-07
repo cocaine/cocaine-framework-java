@@ -1,96 +1,49 @@
-Cocaine framework java
-===============
+# Cocaine Framework Java
 
-Usage example
-====================
+## Packages
+ * Cocaine Core
+ * Cocaine Services
 
-```java
-package example;
+## Building Cocaine Framework Java with Maven
 
-import java.util.NoSuchElementException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+### What you’ll need
+ * Latest stable [Oracle JDK 7](http://www.oracle.com/technetwork/java "Oracle JDK 7")
+ * Latest stable [Apache Maven](http://maven.apache.org "Apache Maven")
 
-import cocaine.AsyncCallback;
-import cocaine.Callback;
-import cocaine.Locator;
-import cocaine.ReduceFunctions;
-import cocaine.Service;
-import cocaine.ServiceResponse;
-import com.google.common.base.Charsets;
-import com.google.common.base.Function;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
-import org.apache.log4j.Logger;
+### Build Java code
+You can execute several build lifecycle goals with Maven, including goals to compile the project’s code,
+ create a library package (such as a JAR file), install the library in the local Maven dependency repository
+  and pack sources.
 
-/**
- * @author Anton Bobukh <abobukh@yandex-team.ru>
- */
-public class Example {
+To try out the build, issue the following at the command line:
 
-    private static final Logger logger = Logger.getLogger(Example.class);
+    mvn compile
 
-    public static void main(String[] args) throws Exception {
-        final Executor executor = Executors.newFixedThreadPool(2);
+This will run Maven, telling it to execute the compile goal. When it’s finished, you should find
+ the compiled .class files in the <artifactId>/target/classes directory.
 
-        try (Locator locator = Locator.create()) {
+Since it’s unlikely that you’ll want to distribute or work with .class files directly,
+ you’ll probably want to run the package goal instead:
 
-            Service node = locator.service("echo");
-            ServiceResponse<byte[]> response = node.invoke("invoke", 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+    mvn package
 
-            ListenableFuture<Long> result = response.map(new Function<byte[], String>() {
+The package goal will compile your Java code, run any tests, and finish by packaging the code up
+ in a JAR file within the target directory. The name of the JAR file will be based on the project’s <version>.
+  For example, the JAR files will be named cocaine-core-0.10.5-1.jar and cocaine-services-0.10.5-1.jar.
 
-                @Override
-                public String apply(byte[] bytes) {
-                    return new String(bytes, Charsets.UTF_8);
-                }
+Maven also maintains a repository of dependencies on your local machine (usually in a ~/.m2/repository directory)
+ for quick access to project dependencies. If you’d like to install JAR files to that local repository,
+  then you should invoke the install goal:
 
-            }).then(new AsyncCallback<String, Long>() {
+    mvn install
 
-                @Override
-                public ListenableFuture<Long> onSuccess(String value, ServiceResponse<String> response)
-                        throws Exception
-                {
-                    logger.info(value);
+The install goal will compile, test, and package code and then copy it into the local dependency repository,
+ ready for another project to reference it as a dependency.
 
-                    response.then(new Callback<String, Void>() {
-                        @Override
-                        public Void onSuccess(String value, ServiceResponse<String> response) throws Exception {
-                            logger.info(value);
-                            return null;
-                        }
+You can also run the source:jar goal:
 
-                        @Override
-                        public Void onFailure(Throwable throwable, ServiceResponse<String> response) throws Throwable {
-                            logger.error(throwable.getMessage());
-                            return null;
-                        }
-                    });
+    mvn source:jar
 
-                    return response.map(new Function<String, Long>() {
-                        @Override
-                        public Long apply(String value) {
-                            return Long.valueOf(value);
-                        }
-                    }).reduce(0L, ReduceFunctions.adder(), executor);
-                }
-
-                @Override
-                public ListenableFuture<Long> onFailure(Throwable throwable, ServiceResponse<String> response)
-                        throws Throwable
-                {
-                    if (throwable instanceof NoSuchElementException) {
-                        return Futures.immediateFuture(0L);
-                    }
-                    throw throwable;
-                }
-
-            }, executor);
-
-            logger.info(result.get());
-
-        }
-    }
-
-}
-```
+The source:jar goal will package the sources up in a JAR file within the target directory.
+ The name of the JAR file will be based on the project’s <version>.
+  For example, the JAR file will be named cocaine-core-0.10.5-1-sources.jar and cocaine-services-0.10.5-1-sources.jar.
