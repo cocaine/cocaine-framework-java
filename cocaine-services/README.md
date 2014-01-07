@@ -1,4 +1,4 @@
-# Cocaine Core
+# Cocaine Services
 
 ## Usage Example
 

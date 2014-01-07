@@ -12,7 +12,7 @@
 
     <groupId>ru.yandex.cocaine</groupId>
     <artifactId>cocaine-framework-java</artifactId>
-    <version>0.10.5-1</version>
+    <version>0.10.5-2</version>
     <packaging>pom</packaging>
 
     <name>Cocaine-Framework-Java</name>
