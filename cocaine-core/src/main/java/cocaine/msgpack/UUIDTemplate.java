@@ -11,7 +11,7 @@ import org.msgpack.unpacker.Unpacker;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class UUIDTemplate extends AbstractTemplate<UUID> {
+public final class UUIDTemplate extends AbstractTemplate<UUID> {
 
     private static final UUIDTemplate instance = new UUIDTemplate();
 

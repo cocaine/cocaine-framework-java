@@ -19,7 +19,7 @@ import org.msgpack.unpacker.Unpacker;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class MessageTemplate extends AbstractTemplate<Message> {
+public final class MessageTemplate extends AbstractTemplate<Message> {
 
     private static final Template<Message> instance = new MessageTemplate();
 

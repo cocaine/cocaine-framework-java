@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Map;
 
+import cocaine.ServiceApi;
 import cocaine.ServiceInfo;
 import com.google.common.collect.ImmutableBiMap;
 import org.msgpack.packer.Packer;
@@ -29,7 +30,8 @@ public class ServiceInfoTemplate extends AbstractTemplate<ServiceInfo> {
 
     @Override
     public void write(Packer packer, ServiceInfo service, boolean required) throws IOException {
-        throw new UnsupportedOperationException("Writing ServiceInfo is not supported");
+        throw new UnsupportedOperationException(ServiceInfo.class.getSimpleName()
+                + " can not be encoded by " + ServiceInfoTemplate.class.getSimpleName());
     }
 
     @Override
@@ -40,7 +42,7 @@ public class ServiceInfoTemplate extends AbstractTemplate<ServiceInfo> {
         Map<Integer, String> api = unpacker.read(Templates.tMap(Templates.TInteger, Templates.TString));
         unpacker.readArrayEnd();
 
-        return new ServiceInfo(name, endpoint, ImmutableBiMap.copyOf(api).inverse());
+        return new ServiceInfo(name, endpoint, ServiceApi.of(name, ImmutableBiMap.copyOf(api).inverse()));
     }
 
 }

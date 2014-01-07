@@ -12,7 +12,7 @@ import org.msgpack.unpacker.Unpacker;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class SocketAddressTemplate extends AbstractTemplate<SocketAddress> {
+public final class SocketAddressTemplate extends AbstractTemplate<SocketAddress> {
 
     private static final Template<SocketAddress> instance = new SocketAddressTemplate();
 
@@ -25,7 +25,8 @@ public class SocketAddressTemplate extends AbstractTemplate<SocketAddress> {
     @Override
     public void write(Packer packer, SocketAddress endpoint, boolean required) throws IOException {
         if (!InetSocketAddress.class.isAssignableFrom(endpoint.getClass())) {
-            throw new IllegalArgumentException("Can only pack InetSocketAddress");
+            throw new IllegalArgumentException(endpoint.getClass().getSimpleName()
+                    + " can not be encoded by " + SocketAddressTemplate.class.getSimpleName());
         }
 
         InetSocketAddress inetEndpoint = (InetSocketAddress) endpoint;
