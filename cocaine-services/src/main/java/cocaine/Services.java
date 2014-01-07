@@ -11,15 +11,18 @@ import javax.inject.Inject;
 
 import cocaine.annotations.CocaineMethod;
 import cocaine.annotations.CocaineService;
-import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.Invokable;
 import com.google.common.reflect.Parameter;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
+import org.msgpack.MessagePack;
+import rx.Observable;
+import rx.util.functions.Func1;
 
 /**
  * @author Anton Bobukh <anton@bobukh.ru>
@@ -34,6 +37,13 @@ public class Services {
     public Services(List<CocaineSerializer> serializers, List<CocaineDeserializer> deserializers, Locator locator) {
         this.serializers = serializers;
         this.deserializers = deserializers;
+        this.locator = locator;
+    }
+
+    public Services(Locator locator) {
+        MessagePack pack = new MessagePack();
+        this.serializers = ImmutableList.<CocaineSerializer>of(new MessagePackSerializer(pack));
+        this.deserializers = ImmutableList.<CocaineDeserializer>of(new MessagePackDeserializer(pack));
         this.locator = locator;
     }
 
@@ -99,9 +109,9 @@ public class Services {
 
             ResultInfo result = ResultInfo.fromType(invokable.getReturnType().getType());
 
-            ServiceResponse<byte[]> invocationResult = service.invoke(method, arguments);
+            Observable<byte[]> invocationResult = service.invoke(method, arguments);
             return result.isSingle()
-                    ? deserializer.deserialize(invocationResult.next(), result.getValueType())
+                    ? deserializer.deserialize(invocationResult.toBlockingObservable().single(), result.getValueType())
                     : invocationResult.map(new Transformer(deserializer, result.getValueType()));
         }
 
@@ -173,7 +183,7 @@ public class Services {
         public static ResultInfo fromType(Type type) {
             if (type instanceof ParameterizedType) {
                 ParameterizedType parameterized = (ParameterizedType) type;
-                if (ServiceResponse.class.isAssignableFrom((Class<?>) parameterized.getRawType())) {
+                if (Observable.class.isAssignableFrom((Class<?>) parameterized.getRawType())) {
                     return new ResultInfo(false, parameterized.getActualTypeArguments()[0]);
                 }
             }
@@ -182,7 +192,7 @@ public class Services {
 
     }
 
-    private static class Transformer implements Function<byte[], Object> {
+    private static class Transformer implements Func1<byte[], Object> {
 
         private final CocaineDeserializer deserializer;
         private final Type type;
@@ -193,7 +203,7 @@ public class Services {
         }
 
         @Override
-        public Object apply(byte[] bytes) {
+        public Object call(byte[] bytes) {
             try {
                 return deserializer.deserialize(bytes, type);
             } catch (IOException e) {
