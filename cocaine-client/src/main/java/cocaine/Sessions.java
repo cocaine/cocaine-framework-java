@@ -19,7 +19,7 @@ public final class Sessions {
     private static final Logger logger = Logger.getLogger(Sessions.class);
 
     private final AtomicLong counter;
-    private final Map<Long, Observer<byte[]>> sessions;
+    private final Map<Long, Session> sessions;
     private final String service;
 
     public Sessions(String service) {
@@ -33,35 +33,36 @@ public final class Sessions {
         Subject<byte[], byte[]> subject = ReplaySubject.create();
 
         logger.debug("Creating new session: " + id);
-        sessions.put(id, subject);
-        return new Session(id, subject);
+        Session session = new Session(id, subject);
+        sessions.put(id, session);
+        return session;
     }
 
     public void onChunk(long id, byte[] chunk) {
-        Observer<byte[]> session = sessions.get(id);
+        Session session = sessions.get(id);
         if (session != null) {
             logger.debug("Pushing new chunk " + Arrays.toString(chunk) + " to session " + id);
-            session.onNext(chunk);
+            session.input.onNext(chunk);
         } else {
             logger.warn("Session " + id + " does not exist");
         }
     }
 
     public void onCompleted(long id) {
-        Observer<byte[]> session = sessions.remove(id);
+        Session session = sessions.remove(id);
         if (session != null) {
             logger.debug("Closing session " + id);
-            session.onCompleted();
+            session.input.onCompleted();
         } else {
             logger.warn("Session " + id + " does not exist");
         }
     }
 
     public void onError(long id, ServiceException exception) {
-        Observer<byte[]> session = sessions.remove(id);
+        Session session = sessions.remove(id);
         if (session != null) {
             logger.debug("Setting error " + exception.getMessage() + " for session " + id);
-            session.onError(exception);
+            session.input.onError(exception);
         } else {
             logger.warn("Session " + id + " does not exist");
         }
@@ -84,19 +85,19 @@ public final class Sessions {
     public static final class Session {
 
         private final long id;
-        private final Observable<byte[]> observable;
+        private final Subject<byte[], byte[]> input;
 
-        private Session(long id, Observable<byte[]> observable) {
+        private Session(long id, Subject<byte[], byte[]> input) {
             this.id = id;
-            this.observable = observable;
+            this.input = input;
         }
 
         public long getId() {
             return id;
         }
 
-        public Observable<byte[]> getObservable() {
-            return observable;
+        public Observable<byte[]> getInput() {
+            return input;
         }
     }
 }

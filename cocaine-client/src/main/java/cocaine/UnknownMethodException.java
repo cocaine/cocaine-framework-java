@@ -5,8 +5,8 @@ package cocaine;
  */
 public class UnknownMethodException extends ServiceException {
 
-    public UnknownMethodException(String serviceName, String method) {
-        super(serviceName, "Unknown service method: " + method);
+    public UnknownMethodException(String service, String method) {
+        super(service, "Unknown service method: " + method);
     }
 
 }

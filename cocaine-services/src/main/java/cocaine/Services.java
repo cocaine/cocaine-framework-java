@@ -22,7 +22,7 @@ import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
 import org.msgpack.MessagePack;
 import rx.Observable;
-import rx.util.functions.Func1;
+import rx.functions.Func1;
 
 /**
  * @author Anton Bobukh <anton@bobukh.ru>
@@ -111,7 +111,7 @@ public class Services {
 
             Observable<byte[]> invocationResult = service.invoke(method, arguments);
             return result.isSingle()
-                    ? deserializer.deserialize(invocationResult.toBlockingObservable().single(), result.getValueType())
+                    ? deserializer.deserialize(invocationResult.toBlocking().single(), result.getValueType())
                     : invocationResult.map(new Transformer(deserializer, result.getValueType()));
         }
 

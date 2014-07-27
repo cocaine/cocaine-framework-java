@@ -7,13 +7,25 @@ import com.google.common.base.Preconditions;
  */
 public final class ErrorMessage extends Message {
 
+    public static final class Code {
+
+        // No handler for requested event
+        public static final int ENOHANDLER = 200;
+        // Invocation failed
+        public static final int EINVFAILED = 212;
+        // Service is disconnected
+        public static final int ESRVDISCON = 220;
+
+        private Code() { }
+    }
+
     private final int code;
     private final String message;
 
     public ErrorMessage(long session, int code, String message) {
         super(MessageType.ERROR, session);
         this.code = code;
-        this.message = Preconditions.checkNotNull(message, "Error message can not be null");;
+        this.message = Preconditions.checkNotNull(message, "Error message can not be null");
     }
 
     public int getCode() {

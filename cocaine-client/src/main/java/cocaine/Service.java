@@ -54,7 +54,7 @@ public class Service {
         int requestedMethod = api.getMethod(method);
         channel.write(new InvocationRequest(requestedMethod, session.getId(), args));
 
-        return session.getObservable();
+        return session.getInput();
     }
 
     @Override
