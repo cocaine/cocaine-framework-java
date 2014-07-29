@@ -55,11 +55,8 @@ public class Worker implements AutoCloseable {
 
     public void run() throws IOException {
         this.socket = new UnixDomainSocketClient(options.getEndpoint(), JUDS.SOCK_STREAM);
-        this.heartbeats.scheduleAtFixedRate(new Heartbeat(), 0, options.getHeartbeatTimeout());
-
         this.sendHandShake();
-        this.sendHeartbeat();
-
+        this.heartbeats.scheduleAtFixedRate(new Heartbeat(), 0, options.getHeartbeatTimeout());
         this.dispatcher.start();
     }
 

@@ -25,6 +25,9 @@ public class WorkerOptions {
     @Parameter(names = "--endpoint", description = "Unix Domain Socket")
     private String endpoint;
 
+    @Parameter(names = "--locator")
+    private String locator;
+
     @Parameter(names = "--help", help = true)
     private boolean help;
 
@@ -46,6 +49,10 @@ public class WorkerOptions {
 
     public String getEndpoint() {
         return endpoint;
+    }
+
+    public String getLocator() {
+        return locator;
     }
 
     @Override
