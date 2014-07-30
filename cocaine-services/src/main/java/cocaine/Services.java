@@ -13,6 +13,7 @@ import cocaine.annotations.CocaineMethod;
 import cocaine.annotations.CocaineService;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicates;
+import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.Invokable;
@@ -28,6 +29,16 @@ import rx.functions.Func1;
  * @author Anton Bobukh <anton@bobukh.ru>
  */
 public class Services {
+
+    private static final Method close;
+
+    static {
+        try {
+            close = AutoCloseable.class.getMethod("close");
+        } catch (NoSuchMethodException e) {
+            throw Throwables.propagate(e);
+        }
+    }
 
     private final List<CocaineSerializer> serializers;
     private final List<CocaineDeserializer> deserializers;
@@ -47,12 +58,12 @@ public class Services {
         this.locator = locator;
     }
 
-    public <T> T service(Class<T> type) {
+    public <T extends AutoCloseable> T service(Class<T> type) {
         Service service = locator.service(getServiceName(type));
         return create(type, new ServiceMethodHandler(service));
     }
 
-    public <T> T app(Class<T> type) {
+    public <T extends AutoCloseable> T app(Class<T> type) {
         Service service = locator.service(getServiceName(type));
         return create(type, new AppServiceMethodHandler(service));
     }
@@ -64,7 +75,7 @@ public class Services {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> T create(Class<T> type, MethodHandler handler) {
+    private static <T extends AutoCloseable> T create(Class<T> type, MethodHandler handler) {
         Preconditions.checkArgument(type.isInterface(), "Service must be described with interface");
         try {
             ProxyObject instance = createType(type).newInstance();
@@ -76,7 +87,7 @@ public class Services {
     }
 
     @SuppressWarnings("unchecked")
-    private static <T> Class<? extends ProxyObject> createType(Class<T> type) {
+    private static <T extends AutoCloseable> Class<? extends ProxyObject> createType(Class<T> type) {
         ProxyFactory factory = new ProxyFactory();
         factory.setInterfaces(new Class[] { type });
         return factory.createClass();
@@ -94,6 +105,9 @@ public class Services {
         public Object invoke(Object self, Method thisMethod, Method proceed, Object[] args) throws Throwable {
             if (isToString(thisMethod)) {
                 return service.toString();
+            } else if (thisMethod.equals(close)) {
+                service.close();
+                return null;
             }
 
             CocaineMethod methodDescriptor = Preconditions.checkNotNull(thisMethod.getAnnotation(CocaineMethod.class),
