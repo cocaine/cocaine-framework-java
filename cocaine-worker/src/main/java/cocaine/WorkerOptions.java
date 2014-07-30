@@ -10,22 +10,27 @@ import com.beust.jcommander.Parameter;
  */
 public class WorkerOptions {
 
+    private static final Names names = Names.create("names.txt");
+
     @Parameter(names = {"-d", "--disown-timeout"}, description = "Disown timeout in millis")
     private int disownTimeout = 5_000;
 
     @Parameter(names = {"-h", "--heartbeat-timeout"}, description = "Heartbeat timeout in millis")
     private int heartbeatTimeout = 20_000;
 
-    @Parameter(names = "--app")
+    @Parameter(names = "--app", required = true)
     private String application;
 
-    @Parameter(names = "--uuid", converter = UUIDConverter.class)
+    @Parameter(names = "--uuid", required = true, converter = UUIDConverter.class)
     private UUID uuid;
 
-    @Parameter(names = "--endpoint", description = "Unix Domain Socket")
+    @Parameter(names = "--name", description = "Worker Name")
+    private String name = names.randomName();
+
+    @Parameter(names = "--endpoint", description = "Unix Domain Socket", required = true)
     private String endpoint;
 
-    @Parameter(names = "--locator")
+    @Parameter(names = "--locator", required = true)
     private String locator;
 
     @Parameter(names = "--help", help = true)
@@ -45,6 +50,10 @@ public class WorkerOptions {
 
     public UUID getUuid() {
         return uuid;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getEndpoint() {

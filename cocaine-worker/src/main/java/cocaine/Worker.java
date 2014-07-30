@@ -48,8 +48,8 @@ public class Worker implements AutoCloseable {
         this.options = options;
         this.handlers = handlers;
         this.sessions = new WorkerSessions(this);
-        this.heartbeats = new Timer("Worker Heartbeats", true);
-        this.disowns = new Timer("Worker Disown", true);
+        this.heartbeats = new Timer(getThreadName("Worker Heartbeats"), true);
+        this.disowns = new Timer(getThreadName("Worker Disown"), true);
         this.dispatcher = new Dispatcher();
     }
 
@@ -198,6 +198,10 @@ public class Worker implements AutoCloseable {
         }
     }
 
+    private String getThreadName(String name) {
+        return String.format("[%s] [%s] %s", options.getName(), options.getUuid(), name);
+    }
+
     private final class Heartbeat extends TimerTask {
 
         @Override
@@ -220,7 +224,7 @@ public class Worker implements AutoCloseable {
     private final class Dispatcher extends Thread {
 
         public Dispatcher() {
-            super("Worker Dispatcher");
+            super(Worker.this.getThreadName("Worker Dispatcher"));
         }
 
         @Override
