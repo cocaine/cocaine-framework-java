@@ -33,9 +33,6 @@ public class WorkerOptions {
     @Parameter(names = "--locator", required = true)
     private String locator;
 
-    @Parameter(names = "--help", help = true)
-    private boolean help;
-
     public int getDisownTimeout() {
         return disownTimeout;
     }
