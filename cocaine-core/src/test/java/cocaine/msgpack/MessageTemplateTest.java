@@ -1,7 +1,6 @@
 package cocaine.msgpack;
 
 import java.io.IOException;
-import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.UUID;
@@ -24,7 +23,6 @@ public class MessageTemplateTest {
     @Before
     public void setUp() {
         this.pack = new MessagePack();
-        this.pack.register(SocketAddress.class, SocketAddressTemplate.getInstance());
         this.pack.register(UUID.class, UUIDTemplate.getInstance());
     }
 

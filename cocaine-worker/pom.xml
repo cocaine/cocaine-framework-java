@@ -9,12 +9,16 @@
     </parent>
 
     <groupId>ru.yandex.cocaine</groupId>
-    <artifactId>cocaine-services</artifactId>
+    <artifactId>cocaine-worker</artifactId>
     <version>0.11.1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>Cocaine-Services</name>
-    <description>Service binding utils for Cocaine Application Engine.</description>
+    <name>Cocaine-Worker</name>
+    <description>Worker for Cocaine Application Engine.</description>
+
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
 
     <properties>
         <test.include>*Test.java</test.include>
@@ -23,16 +27,8 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>cocaine-client</artifactId>
+            <artifactId>cocaine-core</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -51,8 +47,12 @@
             <artifactId>rxjava-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
+            <groupId>com.beust</groupId>
+            <artifactId>jcommander</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>uk.co.caprica</groupId>
+            <artifactId>juds</artifactId>
         </dependency>
 
         <dependency>
@@ -61,8 +61,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.skyscreamer</groupId>
-            <artifactId>jsonassert</artifactId>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>

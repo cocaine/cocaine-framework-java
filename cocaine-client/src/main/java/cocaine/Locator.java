@@ -91,7 +91,7 @@ public final class Locator implements AutoCloseable {
     private ServiceInfo resolve(String name) {
         logger.info("Resolving service info for " + name);
         try {
-            byte[] result = service.invoke("resolve", name).toBlockingObservable().single();
+            byte[] result = service.invoke("resolve", name).toBlocking().single();
             return pack.read(result, ServiceInfoTemplate.create(name));
         } catch (Exception e) {
             throw new LocatorResolveException(name, endpoint, e);

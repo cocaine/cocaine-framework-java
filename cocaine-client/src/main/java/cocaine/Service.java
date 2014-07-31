@@ -5,6 +5,7 @@ import java.net.SocketAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import cocaine.netty.ServiceMessageHandler;
 import com.google.common.base.Joiner;
@@ -22,7 +23,7 @@ import rx.Observable;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class Service {
+public class Service implements AutoCloseable {
 
     private static final Logger logger = Logger.getLogger(Service.class);
 
@@ -30,12 +31,14 @@ public class Service {
     private final ServiceApi api;
     private final Sessions sessions;
 
+    private AtomicBoolean closed;
     private Channel channel;
 
     private Service(String name, ServiceApi api, Bootstrap bootstrap, Supplier<SocketAddress> endpoint) {
         this.name = name;
         this.sessions = new Sessions(name);
         this.api = api;
+        this.closed = new AtomicBoolean(false);
         connect(bootstrap, endpoint, new ServiceMessageHandler(name, sessions));
     }
 
@@ -54,7 +57,14 @@ public class Service {
         int requestedMethod = api.getMethod(method);
         channel.write(new InvocationRequest(requestedMethod, session.getId(), args));
 
-        return session.getObservable();
+        return session.getInput();
+    }
+
+    @Override
+    public void close() throws Exception {
+        if (closed.compareAndSet(false, true)) {
+            channel.close();
+        }
     }
 
     @Override
@@ -70,11 +80,11 @@ public class Service {
             channel.pipeline().addLast(handler);
             channel.closeFuture().addListener(new ChannelFutureListener() {
                 @Override
-                public void operationComplete(ChannelFuture future) throws Exception {
+                public void operationComplete(final ChannelFuture future) throws Exception {
                     future.channel().eventLoop().schedule(new Runnable() {
                         @Override
                         public void run() {
-                            if (!bootstrap.group().isShuttingDown()) {
+                            if (!closed.get() && !bootstrap.group().isShuttingDown()) {
                                 connect(bootstrap, endpoint, handler);
                             }
                         }

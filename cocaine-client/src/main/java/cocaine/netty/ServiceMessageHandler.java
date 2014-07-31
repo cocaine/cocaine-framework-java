@@ -6,6 +6,7 @@ import cocaine.UnexpectedMessageException;
 import cocaine.message.ChunkMessage;
 import cocaine.message.ErrorMessage;
 import cocaine.message.Message;
+import cocaine.message.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;

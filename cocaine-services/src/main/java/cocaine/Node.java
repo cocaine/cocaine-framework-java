@@ -9,7 +9,7 @@ import cocaine.annotations.CocaineService;
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
 @CocaineService("node")
-public interface Node {
+public interface Node extends AutoCloseable {
 
     @CocaineMethod("info")
     NodeInfo info();

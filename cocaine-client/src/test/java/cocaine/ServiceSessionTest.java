@@ -1,9 +1,5 @@
 package cocaine;
 
-import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-
 import com.google.common.base.Charsets;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Iterables;
@@ -11,12 +7,16 @@ import org.junit.Ignore;
 import org.junit.Test;
 import rx.Observable;
 import rx.Observer;
+import rx.functions.Action1;
+import rx.functions.Func1;
+import rx.functions.Func2;
 import rx.subjects.PublishSubject;
 import rx.subjects.ReplaySubject;
 import rx.subjects.Subject;
-import rx.util.functions.Action1;
-import rx.util.functions.Func1;
-import rx.util.functions.Func2;
+
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
@@ -33,9 +33,8 @@ public class ServiceSessionTest {
 
         Observable<List<String>> result = subject.map(new ToString()).toList();
 
-        System.out.println(Iterables.toString(result.toBlockingObservable().single()));
+        System.out.println(Iterables.toString(result.toBlocking().single()));
     }
-
 
     @Ignore
     @Test
@@ -47,7 +46,7 @@ public class ServiceSessionTest {
 
         final StringBuilder builder = new StringBuilder();
         subject.map(new ToString()).take(10)
-                .toBlockingObservable().forEach(new Action1<String>() {
+                .toBlocking().forEach(new Action1<String>() {
                     @Override
                     public void call(String value) {
                         builder.append(value).append("\n");
@@ -108,7 +107,7 @@ public class ServiceSessionTest {
             }
         });
 
-        System.out.println(result.toBlockingObservable().single());
+        System.out.println(result.toBlocking().single());
     }
 
     private static class ParseLong implements Func1<String, Long> {
