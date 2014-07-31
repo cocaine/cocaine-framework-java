@@ -18,6 +18,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.reflect.Invokable;
 import com.google.common.reflect.Parameter;
+import com.google.common.reflect.TypeToken;
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyFactory;
 import javassist.util.proxy.ProxyObject;
@@ -95,6 +96,7 @@ public class Services {
 
     private abstract class CocaineMethodHandler implements MethodHandler {
 
+        private final TypeToken<Observable<byte[]>> raw = new TypeToken<Observable<byte[]>>(){};
         private final Service service;
 
         protected CocaineMethodHandler(Service service) {
@@ -121,9 +123,15 @@ public class Services {
             String method = getMethod(thisMethod);
             List<Object> arguments = getArgs(thisMethod, parameters, args);
 
+            Observable<byte[]> invocationResult = service.invoke(method, arguments);
+            if (methodDescriptor.raw()) {
+                Preconditions.checkState(raw.equals(TypeToken.of(invokable.getReturnType().getType())),
+                        "Raw methods must return Observable<byte[]>");
+                return invocationResult;
+            }
+
             ResultInfo result = ResultInfo.fromType(invokable.getReturnType().getType());
 
-            Observable<byte[]> invocationResult = service.invoke(method, arguments);
             return result.isSingle()
                     ? deserializer.deserialize(invocationResult.toBlocking().single(), result.getValueType())
                     : invocationResult.map(new Transformer(deserializer, result.getValueType()));

@@ -23,4 +23,6 @@ public @interface CocaineMethod {
 
     Class<? extends CocaineDeserializer> deserializer() default MessagePackDeserializer.class;
 
+    boolean raw() default false;
+
 }

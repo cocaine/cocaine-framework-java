@@ -106,7 +106,7 @@ public class Worker implements AutoCloseable {
                 break;
             default:
                 logger.warn("Unexpected message type: " + msg.getType());
-                throw new UnexpectedMessageException(options.getApplication(), msg);
+                throw new UnexpectedClientMessageException(options.getApplication(), msg);
         }
     }
 

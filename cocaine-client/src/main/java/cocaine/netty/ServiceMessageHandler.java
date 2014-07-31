@@ -2,11 +2,10 @@ package cocaine.netty;
 
 import cocaine.ServiceErrorException;
 import cocaine.Sessions;
-import cocaine.UnexpectedMessageException;
+import cocaine.UnexpectedServiceMessageException;
 import cocaine.message.ChunkMessage;
 import cocaine.message.ErrorMessage;
 import cocaine.message.Message;
-import cocaine.message.MessageType;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import org.apache.log4j.Logger;
@@ -49,7 +48,7 @@ public class ServiceMessageHandler extends ChannelInboundHandlerAdapter {
                 break;
             }
             default: {
-                sessions.onError(session, new UnexpectedMessageException(service, message));
+                sessions.onError(session, new UnexpectedServiceMessageException(service, message));
                 break;
             }
         }

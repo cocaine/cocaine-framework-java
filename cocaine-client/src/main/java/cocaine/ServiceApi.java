@@ -27,7 +27,7 @@ public class ServiceApi {
     public int getMethod(String method) {
         Integer number = api.get(method);
         if (number == null) {
-            throw new UnknownMethodException(name, method);
+            throw new UnknownServiceMethodException(name, method);
         }
         return number;
     }

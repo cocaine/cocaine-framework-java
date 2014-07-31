@@ -3,9 +3,9 @@ package cocaine;
 /**
  * @author Anton Bobukh <abobukh@yandex-team.ru>
  */
-public class UnknownMethodException extends ServiceException {
+public class UnknownServiceMethodException extends ServiceException {
 
-    public UnknownMethodException(String service, String method) {
+    public UnknownServiceMethodException(String service, String method) {
         super(service, "Unknown service method: " + method);
     }
 
