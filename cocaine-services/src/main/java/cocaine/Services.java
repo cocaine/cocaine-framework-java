@@ -53,7 +53,10 @@ public class Services {
     }
 
     public Services(Locator locator) {
-        MessagePack pack = new MessagePack();
+        this(locator, new MessagePack());
+    }
+
+    public Services(Locator locator, MessagePack pack) {
         this.serializers = ImmutableList.<CocaineSerializer>of(new MessagePackSerializer(pack));
         this.deserializers = ImmutableList.<CocaineDeserializer>of(new MessagePackDeserializer(pack));
         this.locator = locator;
