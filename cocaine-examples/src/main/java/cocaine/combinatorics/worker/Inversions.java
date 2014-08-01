@@ -25,8 +25,8 @@ public class Inversions implements EventHandler {
     }
 
     @Override
-    public void handle(Observable<byte[]> input, final Observer<byte[]> output) throws Exception {
-        input.map(new Func1<byte[], int[]>() {
+    public void handle(Observable<byte[]> request, final Observer<byte[]> response) throws Exception {
+        request.map(new Func1<byte[], int[]>() {
             @Override
             public int[] call(byte[] bytes) {
                 return MessagePackUtils.read(messagePack, bytes, int[].class);
@@ -34,7 +34,7 @@ public class Inversions implements EventHandler {
         }).finallyDo(new Action0() {
             @Override
             public void call() {
-                output.onCompleted();
+                response.onCompleted();
             }
         }).subscribe(new Observer<int[]>() {
             @Override
@@ -49,7 +49,7 @@ public class Inversions implements EventHandler {
 
             @Override
             public void onNext(int[] value) {
-                output.onNext(MessagePackUtils.write(messagePack, inversions(value)));
+                response.onNext(MessagePackUtils.write(messagePack, inversions(value)));
             }
         });
     }

@@ -71,8 +71,8 @@ public final class Runner {
         }
 
         @Override
-        public void handle(Observable<byte[]> in, Observer<byte[]> out) throws Exception {
-            method.invoke(container, in, out);
+        public void handle(Observable<byte[]> request, Observer<byte[]> response) throws Exception {
+            method.invoke(container, request, response);
         }
 
     }

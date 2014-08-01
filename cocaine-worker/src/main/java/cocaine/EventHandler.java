@@ -8,6 +8,6 @@ import rx.Observer;
  */
 public interface EventHandler {
 
-    void handle(Observable<byte[]> in, Observer<byte[]> out) throws Exception;
+    void handle(Observable<byte[]> request, Observer<byte[]> response) throws Exception;
 
 }

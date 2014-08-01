@@ -26,8 +26,8 @@ public class Sequences implements EventHandler {
     }
 
     @Override
-    public void handle(Observable<byte[]> input, final Observer<byte[]> output) throws Exception {
-        input.map(new Func1<byte[], Value[]>() {
+    public void handle(Observable<byte[]> request, final Observer<byte[]> response) throws Exception {
+        request.map(new Func1<byte[], Value[]>() {
             @Override
             public Value[] call(byte[] bytes) {
                 return MessagePackUtils.read(messagePack, bytes);
@@ -35,7 +35,7 @@ public class Sequences implements EventHandler {
         }).finallyDo(new Action0() {
             @Override
             public void call() {
-                output.onCompleted();
+                response.onCompleted();
             }
         }).subscribe(new Observer<Value[]>() {
             @Override
@@ -50,7 +50,7 @@ public class Sequences implements EventHandler {
 
             @Override
             public void onNext(Value[] value) {
-                permutations(value, output);
+                permutations(value, response);
             }
         });
     }
