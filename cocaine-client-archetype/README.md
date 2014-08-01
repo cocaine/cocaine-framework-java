@@ -1,0 +1,13 @@
+# Cocaine Client Archetype
+
+## Create a Project
+
+```bash
+mvn archetype:generate -DarchetypeCatalog=https://raw.githubusercontent.com/cocaine/cocaine-framework-java/master/archetype-catalog.xml \
+    -DarchetypeGroupId=ru.yandex.cocaine \
+    -DarchetypeArtifactId=cocaine-client-archetype \
+    -DarchetypeVersion=0.11.1.0-SNAPSHOT \
+    -DgroupId=my.group.id \
+    -DartifactId=my-artifact-id \
+    -Dversion=version
+```

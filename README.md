@@ -2,6 +2,10 @@
 
 ## Packages
  * Cocaine Core
+ * Cocaine Client
+ * Cocaine Client Archetype
+ * Cocaine Worker
+ * Cocaine Worker Archetype
  * Cocaine Services
 
 ## Building Cocaine Framework Java with Maven
