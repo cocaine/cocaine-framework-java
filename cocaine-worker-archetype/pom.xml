@@ -13,9 +13,29 @@
     <groupId>ru.yandex.cocaine</groupId>
     <artifactId>cocaine-worker-archetype</artifactId>
     <version>0.11.1.0-SNAPSHOT</version>
-    <packaging>jar</packaging>
+    <packaging>maven-archetype</packaging>
 
     <name>Cocaine-Worker-Archetype</name>
     <description>Archetype for creating a basic worker for Cocaine Application Engine.</description>
+
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-packaging</artifactId>
+                <version>2.2</version>
+            </extension>
+        </extensions>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-archetype-plugin</artifactId>
+                    <version>2.2</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
