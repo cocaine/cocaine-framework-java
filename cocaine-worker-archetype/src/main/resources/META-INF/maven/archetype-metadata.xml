@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor name="Cocaine Worker Quickstart Project">
+
+    <requiredProperties>
+        <requiredProperty key="logFile">
+            <defaultValue>/var/log/cocaine/application.log</defaultValue>
+        </requiredProperty>
+    </requiredProperties>
+
+    <fileSets>
+
+        <fileSet filtered="true" packaged="true">
+            <directory>src/main/java</directory>
+            <includes>
+                <include>**/*.java</include>
+            </includes>
+        </fileSet>
+
+        <fileSet filtered="true" packaged="false">
+            <directory>src/main/resources</directory>
+            <includes>
+                <include>log4j.properties</include>
+            </includes>
+        </fileSet>
+
+        <fileSet filtered="false" packaged="false">
+            <directory>src/main/assembly</directory>
+            <includes>
+                <include>assembly.xml</include>
+            </includes>
+        </fileSet>
+
+        <fileSet filtered="true" packaged="false">
+            <directory>src/main/bin</directory>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+
+    </fileSets>
+
+</archetype-descriptor>
