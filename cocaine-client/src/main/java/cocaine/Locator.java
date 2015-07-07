@@ -38,7 +38,7 @@ public final class Locator implements AutoCloseable {
 
     private Locator(SocketAddress endpoint) {
         this.endpoint = endpoint;
-        this.eventLoop = new NioEventLoopGroup();
+        this.eventLoop = new NioEventLoopGroup(1);
         this.pack = new MessagePack();
         this.pack.register(Message.class, MessageTemplate.getInstance());
         this.bootstrap = new Bootstrap()
