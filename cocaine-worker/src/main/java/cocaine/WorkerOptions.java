@@ -30,9 +30,6 @@ public class WorkerOptions {
     @Parameter(names = "--endpoint", description = "Unix Domain Socket", required = true)
     private String endpoint;
 
-    @Parameter(names = "--locator", required = true)
-    private String locator;
-
     public int getDisownTimeout() {
         return disownTimeout;
     }
@@ -55,10 +52,6 @@ public class WorkerOptions {
 
     public String getEndpoint() {
         return endpoint;
-    }
-
-    public String getLocator() {
-        return locator;
     }
 
     @Override
